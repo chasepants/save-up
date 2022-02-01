@@ -1,8 +1,8 @@
 import '../App.css'
 import {useState} from 'react'
 
-function Items({viewPage}) {
-    let [items, setItems] = useState(['Gibson SG', 'Polaris 4x4', 'Mac Book Pro'])
+function Items({user, viewPage}) {
+    let [items, setItems] = useState([...user.items])
     let [add_item_name, setAddItemName] = useState('')
 
     const removeItem = (delete_item) => {
@@ -30,12 +30,13 @@ function Items({viewPage}) {
             </div>
             </div>
             {items.map(item => {
+                console.log(item)
                 if (item) {
                     return (
                         <div className='row'>
                             <div className='col-sm-6 offset-sm-3'>
                                 <div className="input-group">
-                                    <p className="form-control">{item}</p>
+                                    <p className="form-control">{item.name}</p>
                                     <div className="input-group-append">
                                         <button onClick={()=>viewPage({number: 1, item: item})} className="btn-sharp btn-outline-primary" type="button">view</button>
                                         <button onClick={() => removeItem(item)} className="btn-sharp btn-outline-danger" type="button">delete</button>

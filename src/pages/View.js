@@ -2,16 +2,17 @@ import '../App.css'
 import gibson from './assets/gibson.png'
 import { ProgressBar } from 'react-bootstrap';
 
-const now = 60;
-
-const progressInstance = <ProgressBar now={now} label={`${now}%`} />;
 
 function View({page, viewPage}) {
+    const now = Math.round(page.item.saved / page.item.amount * 100);
+    console.log(now)
+    const progressInstance = <ProgressBar now={now} label={`${now}%`} />;
+
     return (
         <div className='container mt-5'>
             <div className='row'>
                 <div className='col-sm-6 offset-sm-3 d-flex justify-content-between'>
-                    <h3>{page.item} $999.99</h3>
+                    <h3>{page.item.name} ${page.item.amount}</h3>
                     <button onClick={() => viewPage({number: 0, item: ""})} className="btn btn-primary">Back</button>
                 </div>
             </div>
@@ -22,8 +23,7 @@ function View({page, viewPage}) {
             </div>
             <div className='row'>
                 <div className='col-sm-6 offset-sm-3'>
-                    <p><b>Description:</b> I've always wanted a Gibson SG so that I could be like the two greatest guitar players to ever
-                    live... Angus Young and Jack Black</p>
+                    <p><b>Description:</b> {page.item.description}</p>
                 </div>
             </div>
             <div className='row mt-3'>
@@ -35,7 +35,9 @@ function View({page, viewPage}) {
             <div className='row mt-3'>
                 <div className='col-sm-6 offset-sm-3'>
                     <div className="input-group">
-                        <p className="form-control-no-border"><b>Savings Plan:</b> $25 from every "Zego Pay Check"</p>
+                        <p className="form-control-no-border">
+                            <b>Savings Plan:</b> {page.item.saving_plan.amount} from every "{page.item.saving_plan.bank}" check
+                        </p>
                         <div className="input-group-append">
                             <button className="btn-sharp btn-outline-warning" type="button">EDIT</button>
                         </div>
