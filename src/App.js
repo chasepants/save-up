@@ -1,23 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import {useState} from 'react'
+import Header from './common/Header'
+import Items from './pages/Items'
+import View from './pages/View'
 
 function App() {
+  let [page, setPage] = useState({
+    number: 0,
+    item: ""
+  })
+
+  const viewPage = (page) => {
+    console.log("trying to view page")
+    console.log(page)
+    setPage(page)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Header/>
+      {
+        (() => {
+          switch (page.number) {
+            case 0: 
+              return <Items viewPage={viewPage} />
+            case 1: 
+              return <View page={page} viewPage={viewPage}/>
+            default:
+              return <Items viewPage={viewPage} />
+          }
+        })()
+      }
     </div>
   );
 }
