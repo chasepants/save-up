@@ -1,10 +1,12 @@
 import './App.css'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import Header from './common/Header'
 import Items from './pages/Items'
 import View from './pages/View'
+import Login from './pages/Login'
 
 function App() {
+  let [authenticated, setAuthentication] = useState(false)
   let [page, setPage] = useState({
     number: 0,
     item: ""
@@ -16,11 +18,22 @@ function App() {
     setPage(page)
   }
 
+  useEffect(() => {
+    let token = localStorage.getItem('auth')
+    console.log(token)
+    if (!token) {
+      setAuthentication(false)
+    }
+  })
+
   return (
     <div>
       <Header/>
       {
         (() => {
+          if (!authenticated) 
+            return <Login setAuthentication={setAuthentication}/> 
+
           switch (page.number) {
             case 0: 
               return <Items viewPage={viewPage} />
