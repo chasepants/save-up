@@ -51,8 +51,25 @@ async function signup(username, password) {
     return response;
 }
 
+async function updateUserItems(username, password, items) {
+    let user = {
+        username: username,
+        password: password,
+        items: items
+    }
+    let response = await axios.post(`http://localhost:8081/update/${username}/${password}`, user).then(res => {
+        return res
+    }).catch(err => {
+        return err
+    })
+    console.log(response)
+
+    return response;
+}
+
 export {
     login,
     logout,
-    signup
+    signup,
+    updateUserItems
 }
