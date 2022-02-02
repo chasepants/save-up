@@ -1,44 +1,12 @@
 import '../App.css'
-import {useEffect, useState} from 'react'
+import { useState } from 'react'
 import { updateUserItems } from '../api/auth'
+import AddItemForm from '../forms/AddItemForm'
 
 function Items({user, viewPage}) {
     let [showItemEditor, setShowItemEditor] = useState(false)
     let [items, setItems] = useState([...user.items])
-    let [addItemError, setAddItemError] = useState('')
     let [removeItemError, setRemoveItemError] = useState('')
-    let [itemName, setItemName] = useState('')
-    let [itemDescription, setItemDescription] = useState('')
-    let [itemAmount, setItemAmount] = useState('')
-    let [itemAmountSaved, setItemAmountSaved] = useState('')
-    let [itemAccount, setItemAccount] = useState('')
-    let [itemSaveCadence, setItemSaveCadence] = useState('')
-    let [itemSaveAmount, setItemSaveAmount] = useState('')
-
-    const validateItem = item => {
-        if (
-            item.name === ""  ||
-            item.amount === 0 ||
-            item.saving_plan === {}
-        ) {
-            console.log('looks not good')
-            return false
-        }
-        
-        if (
-            item.saving_plan.bank === "" ||
-            item.saving_plan.amount === 0 ||
-            item.saving_plan.cadence === 0
-        
-        ) {
-            console.log('looks not good')
-            return false
-        }
-        
-        console.log('looks good')
-        
-        return true
-    }
 
     const removeItem = async (delete_item) => {
         let index;
@@ -61,29 +29,12 @@ function Items({user, viewPage}) {
         }
     }
 
-    const addItem = async () => {
-        let item = {
-            name: itemName,
-            decription: itemDescription,
-            amount: Number.parseFloat(itemAmount),
-            saved: Number.parseFloat(itemAmountSaved),
-            saving_plan: {
-                bank: itemAccount,
-                amount: Number.parseFloat(itemSaveAmount),
-                cadence: Number.parseInt(itemSaveCadence)
-            }
-        }
-
-        console.log(item)
-        if (!validateItem(item)) {
-            setAddItemError('Your item could not be saved. Please try again.')
-        }
-        
+    const addItem = async item => {    
         let response = await updateUserItems(user.username, user.password, [...user.items, item])
         console.log(response)
 
         if (false === response) {
-            setAddItemError('Your item could not be saved. Please try again.')
+            return false
         } else {
             console.log('your item has been added!')
             setItems([
@@ -91,7 +42,7 @@ function Items({user, viewPage}) {
                 item
             ])
             setShowItemEditor(false)
-            setAddItemError('')
+            return true
         }
     }
 
@@ -121,6 +72,15 @@ function Items({user, viewPage}) {
                 }
             })}
             {
+                !showItemEditor && (
+                    <div className='row'>
+                        <div className='col-sm-6 offset-sm-3 text-center'>
+                            <button onClick={() => setShowItemEditor(true)} className="btn-sharp btn-success">Add</button>
+                        </div>
+                    </div>
+                )
+            }
+            {
                 '' === removeItemError && (
                     <div className='row'>
                         <div className='col-sm-6 offset-sm-3'>
@@ -130,124 +90,8 @@ function Items({user, viewPage}) {
                 )
             }
             {
-                showItemEditor && (
-                    <>
-                        <div className='row mt-5'>
-                            <div className='col-sm-6 offset-sm-3'>
-                                <p>Add A New Item</p>
-                            </div>
-                        </div>
-                        <div className='row'>
-                            <div className='col-sm-6 offset-sm-3 text-center'>
-                                <ul class="list-group">
-                                    <li class="list-group-item">
-                                        <div class="input-group flex-nowrap">
-                                            <input 
-                                                value={itemName}
-                                                onChange={e => setItemName(e.target.value)}
-                                                type="text"
-                                                class="form-control" 
-                                                placeholder="Item Name"
-                                            />
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="input-group flex-nowrap">
-                                            <input
-                                                value = {itemDescription}
-                                                onChange = {e => setItemDescription(e.target.value)}
-                                                type="text" 
-                                                class="form-control" 
-                                                placeholder="Item Description"
-                                            />
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="input-group flex-nowrap">
-                                            <input
-                                                value = {itemAmount}
-                                                onChange = {e => setItemAmount(e.target.value)}
-                                                type="text" 
-                                                class="form-control" 
-                                                placeholder="Amount"
-                                            />
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="input-group flex-nowrap">
-                                            <input
-                                                value = {itemAmountSaved}
-                                                onChange = {e => setItemAmountSaved(e.target.value)}
-                                                type="text" 
-                                                class="form-control" 
-                                                placeholder="Amount Already Saved"
-                                            />
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="input-group flex-nowrap">
-                                            <input
-                                                value = {itemAccount}
-                                                onChange = {e => setItemAccount(e.target.value)}
-                                                type="text" 
-                                                class="form-control" 
-                                                placeholder="Account To Save From"
-                                            />
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="input-group flex-nowrap">
-                                            <input
-                                                value = {itemSaveCadence}
-                                                onChange = {e => setItemSaveCadence(e.target.value)}
-                                                type="text" 
-                                                class="form-control" 
-                                                placeholder="How Many Weeks Per Month Do You Save"
-                                            />
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="input-group flex-nowrap">
-                                            <input
-                                                value = {itemSaveAmount}
-                                                onChange = {e => setItemSaveAmount(e.target.value)}
-                                                type="text" 
-                                                class="form-control" 
-                                                placeholder="How Much Do You Save"
-                                            />
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        {
-                            '' === addItemError && (
-                                <div className='row mt-2'>
-                                    <div className='col-sm-6 offset-sm-3'>
-                                        <p className='invalid-feedback'>{addItemError}</p>
-                                    </div>
-                                </div>
-                            )
-                        }
-                    </>
-                )
+                showItemEditor && <AddItemForm addItem={addItem} setShowItemEditor={setShowItemEditor}/>
             }
-            <div className='row mt-3'>
-                <div className='col-sm-6 offset-sm-3 text-center'>
-                    
-                    {(() =>{
-                        return showItemEditor ? (
-                            <>
-                                <div className="input-group d-flex justify-content-evenly">
-                                    <button onClick={() => addItem()} className="btn-sharp btn-success">Save</button>
-                                    <button onClick={() => setShowItemEditor(false)} className="btn-sharp btn-warning">Close</button>
-                                </div>
-                            </>
-                        ) : <button onClick={() => setShowItemEditor(true)} className="btn-sharp btn-success">Add</button>
-                    })()}
-                    
-                </div>
-            </div>
         </div>
     );
 }
