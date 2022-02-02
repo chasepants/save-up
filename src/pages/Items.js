@@ -1,10 +1,12 @@
 import '../App.css'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import { updateUserItems } from '../api/auth'
 
 function Items({user, viewPage}) {
     let [showItemEditor, setShowItemEditor] = useState(false)
     let [items, setItems] = useState([...user.items])
+    let [addItemError, setAddItemError] = useState('')
+    let [removeItemError, setRemoveItemError] = useState('')
     let [itemName, setItemName] = useState('')
     let [itemDescription, setItemDescription] = useState('')
     let [itemAmount, setItemAmount] = useState('')
@@ -13,16 +15,53 @@ function Items({user, viewPage}) {
     let [itemSaveCadence, setItemSaveCadence] = useState('')
     let [itemSaveAmount, setItemSaveAmount] = useState('')
 
-    const removeItem = (delete_item) => {
-        let updated_items = items.map(item=>{
-            return item !== delete_item ? item : null; 
-        })
-        console.log(updated_items)
-
-        setItems(updated_items)
+    const validateItem = item => {
+        if (
+            item.name === ""  ||
+            item.amount === 0 ||
+            item.saving_plan === {}
+        ) {
+            console.log('looks not good')
+            return false
+        }
+        
+        if (
+            item.saving_plan.bank === "" ||
+            item.saving_plan.amount === 0 ||
+            item.saving_plan.cadence === 0
+        
+        ) {
+            console.log('looks not good')
+            return false
+        }
+        
+        console.log('looks good')
+        
+        return true
     }
 
-    const addItem = () => {
+    const removeItem = async (delete_item) => {
+        let index;
+        let updated_items = items.map((item, i) => {
+            if (item !== delete_item)
+                return item 
+            index = i
+        })
+
+        updated_items.splice(index, 1);
+
+        let response = await updateUserItems(user.username, user.password, updated_items)
+        console.log(response)
+
+        if (false === response) {
+            setRemoveItemError('Your item could not be deleted. Please try again.')
+        } else {
+            console.log('your item has been deleted!')
+            setItems(updated_items)
+        }
+    }
+
+    const addItem = async () => {
         let item = {
             name: itemName,
             decription: itemDescription,
@@ -34,19 +73,36 @@ function Items({user, viewPage}) {
                 cadence: Number.parseInt(itemSaveCadence)
             }
         }
+
+        console.log(item)
+        if (!validateItem(item)) {
+            setAddItemError('Your item could not be saved. Please try again.')
+        }
         
-        updateUserItems(user.username, user.password, [...user.items, item])
+        let response = await updateUserItems(user.username, user.password, [...user.items, item])
+        console.log(response)
+
+        if (false === response) {
+            setAddItemError('Your item could not be saved. Please try again.')
+        } else {
+            console.log('your item has been added!')
+            setItems([
+                ...items,
+                item
+            ])
+            setShowItemEditor(false)
+            setAddItemError('')
+        }
     }
 
     return (
         <div className='container mt-5'>
             <div className='row'>
-            <div className='col-sm-6 offset-sm-3'>
-                <h3>WHY YOU SLAVE...</h3>
-            </div>
+                <div className='col-sm-6 offset-sm-3'>
+                    <h3>WHY YOU SLAVE...</h3>
+                </div>
             </div>
             {items.map(item => {
-                console.log(item)
                 if (item) {
                     return (
                         <div className='row'>
@@ -54,7 +110,7 @@ function Items({user, viewPage}) {
                                 <div className="input-group">
                                     <p className="form-control">{item.name}</p>
                                     <div className="input-group-append">
-                                        <button onClick={()=>viewPage({number: 1, item: item})} className="btn-sharp btn-outline-primary" type="button">view</button>
+                                        <button onClick={() => viewPage({number: 1, item: item})} className="btn-sharp btn-outline-primary" type="button">view</button>
                                         <button onClick={() => removeItem(item)} className="btn-sharp btn-outline-danger" type="button">delete</button>
                                         <button className="btn-sharp btn-outline-warning" type="button">share</button>
                                     </div>
@@ -64,6 +120,15 @@ function Items({user, viewPage}) {
                     )
                 }
             })}
+            {
+                '' === removeItemError && (
+                    <div className='row'>
+                        <div className='col-sm-6 offset-sm-3'>
+                            <p>{removeItemError}</p>
+                        </div>
+                    </div>
+                )
+            }
             {
                 showItemEditor && (
                     <>
@@ -155,6 +220,15 @@ function Items({user, viewPage}) {
                                 </ul>
                             </div>
                         </div>
+                        {
+                            '' === addItemError && (
+                                <div className='row mt-2'>
+                                    <div className='col-sm-6 offset-sm-3'>
+                                        <p className='invalid-feedback'>{addItemError}</p>
+                                    </div>
+                                </div>
+                            )
+                        }
                     </>
                 )
             }
