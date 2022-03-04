@@ -1,11 +1,14 @@
 import '../App.css'
 import gibson from './assets/gibson.png'
 import { ProgressBar } from 'react-bootstrap';
+import { useSelector, useDispatch } from 'react-redux'
+import pageActions from '../redux/actions/pageActions'
 
-
-function View({page, viewPage}) {
+function View() {
+    const page = useSelector(state => state.page )
+    const dispatch = useDispatch()
+    
     const now = Math.round(page.item.saved / page.item.amount * 100);
-    console.log(now)
     const progressInstance = <ProgressBar now={now} label={`${now}%`} />;
 
     return (
@@ -13,12 +16,13 @@ function View({page, viewPage}) {
             <div className='row'>
                 <div className='col-sm-6 offset-sm-3 d-flex justify-content-between'>
                     <h3>{page.item.name} ${page.item.amount}</h3>
-                    <button onClick={() => viewPage({number: 0, item: ""})} className="btn btn-primary">Back</button>
+                    <button onClick={() => 
+                        dispatch(pageActions.updatePage({}, 0))} className="btn btn-primary">Back</button>
                 </div>
             </div>
             <div className='row'>
                 <div className='col-sm-6 offset-sm-3'>
-                    <img className='img-fluid' src={gibson}/>
+                    <img alt='Item' className='img-fluid' src={gibson}/>
                 </div>
             </div>
             <div className='row'>
@@ -36,7 +40,7 @@ function View({page, viewPage}) {
                 <div className='col-sm-6 offset-sm-3'>
                     <div className="input-group">
                         <p className="form-control-no-border">
-                            <b>Savings Plan:</b> {page.item.saving_plan.amount} from every "{page.item.saving_plan.bank}" check
+                            <b>Savings Plan:</b> {page.item.saving_plan.amount} from "{page.item.saving_plan.bank}", {page.item.saving_plan.cadence} times a month
                         </p>
                         <div className="input-group-append">
                             <button className="btn-sharp btn-outline-warning" type="button">EDIT</button>

@@ -1,33 +1,12 @@
 import { useState } from 'react'
-import { login, signup } from '../api/auth'
+import { useDispatch, useSelector } from 'react-redux'
+import { login, signup } from '../redux/thunks/user'
 
-function Login({authentication, setAuthentication}) {
+function Login() {
     let [username, setUsername] = useState('')
     let [password, setPassword] = useState('')
-
-    const logUserIn = async () => {
-        let auth = await login(username, password)
-        console.log('Auth returned from login...' + auth)
-        setAuthentication({
-            ...authentication,
-            valid: auth.valid,
-            token: auth.token,
-            error: auth.error,
-            user: auth.user
-        })
-    }
-
-    const signUserUp = async () => {
-        let auth = await signup(username, password)
-        console.log('Auth returned from login...' + auth)
-        setAuthentication({
-            ...authentication,
-            valid: auth.valid,
-            token: auth.token,
-            error: auth.error,
-            user: auth.user
-        })
-    }
+    const authentication = useSelector(state => state.auth)
+    const dispatch = useDispatch()
 
     return (
         <div className='container mt-5'>
@@ -38,36 +17,32 @@ function Login({authentication, setAuthentication}) {
             </div>
             <div className='row mt-5'>
                 <div className='col-sm-6 offset-sm-3 text-center'>
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <div class="input-group flex-nowrap">
+                    <ul className="list-group">
+                        <li className="list-group-item">
+                            <div className="input-group flex-nowrap">
                                 <input 
                                     value={username}
                                     onChange={e => setUsername(e.target.value)}
                                     type="text"
-                                    class="form-control" 
-                                    placeholder="Username" 
-                                    aria-label="Username" 
-                                    aria-describedby="addon-wrapping"
+                                    className="form-control" 
+                                    placeholder="Username"
                                 />
                             </div>
                         </li>
-                        <li class="list-group-item">
-                            <div class="input-group flex-nowrap">
+                        <li className="list-group-item">
+                            <div className="input-group flex-nowrap">
                                 <input
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
                                     type="password" 
-                                    class="form-control" 
+                                    className="form-control" 
                                     placeholder="Password"
-                                    aria-label="Password"
-                                    aria-describedby="addon-wrapping"
                                 />
                             </div>
                         </li>
-                        <li class="list-group-item d-flex justify-content-evenly px-5 py-2">
-                            <button className="btn btn-primary" onClick={() => logUserIn()}>Login</button>
-                            <button className="btn btn-primary" onClick={() => signUserUp()} >Signup</button>
+                        <li className="list-group-item d-flex justify-content-evenly px-5 py-2">
+                            <button className="btn btn-primary" onClick={() => dispatch(login(username, password))}>Login</button>
+                            <button className="btn btn-primary" onClick={() => dispatch(signup(username, password))} >Signup</button>
                         </li>
                     </ul>
                 </div>

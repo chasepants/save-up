@@ -1,70 +1,42 @@
 import './App.css'
-import {useEffect, useState} from 'react'
+import { useSelector, connect } from 'react-redux'
 import checkAuthToken from './utils/auth'
 import Header from './common/Header'
 import Items from './pages/Items'
 import View from './pages/View'
 import Login from './pages/Login'
-
+import Accounts from './pages/Accounts'
 function App() {
-  let [authentication, setAuthentication] = useState({
-    valid: false,
-    token: "",
-    error: "",
-    user: {
-      username: "",
-      password: "",
-      items: [],
-      _id: ""
-    }
-  })
-
-  let [page, setPage] = useState({
-    number: 0,
-    item: {}
-  })
-
-  const viewPage = (page) => {
-    console.log("trying to view page")
-    console.log(page)
-    setPage(page)
-  }
-
-  useEffect(() => {
-    console.log('page updated')
-    let auth = checkAuthToken()
-    if (null === auth && true === authentication.valid) {
-      setAuthentication({
-        valid: false,
-        token: "",
-        error: "",
-        user: {}
-      })
-    }
-  }, [page])
-
-  console.log(authentication.user)
+  const page = useSelector(state => state.page)
 
   return (
     <div>
-      <Header page={page} setPage={setPage} authentication={authentication}/>
+      <Header/>
       {
         (() => {
-          if (!authentication.valid) 
-            return <Login authentication={authentication} setAuthentication={setAuthentication}/> 
-
+          if (!checkAuthToken()) {
+            return <Login/> 
+          }
           switch (page.number) {
             case 0: 
-              return <Items user={authentication.user} viewPage={viewPage} />
+              return <Items/>
             case 1: 
-              return <View page={page} viewPage={viewPage}/>
+              return <View/>
+            case 2: 
+              return <Accounts/>
             default:
-              return <Items user={authentication.user} viewPage={viewPage} />
+              return <Items/>
           }
         })()
       }
     </div>
-  );
+  )
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    auth: state.auth
+  }
+}
+
+export default connect(mapStateToProps)(App);

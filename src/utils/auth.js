@@ -1,4 +1,3 @@
-
 function checkAuthToken() {
     return localStorage.getItem('auth');
 }
