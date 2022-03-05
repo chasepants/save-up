@@ -12,7 +12,7 @@ const Header = () => {
             <div className="navbar navbar-light bg shadow-sm">
                 <div className="container">
                     <div className="navbar-brand d-flex align-items-center">
-                        <strong onClick={() => dispatch(pageActions.updatePage({}, 0))} >WORKER-DRONE</strong>
+                        <strong onClick={() => dispatch(pageActions.updatePage({}, 0))}>Save Up</strong>
                     </div>
                     <div>
                     {

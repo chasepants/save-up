@@ -14,7 +14,7 @@ function Items() {
         <div className='container mt-5'>
             <div className='row'>
                 <div className='col-sm-6 offset-sm-3'>
-                    <h3>WHY YOU SLAVE...</h3>
+                    <h3>WHY YOU SAVE...</h3>
                 </div>
             </div>
             {user.items.map(item => {

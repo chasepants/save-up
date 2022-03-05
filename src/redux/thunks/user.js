@@ -3,6 +3,27 @@ import { validateItem } from '../../utils/validate'
 import itemFormActions from '../actions/itemFormActions'
 import authActions from '../actions/authActions'
 
+const updateUserAccounts = (account) => {
+    return (dispatch, getState) => {
+        const state = getState()
+        const user = state.auth.user
+
+        let updated_user = {
+            ...user,
+            accounts: [
+                ...user.accounts,
+                account
+            ]
+        }
+        localStorage.removeItem('state')
+        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user).then(resp => {
+            dispatch(authActions.updateAuthUser(resp.data.user))
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+}
+
 const updateUserItems = (item) => {
     return (dispatch, getState) => {
         let is_validated = validateItem(item)
@@ -10,7 +31,7 @@ const updateUserItems = (item) => {
         if (!is_validated) {
             return () => dispatch(itemFormActions.setAddError('Please fill out correct form'))
         }
-
+        console.log('updating user')
         const state = getState()
         const user = state.auth.user
 
@@ -21,11 +42,13 @@ const updateUserItems = (item) => {
                 item
             ]
         }
-        localStorage.removeItem('state')
-        return axios.post(`http://localhost:8081/update/${user.username}/${user.password}`, updated_user).then(resp => {
+        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user).then(resp => {
+            localStorage.removeItem('state')
+            console.log('success', resp)
             dispatch(authActions.updateAuthUser(resp.data.user))
             dispatch(itemFormActions.hideItemForm())
         }).catch(err => {
+            console.log('err', err)
             dispatch(itemFormActions.setAddError('Could not add item to DB'))
         })
     }
@@ -53,7 +76,7 @@ const removeUserItem = (delete_item) => {
             items: updated_items
         }
 
-        return axios.post(`http://localhost:8081/update/${user.username}/${user.password}`, updated_user).then(resp => {
+        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user).then(resp => {
             dispatch(authActions.updateAuthUser(resp.data.user))
         }).catch(err => {
             dispatch(itemFormActions.setItemFormRemoveError('Could not add item to DB'))
@@ -105,5 +128,6 @@ export {
     logout,
     signup,
     updateUserItems,
-    removeUserItem
+    removeUserItem,
+    updateUserAccounts
 }
