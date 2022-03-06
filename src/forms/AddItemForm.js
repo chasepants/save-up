@@ -13,6 +13,8 @@ function AddItemForm() {
     let [itemSaveAmount, setItemSaveAmount] = useState('')
 
     const itemForm = useSelector(state => state.itemForm)
+    const accounts = useSelector(state => state.auth.user.accounts)
+
     const dispatch = useDispatch()
 
     return <>
@@ -72,26 +74,29 @@ function AddItemForm() {
                     </div>
                     <div className='col-sm-6 offset-sm-3 text-center'>
                         <div className="input-group flex-nowrap">
-                            <input
-                                value = {itemAccount}
-                                onChange = {e => setItemAccount(e.target.value)}
-                                type="text" 
-                                className="form-control" 
-                                placeholder="Account To Save From"
-                                required
-                            />
+                            <select required defaultValue="placeholder" onChange={e => setItemAccount(e.target.value)}>
+                                <option value="placeholder" disabled>Account To Save From</option>
+                                {
+                                    accounts.map(account => {
+                                        return <option key={account.item.item_id}>{account.item.item_id}</option>
+                                    })
+                                }
+                            </select>
                         </div>
                     </div>
                     <div className='col-sm-6 offset-sm-3 text-center'>
                         <div className="input-group flex-nowrap">
-                            <input
-                                value = {itemSaveCadence}
-                                onChange = {e => setItemSaveCadence(e.target.value)}
-                                type="text" 
-                                className="form-control" 
-                                placeholder="How Many Weeks Per Month Do You Save"
-                                required
-                            />
+                            <select required defaultValue='placeholder' onChange = {e => setItemSaveCadence(e.target.value)}>
+                                <option value='placeholder' disabled>How Often Do You Save?</option>
+                                {/* @TODO: these should be options saved off somewhere. Like a saving cadence types. */}
+                                <option>Daily</option>
+                                <option>Weekly</option>
+                                <option>Bi-Weekly</option>
+                                <option>Monthly</option>
+                                <option>Quarterly</option>
+                                <option>Semi-Annually</option>
+                                <option>Annually</option>
+                            </select>
                         </div>
                     </div>
                     <div className='col-sm-6 offset-sm-3 text-center'>

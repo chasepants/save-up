@@ -16,7 +16,11 @@ const updateUserAccounts = (account) => {
             ]
         }
         localStorage.removeItem('state')
-        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user).then(resp => {
+        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user, {
+            headers: {
+                'authorization': state.auth.token
+            } 
+        }).then(resp => {
             dispatch(authActions.updateAuthUser(resp.data.user))
         }).catch(err => {
             console.log(err)
@@ -31,7 +35,7 @@ const updateUserItems = (item) => {
         if (!is_validated) {
             return () => dispatch(itemFormActions.setAddError('Please fill out correct form'))
         }
-        console.log('updating user')
+
         const state = getState()
         const user = state.auth.user
 
@@ -42,13 +46,16 @@ const updateUserItems = (item) => {
                 item
             ]
         }
-        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user).then(resp => {
+        // @TODO: api calls should probably be put in their own file
+        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user, {
+            headers: {
+                'authorization': state.auth.token
+            } 
+        }).then(resp => {
             localStorage.removeItem('state')
-            console.log('success', resp)
             dispatch(authActions.updateAuthUser(resp.data.user))
             dispatch(itemFormActions.hideItemForm())
         }).catch(err => {
-            console.log('err', err)
             dispatch(itemFormActions.setAddError('Could not add item to DB'))
         })
     }
@@ -76,7 +83,11 @@ const removeUserItem = (delete_item) => {
             items: updated_items
         }
 
-        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user).then(resp => {
+        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user, {
+            headers: {
+                'authorization': state.auth.token
+            } 
+        }).then(resp => {
             dispatch(authActions.updateAuthUser(resp.data.user))
         }).catch(err => {
             dispatch(itemFormActions.setItemFormRemoveError('Could not add item to DB'))
