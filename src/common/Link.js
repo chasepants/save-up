@@ -1,11 +1,12 @@
 import { useCallback } from 'react'
-import { updateUserAccounts } from '../redux/thunks/user'
-import { useDispatch } from 'react-redux'
+import { updateUserPlaidItems } from '../redux/thunks/user'
+import { useDispatch, useSelector } from 'react-redux'
 
 /** PLAID */
 import { usePlaidLink } from 'react-plaid-link';
 
 const Link = (props) => {
+    const auth_token = useSelector(state => state.auth.token)
     const dispatch = useDispatch()
     const onSuccess = useCallback(public_token => {
       // send public_token to server
@@ -13,13 +14,14 @@ const Link = (props) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'authorization': auth_token
         },
         body: JSON.stringify({ public_token }),
       })
       .then(response => response.json())
       .then(data => {
         console.log(data)
-        dispatch(updateUserAccounts(data))
+        dispatch(updateUserPlaidItems(data))
       })
       .catch(err => console.log(err))
     }, [])

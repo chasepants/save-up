@@ -13,7 +13,7 @@ function AddItemForm() {
     let [itemSaveAmount, setItemSaveAmount] = useState('')
 
     const itemForm = useSelector(state => state.itemForm)
-    const accounts = useSelector(state => state.auth.user.accounts)
+    const plaid_items = useSelector(state => state.auth.user.plaid_items)
 
     const dispatch = useDispatch()
 
@@ -78,8 +78,26 @@ function AddItemForm() {
                                 <select required defaultValue="placeholder" onChange={e => setItemAccount(e.target.value)}>
                                     <option value="placeholder" disabled>Account To Save From</option>
                                     {
-                                        accounts.map(account => {
-                                            return <option key={account.item.item_id}>{account.item.item_id}</option>
+                                        plaid_items.map(plaidItem => {
+                                            console.log(plaidItem)
+                                            return plaidItem.accounts.map(account => {
+                                                return <option key={account.account_id}>{account.name}</option>
+                                            })
+                                        })
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div className='col-sm-6 offset-sm-3 text-center'>
+                            <div className="input-group flex-nowrap">
+                                <select required defaultValue="placeholder" onChange={e => setItemAccount(e.target.value)}>
+                                    <option value="placeholder" disabled>Account To Save To</option>
+                                    {
+                                        plaid_items.map(plaidItem => {
+                                            console.log(plaidItem)
+                                            return plaidItem.accounts.map(account => {
+                                                return <option key={account.account_id}>{account.name}</option>
+                                            })
                                         })
                                     }
                                 </select>

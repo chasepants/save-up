@@ -3,16 +3,16 @@ import { validateItem } from '../../utils/validate'
 import itemFormActions from '../actions/itemFormActions'
 import authActions from '../actions/authActions'
 
-const updateUserAccounts = (account) => {
+const updateUserPlaidItems = (plaidItem) => {
     return (dispatch, getState) => {
         const state = getState()
         const user = state.auth.user
 
         let updated_user = {
             ...user,
-            accounts: [
-                ...user.accounts,
-                account
+            plaid_items: [
+                ...user.plaid_items,
+                plaidItem
             ]
         }
         localStorage.removeItem('state')
@@ -21,7 +21,7 @@ const updateUserAccounts = (account) => {
                 'authorization': state.auth.token
             } 
         }).then(resp => {
-            dispatch(authActions.updateAucthUser(resp.data.user))
+            dispatch(authActions.updateAuthUser(resp.data.user))
         }).catch(err => {
             console.log(err)
         })
@@ -140,5 +140,5 @@ export {
     signup,
     updateUserItems,
     removeUserItem,
-    updateUserAccounts
+    updateUserPlaidItems
 }
