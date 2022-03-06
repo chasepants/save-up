@@ -72,3 +72,7 @@
     appearance: none;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
+
+.pointer {
+  cursor: pointer
+}

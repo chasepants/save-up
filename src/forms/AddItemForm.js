@@ -115,7 +115,7 @@ function AddItemForm() {
                         <div className="input-group d-flex justify-content-evenly">
                             <button onClick={e => {
                                 e.preventDefault()
-                                const item = {
+                                dispatch(updateUserItems({
                                     name: itemName,
                                     decription: itemDescription,
                                     amount: Number.parseFloat(itemAmount),
@@ -125,8 +125,8 @@ function AddItemForm() {
                                         amount: Number.parseFloat(itemSaveAmount),
                                         cadence: Number.parseInt(itemSaveCadence)
                                     }
-                                }
-                                dispatch(updateUserItems(item))
+                                }))
+                                //@TODO: Can this be moved to a function?? Seems crowded here.
                                 setItemSaveAmount('')
                                 setItemSaveCadence('')
                                 setItemAccount('')

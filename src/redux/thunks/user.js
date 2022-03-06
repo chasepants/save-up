@@ -21,7 +21,7 @@ const updateUserAccounts = (account) => {
                 'authorization': state.auth.token
             } 
         }).then(resp => {
-            dispatch(authActions.updateAuthUser(resp.data.user))
+            dispatch(authActions.updateAucthUser(resp.data.user))
         }).catch(err => {
             console.log(err)
         })

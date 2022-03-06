@@ -11,7 +11,7 @@ const Header = () => {
         <header>
             <div className="navbar navbar-light bg shadow-sm">
                 <div className="container">
-                    <div className="navbar-brand d-flex align-items-center">
+                    <div className="align-items-center d-flex navbar-brand pointer">
                         <strong onClick={() => dispatch(pageActions.updatePage({}, 0))}>Save Up</strong>
                     </div>
                     <div>
