@@ -7,8 +7,8 @@ function AddItemForm() {
     let [itemName, setItemName] = useState('')
     let [itemDescription, setItemDescription] = useState('')
     let [itemAmount, setItemAmount] = useState('')
-    let [itemAmountSaved, setItemAmountSaved] = useState('')
-    let [itemAccount, setItemAccount] = useState('')
+    let [itemFromAccount, setitemFromAccount] = useState('')
+    let [itemToAccount, setitemToAccount] = useState('')
     let [itemSaveCadence, setItemSaveCadence] = useState('')
     let [itemSaveAmount, setItemSaveAmount] = useState('')
 
@@ -63,25 +63,12 @@ function AddItemForm() {
                         </div>
                         <div className='col-sm-6 offset-sm-3 text-center'>
                             <div className="input-group flex-nowrap">
-                                <input
-                                    value = {itemAmountSaved}
-                                    onChange = {e => setItemAmountSaved(e.target.value)}
-                                    type="text" 
-                                    className="form-control" 
-                                    placeholder="Amount Already Saved"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className='col-sm-6 offset-sm-3 text-center'>
-                            <div className="input-group flex-nowrap">
-                                <select required defaultValue="placeholder" onChange={e => setItemAccount(e.target.value)}>
+                                <select required defaultValue="placeholder" onChange={e => setitemFromAccount(e.target.value)}>
                                     <option value="placeholder" disabled>Account To Save From</option>
                                     {
                                         plaid_items.map(plaidItem => {
-                                            console.log(plaidItem)
                                             return plaidItem.accounts.map(account => {
-                                                return <option key={account.account_id}>{account.name}</option>
+                                                return <option key={account.account_id} value={account.account_id}>{account.name}</option>
                                             })
                                         })
                                     }
@@ -90,13 +77,12 @@ function AddItemForm() {
                         </div>
                         <div className='col-sm-6 offset-sm-3 text-center'>
                             <div className="input-group flex-nowrap">
-                                <select required defaultValue="placeholder" onChange={e => setItemAccount(e.target.value)}>
+                                <select required defaultValue="placeholder" onChange={e => setitemToAccount(e.target.value)}>
                                     <option value="placeholder" disabled>Account To Save To</option>
                                     {
                                         plaid_items.map(plaidItem => {
-                                            console.log(plaidItem)
                                             return plaidItem.accounts.map(account => {
-                                                return <option key={account.account_id}>{account.name}</option>
+                                                return <option key={account.account_id} value={account.account_id}>{account.name}</option>
                                             })
                                         })
                                     }
@@ -107,14 +93,13 @@ function AddItemForm() {
                             <div className="input-group flex-nowrap">
                                 <select required defaultValue='placeholder' onChange = {e => setItemSaveCadence(e.target.value)}>
                                     <option value='placeholder' disabled>How Often Do You Save?</option>
-                                    {/* @TODO: these should be options saved off somewhere. Like a saving cadence types. */}
-                                    <option>Daily</option>
-                                    <option>Weekly</option>
-                                    <option>Bi-Weekly</option>
-                                    <option>Monthly</option>
-                                    <option>Quarterly</option>
-                                    <option>Semi-Annually</option>
-                                    <option>Annually</option>
+                                    <option key='daily' value='daily'>Daily</option>
+                                    <option key='weekly' value='weekly'>Weekly</option>
+                                    <option key='bi-weekly' value='bi-weekly'>Bi-Weekly</option>
+                                    <option key='monthly' value='monthly'>Monthly</option>
+                                    <option key='quarterly' value='quarterly'>Quarterly</option>
+                                    <option key='semi-annually' value='semi-annually'>Semi-Annually</option>
+                                    <option key='annually' value='annually'>Annually</option>
                                 </select>
                             </div>
                         </div>
@@ -138,18 +123,18 @@ function AddItemForm() {
                                         name: itemName,
                                         decription: itemDescription,
                                         amount: Number.parseFloat(itemAmount),
-                                        saved: Number.parseFloat(itemAmountSaved),
                                         saving_plan: {
-                                            bank: itemAccount,
+                                            fromAccount: itemFromAccount,
+                                            toAccount: itemToAccount,
                                             amount: Number.parseFloat(itemSaveAmount),
-                                            cadence: Number.parseInt(itemSaveCadence)
+                                            cadence: itemSaveCadence
                                         }
                                     }))
                                     //@TODO: Can this be moved to a function?? Seems crowded here.
                                     setItemSaveAmount('')
                                     setItemSaveCadence('')
-                                    setItemAccount('')
-                                    setItemAmountSaved('')
+                                    setitemFromAccount('')
+                                    setitemToAccount('')
                                     setItemAmount('')
                                     setItemDescription('')
                                     setItemName('')
