@@ -3,6 +3,7 @@ import { logout } from '../redux/thunks/user'
 import pageActions from '../redux/actions/pageActions'
 import { useSelector, useDispatch } from 'react-redux'
 import { useState } from 'react'
+import pageNumbers from '../utils/navigation'
 
 
 const Header = () => {
@@ -15,7 +16,7 @@ const Header = () => {
             <div className="navbar navbar-light bg shadow-sm">
                 <div className="container">
                     <div className="align-items-center d-flex navbar-brand pointer">
-                        <strong onClick={() => dispatch(pageActions.updatePage({}, 0))}>Save Up</strong>
+                        <strong onClick={() => dispatch(pageActions.updatePage({}, pageNumbers.SAVINGS_GOALS_PAGE))}>Save Up</strong>
                     </div>
                         {
                             authentication.valid && (
@@ -33,13 +34,13 @@ const Header = () => {
                                             aria-labelledby="dropdownMenuButton">
                                         <a className="dropdown-item" href='./' onClick={async e => {
                                                 e.preventDefault()
-                                                dispatch(pageActions.updatePage({}, 0))
+                                                dispatch(pageActions.updatePage({}, pageNumbers.SAVINGS_GOALS_PAGE))
                                                 setShowMenuOptions(false)
                                             }
                                         }>Savings Goals</a>
                                         <a className="dropdown-item" href='./' onClick={async e => {
                                                 e.preventDefault()
-                                                dispatch(pageActions.updatePage({}, 2))
+                                                dispatch(pageActions.updatePage({}, pageNumbers.BANK_ACCOUNTS_PAGE))
                                                 setShowMenuOptions(false)
                                             }
                                         }>Bank Accounts</a>
