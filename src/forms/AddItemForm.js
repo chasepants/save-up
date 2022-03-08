@@ -103,7 +103,7 @@ function AddItemForm() {
                                         plaid_items.map(plaidItem => {
                                             return plaidItem.accounts.map(account => {
                                                 return (
-                                                    <a className="dropdown-item" href="#" onClick={async e => {
+                                                    <a className="dropdown-item" href="./" onClick={async e => {
                                                         e.preventDefault()
                                                         setitemFromAccountLabel(account.name)
                                                         setitemFromAccount(account.account_id)
@@ -135,7 +135,7 @@ function AddItemForm() {
                                         plaid_items.map(plaidItem => {
                                             return plaidItem.accounts.map(account => {
                                                 return (
-                                                    <a className="dropdown-item" href="#" onClick={async e => {
+                                                    <a className="dropdown-item" href="./" onClick={async e => {
                                                         e.preventDefault()
                                                         setitemToAccountLabel(account.name)
                                                         setitemToAccount(account.account_id)
@@ -163,14 +163,13 @@ function AddItemForm() {
                                 </button>
                                 <div className={showSavingPeriods ? 'dropdown-menu-displayed w-100' : 'dropdown-menu w-100'}
                                     aria-labelledby="dropdownMenuButton">
-                                    <a value='placeholder' disabled></a>
-                                    <a className="dropdown-item" href="#" onClick={e => savingPeriodHandler(e, 'daily', 'Daily')}>Daily</a>
-                                    <a className="dropdown-item" href="#" onClick={e => savingPeriodHandler(e, 'weekly', 'Wekly')}>Weekly</a>
-                                    <a className="dropdown-item" href="#" onClick={e => savingPeriodHandler(e, 'bi-weekly', 'Bi-Weekly')}>Bi-Weekly</a>
-                                    <a className="dropdown-item" href="#" onClick={e => savingPeriodHandler(e, 'monthly', 'Monthly')}>Monthly</a>
-                                    <a className="dropdown-item" href="#" onClick={e => savingPeriodHandler(e, 'quarterly', 'Quarterly')}>Quarterly</a>
-                                    <a className="dropdown-item" href="#" onClick={e => savingPeriodHandler(e, 'semi-annually', 'Semi-Annually')}>Semi-Annually</a>
-                                    <a className="dropdown-item" href="#" onClick={e => savingPeriodHandler(e, 'annually', 'Annually')}>Annually</a>
+                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'daily', 'Daily')}>Daily</a>
+                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'weekly', 'Wekly')}>Weekly</a>
+                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'bi-weekly', 'Bi-Weekly')}>Bi-Weekly</a>
+                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'monthly', 'Monthly')}>Monthly</a>
+                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'quarterly', 'Quarterly')}>Quarterly</a>
+                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'semi-annually', 'Semi-Annually')}>Semi-Annually</a>
+                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'annually', 'Annually')}>Annually</a>
                                 </div>
                             </div>
                         </div>

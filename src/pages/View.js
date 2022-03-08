@@ -23,7 +23,7 @@ function View() {
                         <div className='col-sm-6 offset-sm-3'>
                             <div class='border d-flex justify-content-between ' onClick={() => console.log('view image')}>
                                 <div class='d-flex align-items-center thumbnail-image-block'>
-                                    <img alt='Item' className='img-fluid' src={page.item.item_preview.img}/>
+                                    <img alt='Item' className='img-fluid' src={page.item.item_preview.img ?? page.item.item_preview.favicon}/>
                                 </div>
                                 <div class='align-items-between d-flex flex-column px-2 pt-1 thumbnail-link-block'>
                                     <b><a href={page.item.url}>Visit Website</a></b>
