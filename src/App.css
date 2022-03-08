@@ -73,6 +73,30 @@
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
+.item-url-row {
+  height: 100px;
+}
+
 .pointer {
   cursor: pointer
+}
+
+.thumbnail-image-block {
+  height: 100px;
+  width: 100px;
+}
+
+.thumbnail-link-block {
+  background-color: lightgray;
+  height: 100px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.thumbnail-link-block > b > a {
+  color: black
+}
+
+.thumbnail-link-block > p {
+  max-height: 50px;
 }

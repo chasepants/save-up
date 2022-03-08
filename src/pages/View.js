@@ -13,31 +13,38 @@ function View() {
         <div className='container mt-5'>
             <div className='row'>
                 <div className='col-sm-6 offset-sm-3 d-flex justify-content-between'>
-                    <h3>{page.item.name} ${page.item.amount}</h3>
-                    <button className="btn btn-primary" onClick={() => dispatch(pageActions.updatePage({}, 0))}>Back</button>
+                    <h3>{page.item.item_preview.title}</h3>
+                    <h3>${page.item.amount}</h3>
                 </div>
             </div>
             {
                 page.item.item_preview && (
-                    <div className='row'>
+                    <div className='row my-3 item-url-row'>
                         <div className='col-sm-6 offset-sm-3'>
-                            <img alt='Item' className='img-fluid' src={page.item.item_preview.img}/>
+                            <div class='border d-flex justify-content-between ' onClick={() => console.log('view image')}>
+                                <div class='d-flex align-items-center thumbnail-image-block'>
+                                    <img alt='Item' className='img-fluid' src={page.item.item_preview.img}/>
+                                </div>
+                                <div class='align-items-between d-flex flex-column px-2 pt-1 thumbnail-link-block'>
+                                    <b><a href={page.item.url}>Visit Website</a></b>
+                                    <text>{page.item.item_preview.description}...</text>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )
             }
-            <div className='row'>
+            {/* <div className='row'>
                 <div className='col-sm-6 offset-sm-3'>
                     <p><b>Description:</b> {page.item.description}</p>
                 </div>
-            </div>
-            <div className='row mt-3'>
+            </div> */}
+            <div className='row mt-5'>
                 <div className='col-sm-6 offset-sm-3 text-center'>
                     {progressInstance}
-                    <p><b>watch your savings grow</b></p>
                 </div>
             </div>
-            <div className='row mt-3'>
+            <div className='row mt-5'>
                 <div className='col-sm-6 offset-sm-3'>
                     <div className="input-group">
                         <p className="form-control-no-border">
@@ -76,6 +83,11 @@ function View() {
                             
                         </div>
                     </div>
+                </div>
+            </div>
+            <div className='row mt-5'>
+                <div className='col-sm-6 offset-sm-3 text-center'>
+                    <button className="btn btn-primary" onClick={() => dispatch(pageActions.updatePage({}, 0))}>Back</button>
                 </div>
             </div>
             <br/>
