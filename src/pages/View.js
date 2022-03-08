@@ -34,7 +34,7 @@ function View() {
                     </div>
                 )
             }
-            {/* <div className='row'>
+            {/* <div className='row'>c
                 <div className='col-sm-6 offset-sm-3'>
                     <p><b>Description:</b> {page.item.description}</p>
                 </div>
