@@ -56,7 +56,6 @@ const Header = () => {
                                         }>Logout</a>
                                     </div>
                                 </div>
-
                             ) 
                         }
                 </div>
