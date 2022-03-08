@@ -11,6 +11,7 @@ function AddItemForm() {
     let [itemToAccount, setitemToAccount] = useState('')
     let [itemSaveCadence, setItemSaveCadence] = useState('')
     let [itemSaveAmount, setItemSaveAmount] = useState('')
+    let [itemUrl, setItemUrl] = useState('')
 
     const itemForm = useSelector(state => state.itemForm)
     const plaid_items = useSelector(state => state.auth.user.plaid_items)
@@ -116,6 +117,17 @@ function AddItemForm() {
                             </div>
                         </div>
                         <div className='col-sm-6 offset-sm-3 text-center'>
+                            <div className="input-group flex-nowrap">
+                                <input
+                                    value = {itemUrl}
+                                    onChange = {e => setItemUrl(e.target.value)}
+                                    type="text" 
+                                    className="form-control" 
+                                    placeholder="Add a link to the website for the item"
+                                />
+                            </div>
+                        </div>
+                        <div className='col-sm-6 offset-sm-3 text-center'>
                             <div className="input-group d-flex justify-content-evenly">
                                 <button onClick={e => {
                                     e.preventDefault()
@@ -123,6 +135,7 @@ function AddItemForm() {
                                         name: itemName,
                                         decription: itemDescription,
                                         amount: Number.parseFloat(itemAmount),
+                                        url: itemUrl,
                                         saving_plan: {
                                             fromAccount: itemFromAccount,
                                             toAccount: itemToAccount,

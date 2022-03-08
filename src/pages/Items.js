@@ -9,6 +9,7 @@ function Items() {
     const itemForm = useSelector(state => state.itemForm)
     const user = useSelector(state => state.auth.user)
     const dispatch = useDispatch()
+    console.log(user)
 
     return (
         <div className='container mt-5'>

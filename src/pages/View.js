@@ -1,13 +1,11 @@
 import '../App.css'
-import gibson from './assets/gibson.png'
-import { ProgressBar } from 'react-bootstrap';
+import { ProgressBar } from 'react-bootstrap'
 import { useSelector, useDispatch } from 'react-redux'
 import pageActions from '../redux/actions/pageActions'
 
 function View() {
     const page = useSelector(state => state.page )
     const dispatch = useDispatch()
-    
     const now = Math.round(page.item.saved / page.item.amount * 100);
     const progressInstance = <ProgressBar now={now} label={`${now}%`} />;
 
@@ -16,15 +14,18 @@ function View() {
             <div className='row'>
                 <div className='col-sm-6 offset-sm-3 d-flex justify-content-between'>
                     <h3>{page.item.name} ${page.item.amount}</h3>
-                    <button onClick={() => 
-                        dispatch(pageActions.updatePage({}, 0))} className="btn btn-primary">Back</button>
+                    <button className="btn btn-primary" onClick={() => dispatch(pageActions.updatePage({}, 0))}>Back</button>
                 </div>
             </div>
-            <div className='row'>
-                <div className='col-sm-6 offset-sm-3'>
-                    <img alt='Item' className='img-fluid' src={gibson}/>
-                </div>
-            </div>
+            {
+                page.item.item_preview && (
+                    <div className='row'>
+                        <div className='col-sm-6 offset-sm-3'>
+                            <img alt='Item' className='img-fluid' src={page.item.item_preview.img}/>
+                        </div>
+                    </div>
+                )
+            }
             <div className='row'>
                 <div className='col-sm-6 offset-sm-3'>
                     <p><b>Description:</b> {page.item.description}</p>

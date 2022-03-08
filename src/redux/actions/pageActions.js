@@ -14,6 +14,13 @@ const updatePageItem = item => {
     }
 }
 
+const updatePageItemPreview = pageItemPreview => {
+    return {
+        type: actions.UPDATE_PAGE_ITEM_PREVIEW,
+        payload: { pageItemPreview }
+    }
+}
+
 const updatePage = (item, number) => {
     return {
         type: actions.UPDATE_PAGE,
@@ -27,7 +34,8 @@ const updatePage = (item, number) => {
 const pageActions = {
     updatePage,
     updatePageItem,
-    updatePageNumber
+    updatePageNumber,
+    updatePageItemPreview
 }
 
 export default pageActions

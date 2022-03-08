@@ -2,6 +2,11 @@ import actions from '../actions/actionLang'
 
 export default function page(page = {}, action) {
     switch (action.type) {
+        case actions.UPDATE_PAGE_ITEM_PREVIEW:
+            return {
+                ...page,
+                item_preview: action.payload.pageItemPreview
+            }
         case actions.UPDATE_PAGE_NUMBER:
             return {
                 ...page,
