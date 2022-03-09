@@ -22,7 +22,6 @@ function AddItemForm() {
     let [savingPeriodLabel, setSavingPeriodLabel] = useState('How Often Do you Save?')
 
     let [isSaving, setIsSaving] = useState(false)
-    let [color, setColor] = useState("#ffffff");
 
     const itemForm = useSelector(state => state.itemForm)
     const plaid_items = useSelector(state => state.auth.user.plaid_items)
@@ -232,7 +231,7 @@ function AddItemForm() {
                                     }))
                                     clearForm()
                                 }} className="btn-sharp btn-success">
-                                    { isSaving ? <ClipLoader color={color} loading={isSaving} size={20} /> : "Save" } 
+                                    { isSaving ? <ClipLoader color="#ffffff" loading={isSaving} size={20} /> : "Save" } 
                                 </button>
 
                                 <button onClick={() => dispatch(itemFormActions.hideItemForm())} className="btn-sharp btn-warning">Close</button>
