@@ -2,6 +2,7 @@ import { updateUserItems } from '../redux/thunks/user'
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import itemFormActions from '../redux/actions/itemFormActions'
+import ClipLoader from "react-spinners/ClipLoader";
 
 function AddItemForm() {
     let [itemName, setItemName] = useState('')
@@ -20,6 +21,9 @@ function AddItemForm() {
     let [itemToAccountLabel, setitemToAccountLabel] = useState('Select An Account To Save To')
     let [savingPeriodLabel, setSavingPeriodLabel] = useState('How Often Do you Save?')
 
+    let [isSaving, setIsSaving] = useState(false)
+    let [color, setColor] = useState("#ffffff");
+
     const itemForm = useSelector(state => state.itemForm)
     const plaid_items = useSelector(state => state.auth.user.plaid_items)
 
@@ -37,6 +41,16 @@ function AddItemForm() {
         setItemSaveCadence(cadence)
         toggleDropDown(setShowSavingPeriods, showSavingPeriods, [setShowFromAccounts, setShowToAccounts])
         setSavingPeriodLabel(label)
+    }
+
+    const clearForm = async () => {
+        setItemSaveAmount('')
+        setItemSaveCadence('')
+        setitemFromAccount('')
+        setitemToAccount('')
+        setItemAmount('')
+        setItemDescription('')
+        setItemName('')
     }
 
     return <div className="row">
@@ -203,6 +217,7 @@ function AddItemForm() {
                             <div className="input-group d-flex justify-content-evenly">
                                 <button onClick={e => {
                                     e.preventDefault()
+                                    setIsSaving(true)
                                     dispatch(updateUserItems({
                                         name: itemName,
                                         decription: itemDescription,
@@ -215,15 +230,10 @@ function AddItemForm() {
                                             cadence: itemSaveCadence
                                         }
                                     }))
-                                    //@TODO: Can this be moved to a function?? Seems crowded here.
-                                    setItemSaveAmount('')
-                                    setItemSaveCadence('')
-                                    setitemFromAccount('')
-                                    setitemToAccount('')
-                                    setItemAmount('')
-                                    setItemDescription('')
-                                    setItemName('')
-                                }} className="btn-sharp btn-success">Save</button>
+                                    clearForm()
+                                }} className="btn-sharp btn-success">
+                                    { isSaving ? <ClipLoader color={color} loading={isSaving} size={20} /> : "Save" } 
+                                </button>
 
                                 <button onClick={() => dispatch(itemFormActions.hideItemForm())} className="btn-sharp btn-warning">Close</button>
                             </div>
