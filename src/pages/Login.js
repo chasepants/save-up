@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login, signup } from "../redux/thunks/user";
+import Form from "react-bootstrap/Form";
 
 function Login() {
   const [inputs, setInputs] = useState({});
@@ -49,30 +50,34 @@ function Login() {
         <div className="col-sm-6 offset-sm-3 text-center">
           <ul className="list-group">
             <li className="list-group-item">
-              <div className="input-group flex-nowrap">
-                <input
-                  name="username"
-                  value={inputs.username || ""}
-                  onChange={(e) => handleInput(e)}
-                  type="text"
-                  className="form-control"
+              <Form.Group>
+                <Form.Control
                   placeholder="Username"
+                  name="username"
+                  type="text"
+                  onChange={(e) => handleInput(e)}
+                  isInvalid={!!errors.username}
                 />
-              </div>
-              <small className="text-danger">{errors.username}</small>
+                <Form.Control.Feedback type="invalid">
+                  {errors.username}
+                </Form.Control.Feedback>
+              </Form.Group>
             </li>
             <li className="list-group-item">
-              <div className="input-group flex-nowrap">
-                <input
+              <Form.Group>
+                <Form.Control
                   name="password"
                   value={inputs.password || ""}
                   onChange={(e) => handleInput(e)}
                   type="password"
                   className="form-control"
                   placeholder="Password"
+                  isInvalid={!!errors.password}
                 />
-              </div>
-              <small className="text-danger">{errors.password}</small>
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </Form.Group>
             </li>
             <li className="list-group-item d-flex justify-content-evenly px-5 py-2">
               <button
