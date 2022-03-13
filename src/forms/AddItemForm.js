@@ -2,24 +2,12 @@ import { updateUserItems } from '../redux/thunks/user'
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import itemFormActions from '../redux/actions/itemFormActions'
-import ClipLoader from "react-spinners/ClipLoader";
+import ClipLoader from 'react-spinners/ClipLoader'
+import { Button, Form  } from 'react-bootstrap'
 
 function AddItemForm() {
-    let [itemName, setItemName] = useState('')
-    let [itemDescription, setItemDescription] = useState('')
-    let [itemAmount, setItemAmount] = useState('')
-    let [itemFromAccount, setitemFromAccount] = useState('')
-    let [itemToAccount, setitemToAccount] = useState('')
-    let [itemSaveCadence, setItemSaveCadence] = useState('')
-    let [itemSaveAmount, setItemSaveAmount] = useState('')
-    let [itemUrl, setItemUrl] = useState('')
-
-    let [showToAccounts, setShowToAccounts] = useState(false)
-    let [showFromAccounts, setShowFromAccounts] = useState(false)
-    let [showSavingPeriods, setShowSavingPeriods] = useState(false)
-    let [itemFromAccountLabel, setitemFromAccountLabel] = useState('Select An Account To Save From')
-    let [itemToAccountLabel, setitemToAccountLabel] = useState('Select An Account To Save To')
-    let [savingPeriodLabel, setSavingPeriodLabel] = useState('How Often Do you Save?')
+    const [inputs, setInputs] = useState({})
+    const [errors, setErrors] = useState({})
 
     let [isSaving, setIsSaving] = useState(false)
 
@@ -28,215 +16,203 @@ function AddItemForm() {
 
     const dispatch = useDispatch()
 
-    const toggleDropDown = async (setStateCallback, currentState, dropdownsToHide) => {
-        setStateCallback(!currentState)
-        dropdownsToHide.forEach(dropdownCallback => {
-            dropdownCallback(false)
-        });
+    const handleInput = (e) => {
+        setInputs({
+            ...inputs,
+            [e.target.name]: e.target.value,
+        })
+    
+        //check for previous error, reset error for new input
+        if (!!errors[e.target.name]) {
+            setErrors({
+                ...errors,
+                [e.target.name]: null,
+            })
+        }
+
+        console.log(inputs)
     }
 
-    const savingPeriodHandler = async (event, cadence, label) => {
-        event.preventDefault() 
-        setItemSaveCadence(cadence)
-        toggleDropDown(setShowSavingPeriods, showSavingPeriods, [setShowFromAccounts, setShowToAccounts])
-        setSavingPeriodLabel(label)
+    const handleFormSubmit = async e => {
+        e.preventDefault()
+        setIsSaving(true) 
+
+        const newErrors = getErrors()
+    
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors)
+          setIsSaving(false)
+          return
+        }
+        
+        dispatch(updateUserItems({
+            name: inputs.goal,
+            decription: inputs.description,
+            amount: Number.parseFloat(inputs.amount),
+            url: inputs.link,
+            saving_plan: {
+                fromAccount: inputs.transfer_from_id,
+                toAccount: inputs.transfer_to_id,
+                amount: Number.parseFloat(inputs.savings_amount),
+                cadence: inputs.savings_rate
+            }
+        }))
     }
 
-    const clearForm = async () => {
-        setItemSaveAmount('')
-        setItemSaveCadence('')
-        setitemFromAccount('')
-        setitemToAccount('')
-        setItemAmount('')
-        setItemDescription('')
-        setItemName('')
+    const getErrors = () => {
+        const {
+            goal, 
+            description,
+            amount, 
+            link,
+            transfer_from_id,
+            transfer_to_id, 
+            savings_amount,
+            savings_rate
+        } = inputs
+
+        const newErrors = {}
+        
+        if (!goal || goal === '') newErrors.goal = 'Enter goal'
+        if (!description || description === '') newErrors.description = 'Enter description'
+        if (!amount || amount === '') newErrors.amount = 'Please enter a goal amount'
+        if (!link || link === '') newErrors.link = 'Please enter a link'
+        if (!transfer_from_id || transfer_from_id === '') newErrors.transfer_from_id = 'Please enter a transfer from id'
+        if (!transfer_to_id || transfer_to_id === '') newErrors.transfer_to_id = 'Please enter a transfer from id'
+        if (!savings_amount || savings_amount === '') newErrors.savings_amount = 'Please enter a savings amount'
+        if (!savings_rate || savings_rate === '') newErrors.savings_rate = 'Please enter a savings rate'
+        
+        return newErrors
     }
 
     return <div className="row">
                 <div className="col-sm-6 offset-sm-3 border">
                     <div className='row mt-5'>
-                            <div className='col-sm-3 offset-sm-3'>
-                                <p>Add A New Item</p>
-                            </div>
+                        <h3>Add Saving's Goal</h3>
                     </div>
-                    <form className='row g-3'>
-                        <div className='col-sm-6 offset-sm-3 text-center'>
-                            <div className="input-group flex-nowrap">
-                                <input 
-                                    value={itemName}
-                                    onChange={e => setItemName(e.target.value)}
-                                    type="text"
-                                    className="form-control" 
-                                    placeholder="Item Name"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className='col-sm-6 offset-sm-3 text-center'>
-                            <div className="input-group flex-nowrap">
-                                <input
-                                    value = {itemDescription}
-                                    onChange = {e => setItemDescription(e.target.value)}
-                                    type="text" 
-                                    className="form-control" 
-                                    placeholder="Item Description"
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className='col-sm-6 offset-sm-3 text-center'>  
-                            <div className="input-group mb-3">
-                                <div className="input-group-prepend">
-                                    <span className="input-group-text">$</span>
-                                </div>
-                                <input
-                                    value = {itemAmount}
-                                    onChange = {e => setItemAmount(e.target.value)}
-                                    type="text" 
-                                    className="form-control" 
-                                    placeholder="How Much Is It?"
-                                    required
-                                />        
-                            </div>
-                        </div>
-                        <div className='col-sm-6 offset-sm-3'>
-                            <div className="dropdown">
-                                <button onClick={() => toggleDropDown(setShowFromAccounts, showFromAccounts, [setShowSavingPeriods, setShowToAccounts])} 
-                                    className="btn btn-secondary dropdown-toggle w-100" 
-                                    type="button" 
-                                    id="dropdownMenuButton" 
-                                    data-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false">
-                                    {itemFromAccountLabel}
-                                </button>
-                                <div className={showFromAccounts ? 'dropdown-menu-displayed w-100' : 'dropdown-menu w-100'}
-                                    aria-labelledby="dropdownMenuButton">
-                                    {
-                                        plaid_items.map(plaidItem => {
-                                            return plaidItem.accounts.map(account => {
-                                                return (
-                                                    <a className="dropdown-item" href="./" onClick={async e => {
-                                                        e.preventDefault()
-                                                        setitemFromAccountLabel(account.name)
-                                                        setitemFromAccount(account.account_id)
-                                                        toggleDropDown(setShowFromAccounts, showFromAccounts, [setShowSavingPeriods, setShowToAccounts])
-                                                    }}>
-                                                        {account.name}
-                                                    </a>
-                                                )
-                                            })
+                    <Form className='row g-3 mt-3'>
+                        <Form.Group className='col-sm-6 offset-sm-3 text-center'>
+                            <Form.Label>Add A Goal Name</Form.Label>
+                            <Form.Control
+                                name="goal"
+                                type="text"
+                                onChange={(e) => handleInput(e)}
+                                isInvalid={!!errors.goal}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.goal}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='col-sm-6 offset-sm-3 text-center'>
+                            <Form.Label>Add Description</Form.Label>
+                            <Form.Control
+                                name="description"
+                                type="text"
+                                onChange={(e) => handleInput(e)}
+                                isInvalid={!!errors.description}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.description}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='col-sm-6 offset-sm-3 text-center'>
+                            <Form.Label>Add Goal Amount</Form.Label>
+                            <Form.Control
+                                name="amount"
+                                type="text"
+                                onChange={(e) => handleInput(e)}
+                                isInvalid={!!errors.amount}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.amount}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='col-sm-6 offset-sm-3'>
+                            <Form.Control onChange={(e) => handleInput(e)} as='select' name='transfer_from_id' isInvalid={!!errors.transfer_from_id}>
+                                <option value=''>Transfer From</option>
+                                {
+                                    plaid_items.map(plaidItem => {
+                                        return plaidItem.accounts.map(account => {
+                                            return (
+                                                <option key={account.account_id} value={account.account_id}>
+                                                    {account.name}
+                                                </option>
+                                            ) 
                                         })
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div className='col-sm-6 offset-sm-3'>
-                            <div className="dropdown">
-                                <button onClick={() => toggleDropDown(setShowToAccounts, showToAccounts, [setShowFromAccounts, setShowSavingPeriods])} 
-                                    className="btn btn-secondary dropdown-toggle w-100" 
-                                    type="button" 
-                                    id="dropdownMenuButton"
-                                    data-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false">
-                                    {itemToAccountLabel}
-                                </button>
-                                <div className={showToAccounts ? 'dropdown-menu-displayed w-100' : 'dropdown-menu w-100'}
-                                    aria-labelledby="dropdownMenuButton">
-                                    {
-                                        plaid_items.map(plaidItem => {
-                                            return plaidItem.accounts.map(account => {
-                                                return (
-                                                    <a className="dropdown-item" href="./" onClick={async e => {
-                                                        e.preventDefault()
-                                                        setitemToAccountLabel(account.name)
-                                                        setitemToAccount(account.account_id)
-                                                        toggleDropDown(setShowToAccounts, showToAccounts, [setShowFromAccounts, setShowSavingPeriods])
-                                                    }}>
-                                                        {account.name}
-                                                    </a>
-                                                )
-                                            })
+                                    })
+                                }
+                            </Form.Control>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.transfer_from_id}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='col-sm-6 offset-sm-3'>
+                            <Form.Control as='select' name="transfer_to_id" isInvalid={!!errors.transfer_to_id} onChange={(e) => handleInput(e)}>
+                                <option value=''>Transfer To</option>
+                                {
+                                    plaid_items.map(plaidItem => {
+                                        return plaidItem.accounts.map(account => {
+                                            return (
+                                                <option key={account.account_id} value={account.account_id}>
+                                                    {account.name}
+                                                </option>
+                                            ) 
                                         })
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div className='col-sm-6 offset-sm-3'>
-                            <div className="dropdown">
-                                <button onClick={() => toggleDropDown(setShowSavingPeriods, showSavingPeriods, [setShowFromAccounts, setShowToAccounts])} 
-                                    className="btn btn-secondary dropdown-toggle w-100" 
-                                    type="button" 
-                                    id="dropdownMenuButton"
-                                    data-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false">
-                                    {savingPeriodLabel}
-                                </button>
-                                <div className={showSavingPeriods ? 'dropdown-menu-displayed w-100' : 'dropdown-menu w-100'}
-                                    aria-labelledby="dropdownMenuButton">
-                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'daily', 'Daily')}>Daily</a>
-                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'weekly', 'Wekly')}>Weekly</a>
-                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'bi-weekly', 'Bi-Weekly')}>Bi-Weekly</a>
-                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'monthly', 'Monthly')}>Monthly</a>
-                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'quarterly', 'Quarterly')}>Quarterly</a>
-                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'semi-annually', 'Semi-Annually')}>Semi-Annually</a>
-                                    <a className="dropdown-item" href="./" onClick={e => savingPeriodHandler(e, 'annually', 'Annually')}>Annually</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='col-sm-6 offset-sm-3 text-center'>
-                            <div className="input-group mb-3">
-                                <div className="input-group-prepend">
-                                    <span className="input-group-text">$</span>
-                                </div>
-                                <input
-                                    value = {itemSaveAmount}
-                                    onChange = {e => setItemSaveAmount(e.target.value)}
-                                    type="text" 
-                                    className="form-control" 
-                                    placeholder="How Much Money Do You Save?"
-                                    required
-                                />             
-                            </div>
-                        </div>
-                        <div className='col-sm-6 offset-sm-3 text-center'>
-                            <div className="input-group flex-nowrap">
-                                <input
-                                    value = {itemUrl}
-                                    onChange = {e => setItemUrl(e.target.value)}
-                                    type="text" 
-                                    className="form-control" 
-                                    placeholder="Add a link to the website for the item"
-                                />
-                            </div>
-                        </div>
-                        <div className='col-sm-6 offset-sm-3 text-center mb-5'>
+                                    })
+                                }
+                            </Form.Control>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.transfer_to_id}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='col-sm-6 offset-sm-3'>
+                            <Form.Control as='select' isInvalid={!!errors.savings_rate} name="savings_rate" onChange={(e) => handleInput(e)}>
+                                    <option value=''>Every</option>
+                                    <option value='daily'>Day</option>
+                                    <option value='weekly'>Week</option>
+                                    <option value='bi-weekly'>Other Week</option>
+                                    <option value='monthly'>Month</option>
+                                    <option value='quarterly'>3 Months</option>
+                                    <option value='semi-annually'>6 Months</option>
+                                    <option value='annually'>Year</option>
+                            </Form.Control>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.savings_rate}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='col-sm-6 offset-sm-3 text-center'>
+                            <Form.Label>Add Savings Amount</Form.Label>
+                            <Form.Control
+                                name="savings_amount"
+                                type="text"
+                                onChange={(e) => handleInput(e)}
+                                isInvalid={!!errors.savings_amount}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.savings_amount}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='col-sm-6 offset-sm-3 text-center'>
+                            <Form.Label>Add A Link</Form.Label>
+                            <Form.Control
+                                name="link"
+                                type="text"
+                                onChange={(e) => handleInput(e)}
+                                isInvalid={!!errors.link}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.link}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className='col-sm-6 offset-sm-3 text-center mb-5'>
                             <div className="input-group d-flex justify-content-evenly">
-                                <button onClick={e => {
-                                    e.preventDefault()
-                                    setIsSaving(true)
-                                    dispatch(updateUserItems({
-                                        name: itemName,
-                                        decription: itemDescription,
-                                        amount: Number.parseFloat(itemAmount),
-                                        url: itemUrl,
-                                        saving_plan: {
-                                            fromAccount: itemFromAccount,
-                                            toAccount: itemToAccount,
-                                            amount: Number.parseFloat(itemSaveAmount),
-                                            cadence: itemSaveCadence
-                                        }
-                                    }))
-                                    clearForm()
-                                }} className="btn-sharp btn-success">
+                                <Button onClick={e => handleFormSubmit(e)} className="btn-sharp btn-success">
                                     { isSaving ? <ClipLoader color="#ffffff" loading={isSaving} size={20} /> : "Save" } 
-                                </button>
+                                </Button>
 
-                                <button onClick={() => dispatch(itemFormActions.hideItemForm())} className="btn-sharp btn-warning">Close</button>
+                                <Button onClick={() => dispatch(itemFormActions.hideItemForm())} className="btn-sharp btn-warning">Close</Button>
                             </div>
-                        </div>
+                        </Form.Group>
                         {
                             '' !== itemForm.add_error && (
                                 <div className='col-sm-6 offset-sm-3 text-center'>
@@ -244,7 +220,7 @@ function AddItemForm() {
                                 </div>
                             )
                         }
-                    </form>    
+                    </Form>
                 </div>
             </div>
 }
