@@ -16,13 +16,6 @@ const updateAuthToken = (token) => {
     }
 }
 
-const updateAuthError = (error) => {
-    return {
-        type: actions.UPDATE_AUTH_ERROR,
-        payload: { error }
-    }
-}
-
 const updateAuthUser = (user) => {
     return {
         type: actions.UPDATE_AUTH_USER,
@@ -49,7 +42,6 @@ const clearAuth = () => {
 const authActions = {
     updateAuthIsValid,
     updateAuthToken,
-    updateAuthError,
     updateAuthUser,
     updateAuth,
     clearAuth

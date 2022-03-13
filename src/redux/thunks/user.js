@@ -2,6 +2,7 @@ import axios from 'axios'
 import { validateItem } from '../../utils/validate'
 import itemFormActions from '../actions/itemFormActions'
 import authActions from '../actions/authActions'
+import loginActions from '../actions/loginActions'
 
 const updateUserPlaidItems = (plaidItem) => {
     return (dispatch, getState) => {
@@ -99,27 +100,38 @@ const login = (username, password) => {
     return (dispatch) => {
         return axios.get(`http://localhost:8081/login/${username}/${password}`).then(res => {
             localStorage.setItem('auth', res.data.auth)
-            console.log(res)
-            const action = authActions.updateAuth(res.data.auth, res.data.user)
-            console.log(action)
-            dispatch(action)
-        }).catch(err => {
+            dispatch(authActions.updateAuth(res.data.auth, res.data.user))
+        }).catch(error => {
+            console.log(error)
+            try {
+                // Check if it's HTTP 400  error
+                if (error.response.status === 400) {
+                    console.log('how do we get here')
+                    dispatch(loginActions.setLoginPageError('Incorrect password'))
+                } else {
+                    dispatch(loginActions.setLoginPageError('Something went wrong, please try again'))
+                }
+            } catch (e) {
+                console.log('do we get here?')
+                //log exception
+                dispatch(loginActions.setLoginPageError('Something went wrong, please try again'))
+            } 
             localStorage.removeItem('auth')
             dispatch(authActions.clearAuth())
         })
     }
 }
 
-const signup = (username, password) => {
+const signup = user => {
     return (dispatch) => {
-        return axios.get(`http://localhost:8081/signup/${username}/${password}`).then(res => {
-            console.log("success")
-            console.log(res)
+        return axios.post(`http://localhost:8081/signup`, user).then(res => {
             localStorage.setItem('auth', res.data.auth)
             dispatch(authActions.updateAuth(res.data.auth, res.data.user))
-        }).catch(err => {
-            console.log("failure")
-            console.log(err)
+        }).catch(error => {
+            if (error.response.status === 403) {
+                dispatch(loginActions.setLoginPageError('Username taken'))
+            }
+
             localStorage.removeItem('auth')
             dispatch(authActions.clearAuth())
         })
@@ -131,6 +143,7 @@ const logout = () => {
         localStorage.removeItem('auth')
         localStorage.removeItem('state')
         dispatch(authActions.clearAuth())
+        dispatch(loginActions.setLoginPageError(''))
     }
 }
 
