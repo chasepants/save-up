@@ -100,40 +100,36 @@ const login = (username, password) => {
     return (dispatch) => {
         return axios.get(`http://localhost:8081/login/${username}/${password}`).then(res => {
             localStorage.setItem('auth', res.data.auth)
-
-            const action = authActions.updateAuth(res.data.auth, res.data.user)
-
-            dispatch(action)
+            dispatch(authActions.updateAuth(res.data.auth, res.data.user))
         }).catch(error => {
-            // Check if it's HTTP 400  error
-            if (error.response.status === 400) {
-                dispatch(authActions.clearAuth());
-                dispatch(loginActions.setLoginPageError('Incorrect password'))
-            }
-
+            console.log(error)
+            try {
+                // Check if it's HTTP 400  error
+                if (error.response.status === 400) {
+                    console.log('how do we get here')
+                    dispatch(loginActions.setLoginPageError('Incorrect password'))
+                } else {
+                    dispatch(loginActions.setLoginPageError('Something went wrong, please try again'))
+                }
+            } catch (e) {
+                console.log('do we get here?')
+                //log exception
+                dispatch(loginActions.setLoginPageError('Something went wrong, please try again'))
+            } 
             localStorage.removeItem('auth')
             dispatch(authActions.clearAuth())
         })
     }
 }
 
-const signup = (username, password) => {
+const signup = user => {
     return (dispatch) => {
-        return axios.get(`http://localhost:8081/signup/${username}/${password}`).then(res => {
-            console.log("success")
-            console.log(res)
+        return axios.post(`http://localhost:8081/signup`, user).then(res => {
             localStorage.setItem('auth', res.data.auth)
             dispatch(authActions.updateAuth(res.data.auth, res.data.user))
         }).catch(error => {
-            console.log(error.response);
-
-            // Check if it's HTTP 400  error
-            if (error.response.status === 400) {
-                console.log(`HTTP 400 error occured`);
-            }
-            // You can get response data (mostly the reason would be in it)
-            if (error.response.data) {
-                console.log(error.response.data);
+            if (error.response.status === 403) {
+                dispatch(loginActions.setLoginPageError('Username taken'))
             }
 
             localStorage.removeItem('auth')

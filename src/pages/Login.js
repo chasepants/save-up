@@ -27,18 +27,21 @@ function Login() {
   }
 
   const handleLogin = () => {
-    console.log('handling login')
     dispatch(login(inputs.username, inputs.password))
   }
 
   const handleSignup = () => {
-    dispatch(signup(inputs.username, inputs.password))
+    dispatch(
+      signup({
+        username: inputs.username, 
+        password: inputs.password,
+        fullname: `${inputs.firstname} ${inputs.lastname}`
+      })
+    )
   }
 
   const handleFormSubmit = (e) => {
     e.preventDefault()
-    console.log('handling form submit ')
-
     const newErrors = getErrors()
 
     if (Object.keys(newErrors).length > 0) {
@@ -71,9 +74,8 @@ function Login() {
     if (!isLoginForm) {
       if (!lastname || lastname === '') newErrors.lastname = 'Please enter a last name'
       if (!firstname || firstname === '') newErrors.firstname = 'Please enter a first name'
-      if (!confirm_password || confirm_password === '') newErrors.confirm_password = 'Passwords do not match'
+      if (!confirm_password || confirm_password === '' || confirm_password !== password) newErrors.confirm_password = 'Passwords do not match'
     }
-    console.log('errors', newErrors)
     return newErrors
   }
 
@@ -98,7 +100,7 @@ function Login() {
                   <Form.Group className="mb-3">
                     <Form.Label>First Name</Form.Label>
                     <Form.Control
-                      name="first_name"
+                      name="firstname"
                       type="text"
                       onChange={(e) => handleInput(e)}
                       isInvalid={!!errors.firstname}
@@ -118,12 +120,6 @@ function Login() {
                     <Form.Control.Feedback type="invalid">
                       {errors.lastname}
                     </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Check
-                      type="checkbox"
-                      label="Do you agree you are 18 year or older?"
-                    />
                   </Form.Group>
                 </>
               )}
@@ -203,7 +199,7 @@ function Login() {
           <div className="col-sm-6 offset-sm-3 text-center">
           {
             loginPage.login_error && 
-            <Form.Text className='text-danger'>Incorrect username or password</Form.Text>
+            <Form.Text className='text-danger'>{loginPage.login_error}</Form.Text>
           }
           </div>
         </div>
