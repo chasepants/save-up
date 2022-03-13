@@ -2,27 +2,32 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { login, signup } from '../redux/thunks/user'
 import { Button, Form } from 'react-bootstrap'
+import loginActions from '../redux/actions/loginActions'
 
 function Login() {
   const [inputs, setInputs] = useState({})
   const [errors, setErrors] = useState({})
   const [isLoginForm, setIsLoginForm] = useState(true)
-  const authentication = useSelector((state) => state.auth)
+  const loginPage = useSelector((state) => state.login)
   const dispatch = useDispatch()
 
   const handleInput = (e) => {
-    setInputs((prevState) => ({
-      ...prevState,
+    setInputs({
+      ...inputs,
       [e.target.name]: e.target.value,
-    }))
-    if (!!errors[e.target.name])
-      setErrors((prevState) => ({
-        ...prevState,
+    })
+
+    //check for previous error, reset error for new input
+    if (!!errors[e.target.name]) {
+      setErrors({
+        ...errors,
         [e.target.name]: null,
-      }))
+      })
+    }
   }
 
   const handleLogin = () => {
+    console.log('handling login')
     dispatch(login(inputs.username, inputs.password))
   }
 
@@ -32,6 +37,8 @@ function Login() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault()
+    console.log('handling form submit ')
+
     const newErrors = getErrors()
 
     if (Object.keys(newErrors).length > 0) {
@@ -45,13 +52,28 @@ function Login() {
   const handleFormSwitch = (e) => {
     e.preventDefault()
     setIsLoginForm(!isLoginForm)
+    setErrors({})
+    dispatch(loginActions.setLoginPageError(''))
   }
 
   const getErrors = () => {
-    const { username, password } = inputs
+    const { 
+      username,
+      password, 
+      confirm_password,
+      lastname,
+      firstname 
+    } = inputs
+
     const newErrors = {}
     if (!username || username === '') newErrors.username = 'Enter username'
     if (!password || password === '') newErrors.password = 'Enter password'
+    if (!isLoginForm) {
+      if (!lastname || lastname === '') newErrors.lastname = 'Please enter a last name'
+      if (!firstname || firstname === '') newErrors.firstname = 'Please enter a first name'
+      if (!confirm_password || confirm_password === '') newErrors.confirm_password = 'Passwords do not match'
+    }
+    console.log('errors', newErrors)
     return newErrors
   }
 
@@ -76,7 +98,6 @@ function Login() {
                   <Form.Group className="mb-3">
                     <Form.Label>First Name</Form.Label>
                     <Form.Control
-                      placeholder="John"
                       name="first_name"
                       type="text"
                       onChange={(e) => handleInput(e)}
@@ -89,14 +110,13 @@ function Login() {
                   <Form.Group className="mb-3">
                     <Form.Label>Last Name</Form.Label>
                     <Form.Control
-                      placeholder="Doe"
-                      name="username"
+                      name="lastname"
                       type="text"
                       onChange={(e) => handleInput(e)}
-                      isInvalid={!!errors.username}
+                      isInvalid={!!errors.lastname}
                     />
                     <Form.Control.Feedback type="invalid">
-                      {errors.username}
+                      {errors.lastname}
                     </Form.Control.Feedback>
                   </Form.Group>
                   <Form.Group className="mb-3">
@@ -110,7 +130,6 @@ function Login() {
               <Form.Group className="mb-3">
                 <Form.Label>Email address</Form.Label>
                 <Form.Control
-                  placeholder="john@example.com"
                   name="username"
                   type="text"
                   onChange={(e) => handleInput(e)}
@@ -119,7 +138,11 @@ function Login() {
                 <Form.Control.Feedback type="invalid">
                   {errors.username}
                 </Form.Control.Feedback>
-                <Form.Text muted>This is your username</Form.Text>
+                {
+                  !isLoginForm && (
+                    <Form.Text muted>This is your username</Form.Text>
+                  )
+                }
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Password</Form.Label>
@@ -129,7 +152,6 @@ function Login() {
                   onChange={(e) => handleInput(e)}
                   type="password"
                   className="form-control"
-                  placeholder="enter your password"
                   isInvalid={!!errors.password}
                 />
                 {!isLoginForm && (
@@ -141,15 +163,33 @@ function Login() {
                   {errors.password}
                 </Form.Control.Feedback>
               </Form.Group>
-              <Button
-                className="mb-3"
-                variant="primary"
-                type="submit"
-                onClick={(e) => handleFormSubmit(e)}
-              >
-                {formButton}
-              </Button>
-              <Form.Group>
+              {!isLoginForm && (
+                <Form.Group className="mb-3">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                  name="confirm_password"
+                  value={inputs.confirm_password || ''}
+                  onChange={e => handleInput(e)}
+                  type="password"
+                  className="form-control"
+                  isInvalid={!!errors.confirm_password}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.confirm_password}
+                </Form.Control.Feedback>
+              </Form.Group>
+              )}
+              <Form.Group className='text-center'> 
+                <Button
+                  className="mb-3"
+                  variant="primary"
+                  type="submit"
+                  onClick={(e) => handleFormSubmit(e)}
+                >
+                  {formButton}
+                </Button>
+              </Form.Group>
+              <Form.Group className='text-center'>
                 <Form.Text muted>
                   <a className="a-pointer" onClick={(e) => handleFormSwitch(e)}>
                     {formBottomText}
@@ -159,8 +199,13 @@ function Login() {
             </Form>
           </div>
         </div>
-        <div className="row mt-5">
-          <div className="col-sm-6 offset-sm-3 text-center"></div>
+        <div className="row mt-2">
+          <div className="col-sm-6 offset-sm-3 text-center">
+          {
+            loginPage.login_error && 
+            <Form.Text className='text-danger'>Incorrect username or password</Form.Text>
+          }
+          </div>
         </div>
       </div>
     </>
@@ -168,17 +213,3 @@ function Login() {
 }
 
 export default Login
-
-/**
-  {(() => {
-    if (!authentication.valid) {
-      return (
-        <div className="row">
-          <div className="col-sm-6 offset-sm-3 text-center">
-            <p>{authentication.error}</p>
-          </div>
-        </div>
-      );
-    }
-  })()}
- */

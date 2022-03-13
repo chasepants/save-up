@@ -2,6 +2,7 @@ import axios from 'axios'
 import { validateItem } from '../../utils/validate'
 import itemFormActions from '../actions/itemFormActions'
 import authActions from '../actions/authActions'
+import loginActions from '../actions/loginActions'
 
 const updateUserPlaidItems = (plaidItem) => {
     return (dispatch, getState) => {
@@ -99,11 +100,17 @@ const login = (username, password) => {
     return (dispatch) => {
         return axios.get(`http://localhost:8081/login/${username}/${password}`).then(res => {
             localStorage.setItem('auth', res.data.auth)
-            console.log(res)
+
             const action = authActions.updateAuth(res.data.auth, res.data.user)
-            console.log(action)
+
             dispatch(action)
-        }).catch(err => {
+        }).catch(error => {
+            // Check if it's HTTP 400  error
+            if (error.response.status === 400) {
+                dispatch(authActions.clearAuth());
+                dispatch(loginActions.setLoginPageError('Incorrect password'))
+            }
+
             localStorage.removeItem('auth')
             dispatch(authActions.clearAuth())
         })
@@ -117,9 +124,18 @@ const signup = (username, password) => {
             console.log(res)
             localStorage.setItem('auth', res.data.auth)
             dispatch(authActions.updateAuth(res.data.auth, res.data.user))
-        }).catch(err => {
-            console.log("failure")
-            console.log(err)
+        }).catch(error => {
+            console.log(error.response);
+
+            // Check if it's HTTP 400  error
+            if (error.response.status === 400) {
+                console.log(`HTTP 400 error occured`);
+            }
+            // You can get response data (mostly the reason would be in it)
+            if (error.response.data) {
+                console.log(error.response.data);
+            }
+
             localStorage.removeItem('auth')
             dispatch(authActions.clearAuth())
         })

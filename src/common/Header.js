@@ -16,7 +16,10 @@ const Header = () => {
             <div className="navbar navbar-light bg shadow-sm">
                 <div className="container">
                     <div className="align-items-center d-flex navbar-brand pointer">
-                        <strong onClick={() => dispatch(pageActions.updatePage({}, pageNumbers.SAVINGS_GOALS_PAGE))}>Save Up</strong>
+                        {
+                            authentication.valid && 
+                            <strong onClick={() => dispatch(pageActions.updatePage({}, pageNumbers.SAVINGS_GOALS_PAGE))}>Save Up</strong>
+                        }
                     </div>
                         {
                             authentication.valid && (

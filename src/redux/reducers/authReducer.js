@@ -12,11 +12,6 @@ export default function auth(auth = {}, action) {
                 ...auth,
                 token: action.payload.token
             }
-        case actions.UPDATE_AUTH_ERROR:
-            return {
-                ...auth,
-                valid: action.payload.valid
-            }
         case actions.UPDATE_AUTH_USER:
             return {
                 ...auth,
