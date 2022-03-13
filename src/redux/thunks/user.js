@@ -57,7 +57,7 @@ const updateUserItems = (item) => {
             dispatch(authActions.updateAuthUser(resp.data.user))
             dispatch(itemFormActions.hideItemForm())
         }).catch(err => {
-            dispatch(itemFormActions.setAddError('Could not add item to DB'))
+            dispatch(itemFormActions.setItemFormAddError('Could not add item to DB'))
         })
     }
 }

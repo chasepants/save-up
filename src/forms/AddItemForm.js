@@ -29,8 +29,6 @@ function AddItemForm() {
                 [e.target.name]: null,
             })
         }
-
-        console.log(inputs)
     }
 
     const handleFormSubmit = async e => {
