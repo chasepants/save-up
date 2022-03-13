@@ -212,7 +212,7 @@ function AddItemForm() {
                                 />
                             </div>
                         </div>
-                        <div className='col-sm-6 offset-sm-3 text-center'>
+                        <div className='col-sm-6 offset-sm-3 text-center mb-5'>
                             <div className="input-group d-flex justify-content-evenly">
                                 <button onClick={e => {
                                     e.preventDefault()

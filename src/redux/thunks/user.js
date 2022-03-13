@@ -143,6 +143,7 @@ const logout = () => {
         localStorage.removeItem('auth')
         localStorage.removeItem('state')
         dispatch(authActions.clearAuth())
+        dispatch(loginActions.setLoginPageError(''))
     }
 }
 

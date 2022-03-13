@@ -40,7 +40,7 @@ function Items() {
                 return ''
             })}
             {
-                !itemForm.show_form && (
+                (!itemForm.show_form && user.items.length !== 0) && (
                     <div className='row'>
                         <div className='col-sm-6 offset-sm-3 text-center'>
                             <button onClick={() => dispatch(itemFormActions.showItemForm())} className="btn-sharp btn-success">Add</button>
@@ -58,7 +58,7 @@ function Items() {
                 )
             }
             {
-                itemForm.show_form && 
+                (itemForm.show_form || user.items.length === 0) && 
                 <AddItemForm/>
             }
         </div>
