@@ -57,7 +57,7 @@ const updateUserItems = (item) => {
             dispatch(authActions.updateAuthUser(resp.data.user))
             dispatch(itemFormActions.hideItemForm())
         }).catch(err => {
-            dispatch(itemFormActions.setItemFormAddError('Could not add item to DB'))
+            dispatch(itemFormActions.setItemFormAddError('NETWORK ERROR: Could not add item at this time'))
         })
     }
 }
@@ -66,11 +66,9 @@ const removeUserItem = (delete_item) => {
     return (dispatch, getState) => {
         const state = getState()
         const user = state.auth.user
-        console.log(user)
 
         let index;
         let updated_items = user.items.map((item, i) => {
-            console.log(item, i)
             if (item !== delete_item)
                 return item 
             index = i
@@ -91,7 +89,7 @@ const removeUserItem = (delete_item) => {
         }).then(resp => {
             dispatch(authActions.updateAuthUser(resp.data.user))
         }).catch(err => {
-            dispatch(itemFormActions.setItemFormRemoveError('Could not add item to DB'))
+            dispatch(itemFormActions.setItemFormRemoveError('NETWORK ERROR: Could not remove item at this time'))
         })
     }
 }

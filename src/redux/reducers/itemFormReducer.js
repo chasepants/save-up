@@ -12,7 +12,8 @@ export default function itemForm(itemForm = defaultItemForm, action) {
         case actions.HIDE_ITEM_FORM:
             return {
                 ...itemForm,
-                show_form: false
+                show_form: false,
+                add_error: ''
             }
         case actions.SET_ADD_ERROR:
             return {
@@ -22,7 +23,7 @@ export default function itemForm(itemForm = defaultItemForm, action) {
         case actions.SET_REMOVE_ERROR:
             return {
                 ...itemForm,
-                remvoe_error: action.payload.remove_error
+                remove_error: action.payload.remove_error
             }
         default:
             return itemForm

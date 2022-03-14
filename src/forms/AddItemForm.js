@@ -11,6 +11,7 @@ function AddItemForm() {
 
     let [isSaving, setIsSaving] = useState(false)
 
+    const items = useSelector(state => state.auth.user)
     const itemForm = useSelector(state => state.itemForm)
     const plaid_items = useSelector(state => state.auth.user.plaid_items)
 
@@ -83,14 +84,14 @@ function AddItemForm() {
         return newErrors
     }
 
-    return <div className="row">
-                <div className="col-sm-6 offset-sm-3 border">
-                    <div className='row mt-5'>
-                        <h3>Add Saving's Goal</h3>
+    return <div className="row mb-5">
+                <div className="col-sm-10 offset-sm-1 border mb-5">
+                    <div className='row mt-5 text-center'>
+                        <h3>Add A Saving's Goal</h3>
                     </div>
                     <Form className='row g-3 mt-3'>
-                        <Form.Group className='col-sm-6 offset-sm-3 text-center'>
-                            <Form.Label>Add A Goal Name</Form.Label>
+                        <Form.Group className='col-sm-6'>
+                            <Form.Label>Add A Name</Form.Label>
                             <Form.Control
                                 name="goal"
                                 type="text"
@@ -101,8 +102,8 @@ function AddItemForm() {
                                 {errors.goal}
                             </Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className='col-sm-6 offset-sm-3 text-center'>
-                            <Form.Label>Add Description</Form.Label>
+                        <Form.Group className='col-sm-6'>
+                            <Form.Label>Add A Description</Form.Label>
                             <Form.Control
                                 name="description"
                                 type="text"
@@ -113,84 +114,7 @@ function AddItemForm() {
                                 {errors.description}
                             </Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className='col-sm-6 offset-sm-3 text-center'>
-                            <Form.Label>Add Goal Amount</Form.Label>
-                            <Form.Control
-                                name="amount"
-                                type="text"
-                                onChange={(e) => handleInput(e)}
-                                isInvalid={!!errors.amount}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.amount}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group className='col-sm-6 offset-sm-3'>
-                            <Form.Control onChange={(e) => handleInput(e)} as='select' name='transfer_from_id' isInvalid={!!errors.transfer_from_id}>
-                                <option value=''>Transfer From</option>
-                                {
-                                    plaid_items.map(plaidItem => {
-                                        return plaidItem.accounts.map(account => {
-                                            return (
-                                                <option key={account.account_id} value={account.account_id}>
-                                                    {account.name}
-                                                </option>
-                                            ) 
-                                        })
-                                    })
-                                }
-                            </Form.Control>
-                            <Form.Control.Feedback type="invalid">
-                                {errors.transfer_from_id}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group className='col-sm-6 offset-sm-3'>
-                            <Form.Control as='select' name="transfer_to_id" isInvalid={!!errors.transfer_to_id} onChange={(e) => handleInput(e)}>
-                                <option value=''>Transfer To</option>
-                                {
-                                    plaid_items.map(plaidItem => {
-                                        return plaidItem.accounts.map(account => {
-                                            return (
-                                                <option key={account.account_id} value={account.account_id}>
-                                                    {account.name}
-                                                </option>
-                                            ) 
-                                        })
-                                    })
-                                }
-                            </Form.Control>
-                            <Form.Control.Feedback type="invalid">
-                                {errors.transfer_to_id}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group className='col-sm-6 offset-sm-3'>
-                            <Form.Control as='select' isInvalid={!!errors.savings_rate} name="savings_rate" onChange={(e) => handleInput(e)}>
-                                    <option value=''>Every</option>
-                                    <option value='daily'>Day</option>
-                                    <option value='weekly'>Week</option>
-                                    <option value='bi-weekly'>Other Week</option>
-                                    <option value='monthly'>Month</option>
-                                    <option value='quarterly'>3 Months</option>
-                                    <option value='semi-annually'>6 Months</option>
-                                    <option value='annually'>Year</option>
-                            </Form.Control>
-                            <Form.Control.Feedback type="invalid">
-                                {errors.savings_rate}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group className='col-sm-6 offset-sm-3 text-center'>
-                            <Form.Label>Add Savings Amount</Form.Label>
-                            <Form.Control
-                                name="savings_amount"
-                                type="text"
-                                onChange={(e) => handleInput(e)}
-                                isInvalid={!!errors.savings_amount}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.savings_amount}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group className='col-sm-6 offset-sm-3 text-center'>
+                        <Form.Group className='col-sm-6'>
                             <Form.Label>Add A Link</Form.Label>
                             <Form.Control
                                 name="link"
@@ -202,18 +126,127 @@ function AddItemForm() {
                                 {errors.link}
                             </Form.Control.Feedback>
                         </Form.Group>
+                        <div class='col-sm-6'>
+                            <Form.Label>Add A Goal Amount</Form.Label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <Form.Control
+                                    className='form-control'
+                                    name="amount"
+                                    type="text"
+                                    onChange={(e) => handleInput(e)}
+                                    isInvalid={!!errors.amount}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.amount}
+                                </Form.Control.Feedback>
+                            </div>
+                        </div>
+                        <div className='col-sm-12'>
+                            <h5>Saving's Plan - Set Up Automatic Transfers</h5>
+                            {plaid_items.length === 0 && <span className='text-muted'>Only available after linking more than one bank account</span>}
+                        </div>
+                        {
+                            plaid_items.length > 0 && (
+                                <>
+                                    <div className='col-sm-1'>
+                                        <span>TRANSFER:</span>    
+                                    </div>
+                                    <div class='col-sm-3'>
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">$</span>
+                                            </div>
+                                            <Form.Control
+                                                className='form-control'
+                                                name="savings_amount"
+                                                type="text"
+                                                onChange={(e) => handleInput(e)}
+                                                isInvalid={!!errors.savings_amount}
+                                            />
+                                            <Form.Control.Feedback type="invalid">
+                                                {errors.savings_amount}
+                                            </Form.Control.Feedback>
+                                        </div>
+                                    </div>
+                                    <Form.Group className='col-sm-3'>
+                                        <Form.Control onChange={(e) => handleInput(e)} as='select' name='transfer_from_id' isInvalid={!!errors.transfer_from_id}>
+                                            <option value=''>From</option>
+                                            {
+                                                plaid_items.map(plaidItem => {
+                                                    return plaidItem.accounts.map(account => {
+                                                        return (
+                                                            <option key={account.account_id} value={account.account_id}>
+                                                                {account.name}
+                                                            </option>
+                                                        ) 
+                                                    })
+                                                })
+                                            }
+                                        </Form.Control>
+                                        <span className='text-muted'>From which account?</span>
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.transfer_from_id}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                    <Form.Group className='col-sm-3'>
+                                        <Form.Control as='select' name="transfer_to_id" isInvalid={!!errors.transfer_to_id} onChange={(e) => handleInput(e)}>
+                                            <option value=''>To</option>
+                                            {
+                                                plaid_items.map(plaidItem => {
+                                                    return plaidItem.accounts.map(account => {
+                                                        return (
+                                                            <option key={account.account_id} value={account.account_id}>
+                                                                {account.name}
+                                                            </option>
+                                                        ) 
+                                                    })
+                                                })
+                                            }
+                                        </Form.Control>
+                                        <span className='text-muted'>To which account?</span>
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.transfer_to_id}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                    <Form.Group className='col-sm-2'>
+                                        <Form.Control as='select' isInvalid={!!errors.savings_rate} name="savings_rate" onChange={(e) => handleInput(e)}>
+                                                <option value=''>Every</option>
+                                                <option value='daily'>Day</option>
+                                                <option value='weekly'>Week</option>
+                                                <option value='bi-weekly'>Other Week</option>
+                                                <option value='monthly'>Month</option>
+                                                <option value='quarterly'>3 Months</option>
+                                                <option value='semi-annually'>6 Months</option>
+                                                <option value='annually'>Year</option>
+                                        </Form.Control>
+                                        <span className='text-muted'>How often?</span>
+                                        <Form.Control.Feedback type="invalid">
+                                            {errors.savings_rate}
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </>
+                            )
+                        }
                         <Form.Group className='col-sm-6 offset-sm-3 text-center mb-5'>
                             <div className="input-group d-flex justify-content-evenly">
                                 <Button onClick={e => handleFormSubmit(e)} className="btn-sharp btn-success">
-                                    { isSaving ? <ClipLoader color="#ffffff" loading={isSaving} size={20} /> : "Save" } 
+                                    { isSaving && '' === itemForm.add_error ? <ClipLoader color="#ffffff" loading={isSaving} size={20} /> : "Save" } 
                                 </Button>
-
-                                <Button onClick={() => dispatch(itemFormActions.hideItemForm())} className="btn-sharp btn-warning">Close</Button>
+                                {
+                                    items.length > 0 && (
+                                        <Button onClick={() => dispatch(itemFormActions.hideItemForm())} className="btn-sharp btn-warning">
+                                            Close
+                                        </Button>
+                                    )
+                                }
                             </div>
                         </Form.Group>
                         {
                             '' !== itemForm.add_error && (
-                                <div className='col-sm-6 offset-sm-3 text-center'>
+                                <div className='col-sm-6 offset-sm-3 text-center text-danger'>
                                     <p>{itemForm.add_error}</p>
                                 </div>
                             )

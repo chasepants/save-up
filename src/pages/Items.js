@@ -9,12 +9,12 @@ function Items() {
     const itemForm = useSelector(state => state.itemForm)
     const user = useSelector(state => state.auth.user)
     const dispatch = useDispatch()
-
+    console.log(user.items.length)
     return (
         <div className='container mt-5'>
             <div className='row'>
-                <div className='col-sm-6 offset-sm-3'>
-                    <h3>Savings Goals</h3>
+                <div className='col-sm-10 offset-sm-1 text-center'>
+                    {user.items.length > 0 && <h3>Savings Goals</h3>}
                 </div>
             </div>
             {user.items.map(item => {
