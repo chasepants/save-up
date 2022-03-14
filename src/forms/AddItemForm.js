@@ -11,7 +11,7 @@ function AddItemForm() {
 
     let [isSaving, setIsSaving] = useState(false)
 
-    const items = useSelector(state => state.auth.user)
+    const items = useSelector(state => state.auth.user.items)
     const itemForm = useSelector(state => state.itemForm)
     const plaid_items = useSelector(state => state.auth.user.plaid_items)
 
@@ -32,12 +32,12 @@ function AddItemForm() {
         }
     }
 
-    const handleFormSubmit = async e => {
+    const handleFormSubmit = e => {
         e.preventDefault()
-        setIsSaving(true) 
+        console.log('saving')
 
         const newErrors = getErrors()
-    
+        console.log(newErrors)
         if (Object.keys(newErrors).length > 0) {
           setErrors(newErrors)
           setIsSaving(false)
@@ -56,6 +56,7 @@ function AddItemForm() {
                 cadence: inputs.savings_rate
             }
         }))
+        setIsSaving(true) 
     }
 
     const getErrors = () => {
@@ -76,11 +77,15 @@ function AddItemForm() {
         if (!description || description === '') newErrors.description = 'Enter description'
         if (!amount || amount === '') newErrors.amount = 'Please enter a goal amount'
         if (!link || link === '') newErrors.link = 'Please enter a link'
-        if (!transfer_from_id || transfer_from_id === '') newErrors.transfer_from_id = 'Please enter a transfer from id'
-        if (!transfer_to_id || transfer_to_id === '') newErrors.transfer_to_id = 'Please enter a transfer from id'
-        if (!savings_amount || savings_amount === '') newErrors.savings_amount = 'Please enter a savings amount'
-        if (!savings_rate || savings_rate === '') newErrors.savings_rate = 'Please enter a savings rate'
         
+        if (plaid_items.length > 0) {
+            if (!transfer_from_id || transfer_from_id === '') newErrors.transfer_from_id = 'Please enter a transfer from id'
+            if (!transfer_to_id || transfer_to_id === '') newErrors.transfer_to_id = 'Please enter a transfer from id'
+            if (!savings_amount || savings_amount === '') newErrors.savings_amount = 'Please enter a savings amount'
+            if (!savings_rate || savings_rate === '') newErrors.savings_rate = 'Please enter a savings rate'
+        
+        }
+
         return newErrors
     }
 
@@ -126,11 +131,11 @@ function AddItemForm() {
                                 {errors.link}
                             </Form.Control.Feedback>
                         </Form.Group>
-                        <div class='col-sm-6'>
+                        <div className='col-sm-6'>
                             <Form.Label>Add A Goal Amount</Form.Label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">$</span>
+                            <div className="input-group">
+                                <div className="input-group-prepend">
+                                    <span className="input-group-text">$</span>
                                 </div>
                                 <Form.Control
                                     className='form-control'
@@ -154,10 +159,10 @@ function AddItemForm() {
                                     <div className='col-sm-1'>
                                         <span>TRANSFER:</span>    
                                     </div>
-                                    <div class='col-sm-3'>
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">$</span>
+                                    <div className='col-sm-3'>
+                                        <div className="input-group mb-3">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text">$</span>
                                             </div>
                                             <Form.Control
                                                 className='form-control'
