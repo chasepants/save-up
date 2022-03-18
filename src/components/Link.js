@@ -24,7 +24,7 @@ const Link = (props) => {
         dispatch(updateUserPlaidItems(data))
       })
       .catch(err => console.log(err))
-    }, [])
+    }, [auth_token, dispatch])
 
     const config = {
       token: props.linkToken,

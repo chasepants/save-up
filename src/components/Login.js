@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { login, signup } from '../redux/thunks/user'
 import { Button, Form } from 'react-bootstrap'
 import loginActions from '../redux/actions/loginActions'
+import { login, signup } from '../redux/thunks/user'
 
 function Login() {
   const [inputs, setInputs] = useState({})
@@ -187,7 +187,7 @@ function Login() {
               </Form.Group>
               <Form.Group className='text-center'>
                 <Form.Text muted>
-                  <a className="a-pointer" onClick={(e) => handleFormSwitch(e)}>
+                  <a href='/' className="a-pointer" onClick={(e) => handleFormSwitch(e)}>
                     {formBottomText}
                   </a>
                 </Form.Text>

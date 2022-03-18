@@ -1,11 +1,10 @@
-import axios from 'axios'
 import { validateItem } from '../../utils/validate'
 import itemFormActions from '../actions/itemFormActions'
 import authActions from '../actions/authActions'
 import loginActions from '../actions/loginActions'
 
-const updateUserPlaidItems = (plaidItem) => {
-    return (dispatch, getState) => {
+function updateUserPlaidItems(plaidItem) {
+    return async (dispatch, getState, usersApi) => {
         const state = getState()
         const user = state.auth.user
 
@@ -16,21 +15,20 @@ const updateUserPlaidItems = (plaidItem) => {
                 plaidItem
             ]
         }
-        localStorage.removeItem('state')
-        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user, {
-            headers: {
-                'authorization': state.auth.token
-            } 
-        }).then(resp => {
-            dispatch(authActions.updateAuthUser(resp.data.user))
-        }).catch(err => {
-            console.log(err)
-        })
+        
+        try {
+            const response = await usersApi.updateUser(user._id, updated_user, state.auth.token);
+            localStorage.removeItem('state')
+            dispatch(authActions.updateAuthUser(response.data.user))
+        } catch (error) {
+            console.log(error)
+            // todo: dispatch error
+        }
     }
 }
 
-const updateUserItems = (item) => {
-    return (dispatch, getState) => {
+function updateUserItems(item) {
+    return async (dispatch, getState, usersApi) => {
         let is_validated = validateItem(item)
 
         if (!is_validated) {
@@ -47,23 +45,20 @@ const updateUserItems = (item) => {
                 item
             ]
         }
-        // @TODO: api calls should probably be put in their own file
-        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user, {
-            headers: {
-                'authorization': state.auth.token
-            } 
-        }).then(resp => {
+
+        try {
+            const response = await usersApi.updateUser(user._id, updated_user, state.auth.token);
             localStorage.removeItem('state')
-            dispatch(authActions.updateAuthUser(resp.data.user))
+            dispatch(authActions.updateAuthUser(response.data.user))
             dispatch(itemFormActions.hideItemForm())
-        }).catch(err => {
+        } catch (error) {
             dispatch(itemFormActions.setItemFormAddError('NETWORK ERROR: Could not add item at this time'))
-        })
+        }
     }
 }
 
-const removeUserItem = (delete_item) => {
-    return (dispatch, getState) => {
+function removeUserItem(delete_item) {
+    return async (dispatch, getState, usersApi) => {
         const state = getState()
         const user = state.auth.user
 
@@ -82,57 +77,49 @@ const removeUserItem = (delete_item) => {
             items: updated_items
         }
 
-        return axios.post(`http://localhost:8081/update/${user._id}`, updated_user, {
-            headers: {
-                'authorization': state.auth.token
-            } 
-        }).then(resp => {
-            dispatch(authActions.updateAuthUser(resp.data.user))
-        }).catch(err => {
-            dispatch(itemFormActions.setItemFormRemoveError('NETWORK ERROR: Could not remove item at this time'))
-        })
+        try {
+            const response = await usersApi.updateUser(user._id, updated_user, state.auth.token)
+            dispatch(authActions.updateAuthUser(response.data.user))
+        } catch (error) {
+            dispatch(itemFormActions.setItemFormAddError('NETWORK ERROR: Could not add item at this time'))
+        }
     }
 }
 
-const login = (username, password) => {
-    return (dispatch) => {
-        return axios.get(`http://localhost:8081/login/${username}/${password}`).then(res => {
-            localStorage.setItem('auth', res.data.auth)
-            dispatch(authActions.updateAuth(res.data.auth, res.data.user))
-        }).catch(error => {
-            console.log(error)
-            try {
-                // Check if it's HTTP 400  error
-                if (error.response.status === 400) {
-                    console.log('how do we get here')
-                    dispatch(loginActions.setLoginPageError('Incorrect password'))
-                } else {
-                    dispatch(loginActions.setLoginPageError('Something went wrong, please try again'))
-                }
-            } catch (e) {
-                console.log('do we get here?')
-                //log exception
+function login(username, password) {
+    return async (dispatch, getState, usersApi) => {
+        try {
+            const response = await usersApi.login(username, password);
+            localStorage.setItem('auth', response.data.auth)
+            dispatch(authActions.updateAuth(response.data.auth, response.data.user))
+        } catch (error) {
+            if (error.response.status === 400) {
+                console.log('how do we get here')
+                dispatch(loginActions.setLoginPageError('Incorrect password'))
+            } else {
                 dispatch(loginActions.setLoginPageError('Something went wrong, please try again'))
-            } 
+            }
+
             localStorage.removeItem('auth')
             dispatch(authActions.clearAuth())
-        })
+        }
     }
 }
 
-const signup = user => {
-    return (dispatch) => {
-        return axios.post(`http://localhost:8081/signup`, user).then(res => {
-            localStorage.setItem('auth', res.data.auth)
-            dispatch(authActions.updateAuth(res.data.auth, res.data.user))
-        }).catch(error => {
+function signup(user) {
+    return async (dispatch, getState, usersApi) => {
+        try {
+            const response = await usersApi.signup(user);
+            localStorage.setItem('auth', response.data.auth)
+            dispatch(authActions.updateAuth(response.data.auth, response.data.user))
+        } catch (error) {
             if (error.response.status === 403) {
                 dispatch(loginActions.setLoginPageError('Username taken'))
             }
 
             localStorage.removeItem('auth')
             dispatch(authActions.clearAuth())
-        })
+        }
     }
 }
 

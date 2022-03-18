@@ -2,7 +2,7 @@ import '../App.css'
 import { ProgressBar } from 'react-bootstrap'
 import { useSelector, useDispatch } from 'react-redux'
 import pageActions from '../redux/actions/pageActions'
-import pageNumbers from '../utils/navigation'
+import * as navigation from '../utils/navigation'
 import { locateAccounts } from '../utils/bank_accounts'
 
 function View() {
@@ -93,7 +93,7 @@ function View() {
             </div>
             <div className='row mt-5'>
                 <div className='col-sm-6 offset-sm-3 text-center'>
-                    <button className="btn btn-primary" onClick={() => dispatch(pageActions.updatePage({}, pageNumbers.SAVINGS_GOALS_PAGE))}>Back</button>
+                    <button className="btn btn-primary" onClick={() => dispatch(pageActions.updatePage({}, navigation.SAVINGS_GOALS_PAGE))}>Back</button>
                 </div>
             </div>
             <br/>

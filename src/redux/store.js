@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import reducer from './reducers'
+import UsersApi from '../api/usersApi'
 
 const loadState = () => {
   try {
@@ -16,23 +17,24 @@ const loadState = () => {
   
 const saveState = (state) => {
   try {
-      const serializedState = JSON.stringify(state);
-      localStorage.setItem('state', serializedState);
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem('state', serializedState);
   } catch (e) {
       // Ignore write errors;
   }
 };
   
 const peristedState = loadState();
+const usersApi = new UsersApi()
 
 let store = createStore(
-    reducer,
-    peristedState,
-    applyMiddleware(thunk)
+  reducer,
+  peristedState,
+  applyMiddleware(thunk.withExtraArgument(usersApi))
 )
 
 store.subscribe(() => {
-    saveState(store.getState());
+  saveState(store.getState());
 });
 
 export default store

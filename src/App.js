@@ -1,12 +1,12 @@
 import './App.css'
-import pageNumbers from './utils/navigation'
+import * as navigation from './utils/navigation'
 import { useSelector, connect } from 'react-redux'
 import checkAuthToken from './utils/auth'
-import Header from './common/Header'
-import Items from './pages/Items'
-import View from './pages/View'
-import Login from './pages/Login'
-import Accounts from './pages/Accounts'
+import Header from './components/Header'
+import Items from './components/Items'
+import View from './components/View'
+import Login from './components/Login'
+import Accounts from './components/Accounts'
 
 function App() {
   const page = useSelector(state => state.page)
@@ -20,11 +20,11 @@ function App() {
             return <Login/> 
           }
           switch (page.number) {
-            case pageNumbers.SAVINGS_GOALS_PAGE: 
+            case navigation.SAVINGS_GOALS_PAGE: 
               return <Items/>
-            case pageNumbers.VIEW_SAVINGS_ITEMS_PAGE: 
+            case navigation.VIEW_SAVINGS_ITEMS_PAGE: 
               return <View/>
-            case pageNumbers.BANK_ACCOUNTS_PAGE: 
+            case navigation.BANK_ACCOUNTS_PAGE: 
               return <Accounts/>
             default:
               return <Items/>

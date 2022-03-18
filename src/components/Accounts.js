@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import Link from '../common/Link'
+import Link from './Link'
 
 function Accounts() {
   const [linkToken, setLinkToken] = useState(null);

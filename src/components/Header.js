@@ -3,7 +3,7 @@ import { logout } from '../redux/thunks/user'
 import pageActions from '../redux/actions/pageActions'
 import { useSelector, useDispatch } from 'react-redux'
 import { useState } from 'react'
-import pageNumbers from '../utils/navigation'
+import * as navigation from '../utils/navigation'
 
 
 const Header = () => {
@@ -18,7 +18,7 @@ const Header = () => {
                     <div className="align-items-center d-flex navbar-brand pointer">
                         {
                             authentication.valid && 
-                            <strong onClick={() => dispatch(pageActions.updatePage({}, pageNumbers.SAVINGS_GOALS_PAGE))}>Save Up</strong>
+                            <strong onClick={() => dispatch(pageActions.updatePage({}, navigation.SAVINGS_GOALS_PAGE))}>Save Up</strong>
                         }
                     </div>
                         {
@@ -37,13 +37,13 @@ const Header = () => {
                                             aria-labelledby="dropdownMenuButton">
                                         <a className="dropdown-item" href='./' onClick={async e => {
                                                 e.preventDefault()
-                                                dispatch(pageActions.updatePage({}, pageNumbers.SAVINGS_GOALS_PAGE))
+                                                dispatch(pageActions.updatePage({}, navigation.SAVINGS_GOALS_PAGE))
                                                 setShowMenuOptions(false)
                                             }
                                         }>Savings Goals</a>
                                         <a className="dropdown-item" href='./' onClick={async e => {
                                                 e.preventDefault()
-                                                dispatch(pageActions.updatePage({}, pageNumbers.BANK_ACCOUNTS_PAGE))
+                                                dispatch(pageActions.updatePage({}, navigation.BANK_ACCOUNTS_PAGE))
                                                 setShowMenuOptions(false)
                                             }
                                         }>Bank Accounts</a>

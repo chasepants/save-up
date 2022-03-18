@@ -1,9 +1,9 @@
 import '../App.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { removeUserItem } from '../redux/thunks/user'
-import AddItemForm from '../forms/AddItemForm'
 import pageActions from '../redux/actions/pageActions'
 import itemFormActions from '../redux/actions/itemFormActions'
+import AddItemForm from './AddItemForm'
 
 function Items() {    
     const itemForm = useSelector(state => state.itemForm)

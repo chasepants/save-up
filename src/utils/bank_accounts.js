@@ -9,9 +9,9 @@ const locateAccounts = (plaid_items, page) => {
                     fromAccount = bankAccount
                 if (bankAccount.account_id === page.item.saving_plan.toAccount) 
                     toAccount = bankAccount
-                return
+                return bankAccount
             })
-            return 
+            return plaidItem
         })
     }
 
