@@ -7,8 +7,8 @@ const setLoginPageError = login_error => {
     }
 }
 
-const loginActions = {
+const loginPageActions = {
     setLoginPageError
 }
 
-export default loginActions
+export default loginPageActions

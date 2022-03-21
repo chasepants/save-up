@@ -1,19 +1,19 @@
 import { updateUserItems } from '../redux/thunks/user'
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import itemFormActions from '../redux/actions/itemFormActions'
+import addSavingsGoalFormActions from '../redux/actions/addSavingsGoalFormActions'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { Button, Form  } from 'react-bootstrap'
 
-function AddItemForm() {
+function AddSavingsGoalForm() {
     const [inputs, setInputs] = useState({})
     const [errors, setErrors] = useState({})
 
     let [isSaving, setIsSaving] = useState(false)
 
-    const items = useSelector(state => state.auth.user.items)
-    const itemForm = useSelector(state => state.itemForm)
-    const plaid_items = useSelector(state => state.auth.user.plaid_items)
+    const items = useSelector(state => state.user.savings_items)
+    const itemForm = useSelector(state => state.addSavingsGoalForm)
+    const plaid_items = useSelector(state => state.user.plaid_items)
 
     const dispatch = useDispatch()
 
@@ -83,7 +83,6 @@ function AddItemForm() {
             if (!transfer_to_id || transfer_to_id === '') newErrors.transfer_to_id = 'Please enter a transfer from id'
             if (!savings_amount || savings_amount === '') newErrors.savings_amount = 'Please enter a savings amount'
             if (!savings_rate || savings_rate === '') newErrors.savings_rate = 'Please enter a savings rate'
-        
         }
 
         return newErrors
@@ -242,7 +241,7 @@ function AddItemForm() {
                                 </Button>
                                 {
                                     items.length > 0 && (
-                                        <Button onClick={() => dispatch(itemFormActions.hideItemForm())} className="btn-sharp btn-warning">
+                                        <Button onClick={() => dispatch(addSavingsGoalFormActions.hideItemForm())} className="btn-sharp btn-warning">
                                             Close
                                         </Button>
                                     )
@@ -261,4 +260,4 @@ function AddItemForm() {
             </div>
 }
 
-export default AddItemForm;
+export default AddSavingsGoalForm;

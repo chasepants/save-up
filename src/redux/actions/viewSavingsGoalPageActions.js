@@ -1,27 +1,27 @@
 import actions from './actionLang'
 
-const updatePageNumber = number => {
+const updateViewSavingsGoalPageNumber = number => {
     return {
         type: actions.UPDATE_PAGE_NUMBER,
         payload: { number }
     }
 }
 
-const updatePageItem = item => {
+const updateViewSavingsGoalPageItem = item => {
     return {
         type: actions.UPDATE_PAGE_ITEM,
         payload: { item }
     }
 }
 
-const updatePageItemPreview = pageItemPreview => {
+const updateViewSavingsGoalPagePreview = pageItemPreview => {
     return {
         type: actions.UPDATE_PAGE_ITEM_PREVIEW,
         payload: { pageItemPreview }
     }
 }
 
-const updatePage = (item, number) => {
+const updateViewSavingsGoalPage = (item, number) => {
     return {
         type: actions.UPDATE_PAGE,
         payload: { 
@@ -32,10 +32,10 @@ const updatePage = (item, number) => {
 }
 
 const pageActions = {
-    updatePage,
-    updatePageItem,
-    updatePageNumber,
-    updatePageItemPreview
+    updateViewSavingsGoalPageNumber,
+    updateViewSavingsGoalPageItem,
+    updateViewSavingsGoalPagePreview,
+    updateViewSavingsGoalPage
 }
 
 export default pageActions

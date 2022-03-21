@@ -1,44 +1,27 @@
 import './App.css'
-import * as navigation from './utils/navigation'
-import { useSelector, connect } from 'react-redux'
-import checkAuthToken from './utils/auth'
+import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
-import Items from './components/Items'
-import View from './components/View'
-import Login from './components/Login'
-import Accounts from './components/Accounts'
+import LoginPage from './components/LoginPage'
+import BankAccountsPage from './components/BankAccountsPage'
+import SavingsGoalsPage from './components/SavingsGoalsPage'
+import ViewSavingsGoalPage from './components/ViewSavingsGoalPage'
+import RequireAuth from './components/RequireAuth'
 
 function App() {
-  const page = useSelector(state => state.page)
-
+  const notFound = () => <main style={{ padding: "1rem" }}><p>There's nothing here!</p></main> 
   return (
     <div>
       <Header/>
-      {
-        (() => {
-          if (!checkAuthToken()) {
-            return <Login/> 
-          }
-          switch (page.number) {
-            case navigation.SAVINGS_GOALS_PAGE: 
-              return <Items/>
-            case navigation.VIEW_SAVINGS_ITEMS_PAGE: 
-              return <View/>
-            case navigation.BANK_ACCOUNTS_PAGE: 
-              return <Accounts/>
-            default:
-              return <Items/>
-          }
-        })()
-      }
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="goals" element={<RequireAuth><SavingsGoalsPage /></RequireAuth>} />
+        <Route path="goal/:item_name" element={<RequireAuth><ViewSavingsGoalPage /></RequireAuth>} />
+        <Route path="bank-accounts" element={<RequireAuth><BankAccountsPage /></RequireAuth>} />        
+        <Route path="*" element={notFound()} />
+      </Routes>
     </div>
   )
 }
 
-const mapStateToProps = (state) => {
-  return {
-    auth: state.auth
-  }
-}
-
-export default connect(mapStateToProps)(App);
+export default App;

@@ -2,7 +2,7 @@ import actions from '../actions/actionLang'
 
 const defaultItemForm = {show_form: false, add_error: '', remove_error: ''}
 
-export default function itemForm(itemForm = defaultItemForm, action) {
+export default function addSavingsGoalFormReducer(itemForm = defaultItemForm, action) {
     switch (action.type) {
         case actions.SHOW_ITEM_FORM:
             return {

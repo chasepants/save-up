@@ -1,23 +1,24 @@
 import '../App.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { removeUserItem } from '../redux/thunks/user'
-import pageActions from '../redux/actions/pageActions'
-import itemFormActions from '../redux/actions/itemFormActions'
-import AddItemForm from './AddItemForm'
+import addSavingsGoalFormActions from '../redux/actions/addSavingsGoalFormActions'
+import AddSavingsGoalForm from './AddSavingsGoalForm'
+import { useNavigate } from 'react-router-dom'
 
-function Items() {    
-    const itemForm = useSelector(state => state.itemForm)
-    const user = useSelector(state => state.auth.user)
+function SavingsGoalsPage() {    
+    const itemForm = useSelector(state => state.addSavingsGoalForm)
+    const user = useSelector(state => state.user)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     return (
         <div className='container mt-5'>
             <div className='row'>
                 <div className='col-sm-10 offset-sm-1 text-center'>
-                    {user.items.length > 0 && <h3>Savings Goals</h3>}
+                    {user.savings_items.length > 0 && <h3>Savings Goals</h3>}
                 </div>
             </div>
-            {user.items.map(item => {
+            {user.savings_items.map(item => {
                 if (item) {
                     return (
                         <div key={item.name} className='row'>
@@ -25,9 +26,7 @@ function Items() {
                                 <div className="input-group">
                                     <p className="form-control">{item.name}</p>
                                     <div className="input-group-append">
-                                        <button onClick={() => { 
-                                            dispatch(pageActions.updatePage(item, 1))
-                                        }} className="btn-sharp btn-outline-primary" type="button">view</button>
+                                        <button onClick={() => navigate(`/goal/${item.name}`)} className="btn-sharp btn-outline-primary" type="button">view</button>
                                         <button onClick={() => dispatch(removeUserItem(item))} className="btn-sharp btn-outline-danger" type="button">delete</button>
                                         <button className="btn-sharp btn-outline-warning" type="button">share</button>
                                     </div>
@@ -40,10 +39,10 @@ function Items() {
                 return ''
             })}
             {
-                (!itemForm.show_form && user.items.length !== 0) && (
+                (!itemForm.show_form && user.savings_items.length !== 0) && (
                     <div className='row'>
                         <div className='col-sm-6 offset-sm-3 text-center'>
-                            <button onClick={() => dispatch(itemFormActions.showItemForm())} className="btn-sharp btn-success">Add</button>
+                            <button onClick={() => dispatch(addSavingsGoalFormActions.showAddSavingsGoalForm())} className="btn-sharp btn-success">Add</button>
                         </div>
                     </div>
                 )
@@ -58,11 +57,11 @@ function Items() {
                 )
             }
             {
-                (itemForm.show_form || user.items.length === 0) && 
-                <AddItemForm/>
+                (itemForm.show_form || user.savings_items.length === 0) && 
+                <AddSavingsGoalForm/>
             }
         </div>
     );
 }
 
-export default Items;
+export default SavingsGoalsPage;

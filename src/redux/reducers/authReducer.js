@@ -1,6 +1,6 @@
 import actions from '../actions/actionLang'
 
-export default function auth(auth = {}, action) {
+export default function auth(auth = {valid: false, token: '', error: ''}, action) {
     switch (action.type) {
         case actions.UPDATE_AUTH_VALID:
             return {
@@ -12,29 +12,17 @@ export default function auth(auth = {}, action) {
                 ...auth,
                 token: action.payload.token
             }
-        case actions.UPDATE_AUTH_USER:
-            return {
-                ...auth,
-                user: action.payload.user
-            }
         case actions.UPDATE_AUTH:
             return {
                 valid: true,
                 token: action.payload.token,
                 error: "",
-                user: action.payload.user
             }
         case actions.CLEAR_AUTH:
             return {
                 valid: false,
                 token: "",
                 error: "",
-                user: {
-                    username: "",
-                    password: "",
-                    items: [],
-                    _id: ""
-                }
             }
         default:
             return auth

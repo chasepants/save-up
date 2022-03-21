@@ -1,15 +1,21 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Form } from 'react-bootstrap'
-import loginActions from '../redux/actions/loginActions'
 import { login, signup } from '../redux/thunks/user'
+import { useNavigate } from 'react-router-dom'
+import loginPageActions from '../redux/actions/loginPageActions'
+import ClipLoader from 'react-spinners/ClipLoader'
 
-function Login() {
+function LoginPage() {
   const [inputs, setInputs] = useState({})
   const [errors, setErrors] = useState({})
   const [isLoginForm, setIsLoginForm] = useState(true)
-  const loginPage = useSelector((state) => state.login)
+  const [isSaving, setIsSaving] = useState(false);
+
+  const loginPage = useSelector((state) => state.loginPage)
+  
   const dispatch = useDispatch()
+  const navigate = useNavigate();
 
   const handleInput = (e) => {
     setInputs({
@@ -26,11 +32,11 @@ function Login() {
     }
   }
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     dispatch(login(inputs.username, inputs.password))
   }
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     dispatch(
       signup({
         username: inputs.username, 
@@ -40,7 +46,7 @@ function Login() {
     )
   }
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault()
     const newErrors = getErrors()
 
@@ -48,15 +54,19 @@ function Login() {
       setErrors(newErrors)
       return
     }
-
+    setIsSaving(true)
     isLoginForm ? handleLogin() : handleSignup()
+    setTimeout(() => {
+      setIsSaving(false)
+      navigate('/goals', { replace: true })
+    }, 1000)
   }
 
   const handleFormSwitch = (e) => {
     e.preventDefault()
     setIsLoginForm(!isLoginForm)
     setErrors({})
-    dispatch(loginActions.setLoginPageError(''))
+    dispatch(loginPageActions.setLoginPageError(''))
   }
 
   const getErrors = () => {
@@ -182,7 +192,7 @@ function Login() {
                   type="submit"
                   onClick={(e) => handleFormSubmit(e)}
                 >
-                  {formButton}
+                 { isSaving ? <ClipLoader color="#ffffff" loading={isSaving} size={20} /> : formButton } 
                 </Button>
               </Form.Group>
               <Form.Group className='text-center'>
@@ -208,4 +218,4 @@ function Login() {
   )
 }
 
-export default Login
+export default LoginPage;

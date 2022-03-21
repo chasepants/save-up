@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import Link from './Link'
 
-function Accounts() {
+function BankAccountsPage() {
   const [linkToken, setLinkToken] = useState(null);
-  const user = useSelector(state => state.auth.user)
+  const user = useSelector(state => state.user)
   const public_token = useSelector(state => state.auth.token)
 
   const generateToken = async () => {
@@ -55,4 +55,4 @@ function Accounts() {
 }
 
 
-export default Accounts;
+export default BankAccountsPage;

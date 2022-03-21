@@ -1,41 +1,39 @@
 import '../App.css'
 import { ProgressBar } from 'react-bootstrap'
-import { useSelector, useDispatch } from 'react-redux'
-import pageActions from '../redux/actions/pageActions'
-import * as navigation from '../utils/navigation'
-import { locateAccounts } from '../utils/bank_accounts'
+import { useSelector } from 'react-redux'
+import { locateAccounts, findSavingsItemByName } from '../utils/bank_accounts'
+import { useParams, useNavigate } from 'react-router-dom'
 
-function View() {
-    const page = useSelector(state => state.page )
-    const plaid_items = useSelector(state => state.auth.user.plaid_items)
+function ViewSavingsGoalPage() {
+    let { item_name } = useParams();
+    const user = useSelector(state => state.user)
+    const item = findSavingsItemByName(item_name, user.savings_items)
+    const plaid_items = useSelector(state => state.user.plaid_items)
 
-    const dispatch = useDispatch()
-    const amount_saved = page.item.saved ?? 0
-    const progress = Math.round(amount_saved / page.item.amount * 100);
-    const progressInstance = <ProgressBar now={progress} label={`${progress}%`} />;
-    console.log('refresh')
-    let [toAccount, fromAccount] = plaid_items ? locateAccounts(plaid_items, page) : [{}, {}]
-    console.log(toAccount)
+    const navigate = useNavigate()
+    const progress = Math.round(10 / item.amount * 100);
+    const progressInstance = <ProgressBar now={progress} label={`${progress}%`} />
+    let [toAccount, fromAccount] = plaid_items ? locateAccounts(plaid_items, item) : [{}, {}]
 
     return (
         <div className='container mt-5'>
             <div className='row'>
                 <div className='col-sm-6 offset-sm-3 d-flex justify-content-between'>
-                    <h3>{page.item.item_preview.title}</h3>
-                    <h3>${page.item.amount}</h3>
+                    <h3>{item.item_preview.title}</h3>
+                    <h3>${item.amount}</h3>
                 </div>
             </div>
             {
-                page.item.item_preview && (
+                item.item_preview && (
                     <div className='row my-3 item-url-row'>
                         <div className='col-sm-6 offset-sm-3'>
                             <div className='border d-flex justify-content-between ' onClick={() => console.log('view image')}>
                                 <div className='d-flex align-items-center thumbnail-image-block'>
-                                    <img alt='Item' className='img-fluid' src={page.item.item_preview.img ?? page.item.item_preview.favicon}/>
+                                    <img alt='Item' className='img-fluid' src={item.item_preview.img ?? item.item_preview.favicon}/>
                                 </div>
                                 <div className='align-items-between d-flex flex-column px-2 pt-1 thumbnail-link-block'>
-                                    <b><a href={page.item.url}>Visit Website</a></b>
-                                    <p>{page.item.item_preview.description}...</p>
+                                    <b><a href={item.url}>Visit Website</a></b>
+                                    <p>{item.item_preview.description}...</p>
                                 </div>
                             </div>
                         </div>
@@ -44,7 +42,7 @@ function View() {
             }
             {/* <div className='row'>c
                 <div className='col-sm-6 offset-sm-3'>
-                    <p><b>Description:</b> {page.item.description}</p>
+                    <p><b>Description:</b> {item.description}</p>
                 </div>
             </div> */}
             <div className='row mt-5'>
@@ -57,8 +55,8 @@ function View() {
                     <div className="input-group">
                         <p className="form-control-no-border">
                             <b>Saving Plan</b> -
-                            Transfer ${page.item.saving_plan.amount} from the <b>{fromAccount.name}</b> to the <b>{toAccount.name}</b> -
-                            &nbsp;{page.item.saving_plan.cadence}
+                            Transfer ${item.saving_plan.amount} from the <b>{fromAccount.name}</b> to the <b>{toAccount.name}</b> -
+                            &nbsp;{item.saving_plan.cadence}
                         </p>
                     </div>
                 </div>
@@ -93,7 +91,7 @@ function View() {
             </div>
             <div className='row mt-5'>
                 <div className='col-sm-6 offset-sm-3 text-center'>
-                    <button className="btn btn-primary" onClick={() => dispatch(pageActions.updatePage({}, navigation.SAVINGS_GOALS_PAGE))}>Back</button>
+                    <button className="btn btn-primary" onClick={() => navigate('/goals')}>Back</button>
                 </div>
             </div>
             <br/>
@@ -103,4 +101,4 @@ function View() {
     );
 }
 
-export default View;
+export default ViewSavingsGoalPage;

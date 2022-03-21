@@ -1,13 +1,13 @@
 import '../App.css'
 import { logout } from '../redux/thunks/user'
-import pageActions from '../redux/actions/pageActions'
 import { useSelector, useDispatch } from 'react-redux'
 import { useState } from 'react'
-import * as navigation from '../utils/navigation'
-
+import { useNavigate } from 'react-router-dom'
 
 const Header = () => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+
     const authentication = useSelector(state => state.auth)
     const [showMenuOptions, setShowMenuOptions] = useState(false)
 
@@ -16,10 +16,10 @@ const Header = () => {
             <div className="navbar navbar-light bg shadow-sm">
                 <div className="container">
                     <div className="align-items-center d-flex navbar-brand pointer">
-                        {
-                            authentication.valid && 
-                            <strong onClick={() => dispatch(pageActions.updatePage({}, navigation.SAVINGS_GOALS_PAGE))}>Save Up</strong>
-                        }
+                    {
+                        authentication.valid && 
+                        <strong onClick={() => navigate('/goals', { replace: true }) }>Save Up</strong>
+                    }
                     </div>
                         {
                             authentication.valid && (
@@ -37,13 +37,13 @@ const Header = () => {
                                             aria-labelledby="dropdownMenuButton">
                                         <a className="dropdown-item" href='./' onClick={async e => {
                                                 e.preventDefault()
-                                                dispatch(pageActions.updatePage({}, navigation.SAVINGS_GOALS_PAGE))
+                                                navigate('goals', { replace: true });
                                                 setShowMenuOptions(false)
                                             }
                                         }>Savings Goals</a>
                                         <a className="dropdown-item" href='./' onClick={async e => {
                                                 e.preventDefault()
-                                                dispatch(pageActions.updatePage({}, navigation.BANK_ACCOUNTS_PAGE))
+                                                navigate('bank-accounts', { replace: true });
                                                 setShowMenuOptions(false)
                                             }
                                         }>Bank Accounts</a>

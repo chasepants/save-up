@@ -1,12 +1,12 @@
-import { validateItem } from '../../utils/validate'
-import itemFormActions from '../actions/itemFormActions'
+import addSavingsGoalFormActions from '../actions/addSavingsGoalFormActions'
 import authActions from '../actions/authActions'
-import loginActions from '../actions/loginActions'
+import loginPageActions from '../actions/loginPageActions'
+import userActions from '../actions/userActions'
 
 function updateUserPlaidItems(plaidItem) {
     return async (dispatch, getState, usersApi) => {
         const state = getState()
-        const user = state.auth.user
+        const user = state.user
 
         let updated_user = {
             ...user,
@@ -19,7 +19,7 @@ function updateUserPlaidItems(plaidItem) {
         try {
             const response = await usersApi.updateUser(user._id, updated_user, state.auth.token);
             localStorage.removeItem('state')
-            dispatch(authActions.updateAuthUser(response.data.user))
+            dispatch(userActions.updateUser(response.data.user))
         } catch (error) {
             console.log(error)
             // todo: dispatch error
@@ -29,19 +29,13 @@ function updateUserPlaidItems(plaidItem) {
 
 function updateUserItems(item) {
     return async (dispatch, getState, usersApi) => {
-        let is_validated = validateItem(item)
-
-        if (!is_validated) {
-            return () => dispatch(itemFormActions.setAddError('Please fill out correct form'))
-        }
-
         const state = getState()
-        const user = state.auth.user
+        const user = state.user
 
         let updated_user = {
             ...user,
-            items: [
-                ...user.items,
+            savings_items: [
+                ...user.savings_items,
                 item
             ]
         }
@@ -49,10 +43,10 @@ function updateUserItems(item) {
         try {
             const response = await usersApi.updateUser(user._id, updated_user, state.auth.token);
             localStorage.removeItem('state')
-            dispatch(authActions.updateAuthUser(response.data.user))
-            dispatch(itemFormActions.hideItemForm())
+            dispatch(userActions.updateUser(response.data.user))
+            dispatch(addSavingsGoalFormActions.hideAddSavingsGoalForm())
         } catch (error) {
-            dispatch(itemFormActions.setItemFormAddError('NETWORK ERROR: Could not add item at this time'))
+            dispatch(addSavingsGoalFormActions.setAddSavingsGoalFormAddError('NETWORK ERROR: Could not add item at this time'))
         }
     }
 }
@@ -60,10 +54,10 @@ function updateUserItems(item) {
 function removeUserItem(delete_item) {
     return async (dispatch, getState, usersApi) => {
         const state = getState()
-        const user = state.auth.user
+        const user = state.user
 
         let index;
-        let updated_items = user.items.map((item, i) => {
+        let updated_items = user.savings_items.map((item, i) => {
             if (item !== delete_item)
                 return item 
             index = i
@@ -74,14 +68,14 @@ function removeUserItem(delete_item) {
 
         let updated_user = {
             ...user,
-            items: updated_items
+            savings_items: updated_items
         }
 
         try {
             const response = await usersApi.updateUser(user._id, updated_user, state.auth.token)
-            dispatch(authActions.updateAuthUser(response.data.user))
+            dispatch(userActions.updateUser(response.data.user))
         } catch (error) {
-            dispatch(itemFormActions.setItemFormAddError('NETWORK ERROR: Could not add item at this time'))
+            dispatch(addSavingsGoalFormActions.setItemFormAddError('NETWORK ERROR: Could not add item at this time'))
         }
     }
 }
@@ -90,14 +84,17 @@ function login(username, password) {
     return async (dispatch, getState, usersApi) => {
         try {
             const response = await usersApi.login(username, password);
+            console.log(response)
             localStorage.setItem('auth', response.data.auth)
-            dispatch(authActions.updateAuth(response.data.auth, response.data.user))
+            dispatch(authActions.updateAuth(true))
+            dispatch(userActions.updateUser(response.data.user))
         } catch (error) {
-            if (error.response.status === 400) {
+            console.log(error)
+            if (error.hasOwnProperty('response') && error.response.hasOwnProperty('status') && error.response.status === 400) {
                 console.log('how do we get here')
-                dispatch(loginActions.setLoginPageError('Incorrect password'))
+                dispatch(loginPageActions.setLoginPageError('Incorrect password'))
             } else {
-                dispatch(loginActions.setLoginPageError('Something went wrong, please try again'))
+                dispatch(loginPageActions.setLoginPageError('Something went wrong, please try again'))
             }
 
             localStorage.removeItem('auth')
@@ -111,10 +108,11 @@ function signup(user) {
         try {
             const response = await usersApi.signup(user);
             localStorage.setItem('auth', response.data.auth)
-            dispatch(authActions.updateAuth(response.data.auth, response.data.user))
+            dispatch(authActions.updateAuth(response.data.auth))
+            dispatch(userActions.updateUser(response.data.user))
         } catch (error) {
-            if (error.response.status === 403) {
-                dispatch(loginActions.setLoginPageError('Username taken'))
+            if (error.hasOwnProperty('response') && error.response.hasOwnProperty('status') && error.response.status === 403) {
+                dispatch(loginPageActions.setLoginPageError('Username taken'))
             }
 
             localStorage.removeItem('auth')
@@ -128,7 +126,8 @@ const logout = () => {
         localStorage.removeItem('auth')
         localStorage.removeItem('state')
         dispatch(authActions.clearAuth())
-        dispatch(loginActions.setLoginPageError(''))
+        dispatch(userActions.clearUser())
+        dispatch(loginPageActions.setLoginPageError(''))
     }
 }
 

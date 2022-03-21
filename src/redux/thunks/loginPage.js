@@ -1,7 +1,7 @@
 import axios from 'axios'
-import pageActions from '../actions/pageActions'
+import viewSavingsGoalPageActions from '../actions/viewSavingsGoalPageActions'
 
-const updatePageItemImagePreview = url => {
+const updateViewSavingsGoalItemImagePreview = url => {
     return (dispatch, getState) => {
         const state = getState()
         const reqBody = {
@@ -13,7 +13,7 @@ const updatePageItemImagePreview = url => {
                 'authorization': state.auth.token
             } 
         }).then(resp => {
-            dispatch(pageActions.updatePageItemPreview({ ...resp.data.preview }))
+            dispatch(viewSavingsGoalPageActions.updateViewSavingsGoalItemImagePreview({ ...resp.data.preview }))
         }).catch(err => {
             console.log(err)
         })
@@ -21,5 +21,5 @@ const updatePageItemImagePreview = url => {
 }
 
 export {
-    updatePageItemImagePreview
+    updateViewSavingsGoalItemImagePreview
 }
