@@ -84,14 +84,11 @@ function login(username, password) {
     return async (dispatch, getState, usersApi) => {
         try {
             const response = await usersApi.login(username, password);
-            console.log(response)
             localStorage.setItem('auth', response.data.auth)
             dispatch(authActions.updateAuth(true))
             dispatch(userActions.updateUser(response.data.user))
         } catch (error) {
-            console.log(error)
             if (error.hasOwnProperty('response') && error.response.hasOwnProperty('status') && error.response.status === 400) {
-                console.log('how do we get here')
                 dispatch(loginPageActions.setLoginPageError('Incorrect password'))
             } else {
                 dispatch(loginPageActions.setLoginPageError('Something went wrong, please try again'))

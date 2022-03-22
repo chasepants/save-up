@@ -2,6 +2,20 @@ import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import Link from './Link'
 
+function BankAccountRow({ account }) {
+  return (
+    <div key={account.account_id} className='row'>
+      <div className='col-sm-12'>
+        <div className="input-group">
+          <p className="form-control">{account.name}</p>
+          <p className="form-control">{account.subtype}</p>
+          <p className="form-control">{account.mask}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function BankAccountsPage() {
   const [linkToken, setLinkToken] = useState(null);
   const user = useSelector(state => state.user)
@@ -31,20 +45,7 @@ function BankAccountsPage() {
           <h3>Accounts</h3>
           {
             user.plaid_items.map(plaidItem => {
-              return plaidItem.accounts.map(account => {
-                console.log(account)
-                return (
-                  <div key={account.account_id} className='row'>
-                    <div className='col-sm-12'>
-                      <div className="input-group">
-                        <p className="form-control">{account.name}</p>
-                        <p className="form-control">{account.subtype}</p>
-                        <p className="form-control">{account.mask}</p>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })
+              return plaidItem.accounts.map(account => <BankAccountRow account={account} />)
             })
           }
           {linkToken != null ? <Link linkToken={linkToken} /> : <></>}
