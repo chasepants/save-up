@@ -1,14 +1,14 @@
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
-import LoginPage from './components/LoginPage'
+import LoginPage from './components/login/LoginPage'
 import BankAccountsPage from './components/BankAccountsPage'
 import SavingsGoalsPage from './components/SavingsGoalsPage'
 import ViewSavingsGoalPage from './components/ViewSavingsGoalPage'
 import RequireAuth from './components/RequireAuth'
 
-function App() {
-  const notFound = () => <main style={{ padding: "1rem" }}><p>There's nothing here!</p></main> 
+function App(): JSX.Element {
+  const notFound = (): JSX.Element => <main style={{ padding: "1rem" }}><p>There's nothing here!</p></main> 
   return (
     <div>
       <Header/>

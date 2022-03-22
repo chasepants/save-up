@@ -2,9 +2,10 @@ import '../App.css'
 import { logout } from '../redux/thunks/user'
 import { useSelector, useDispatch } from 'react-redux'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { NavigateFunction, useNavigate } from 'react-router-dom'
+import { RootState } from '../redux/reducers'
 
-function DropDownItem({label, handleLinkClick, path}) {
+function DropDownItem({label, handleLinkClick, path}): JSX.Element {
     return (
         <a className="dropdown-item" href='./' onClick={e => handleLinkClick(e, path)}>
             {label}
@@ -12,8 +13,8 @@ function DropDownItem({label, handleLinkClick, path}) {
     )
 }
 
-const Logo = () => {
-    const navigate = useNavigate()
+function Logo(): JSX.Element {
+    const navigate: NavigateFunction = useNavigate()
     return (
         <div className="align-items-center d-flex navbar-brand pointer"> 
             <strong onClick={() => navigate('/goals', { replace: true }) }>Save Up</strong> 
@@ -21,20 +22,20 @@ const Logo = () => {
     )
 }
 
-const Header = () => {
+function Header(): JSX.Element {
     const dispatch = useDispatch()
-    const navigate = useNavigate()
+    const navigate: NavigateFunction = useNavigate()
 
-    const authentication = useSelector(state => state.auth)
+    const authentication = useSelector((state: RootState) => state.auth)
     const [showMenuOptions, setShowMenuOptions] = useState(false)
 
-    const handleLinkClick = async (event, link) => {
+    const handleLinkClick = async (event: MouseEvent, link: string) => {
         event.preventDefault()
         navigate(link, { replace: true });
         setShowMenuOptions(false)
     }
 
-    const handleLogout = async (event) => {
+    const handleLogout = async (event: MouseEvent) => {
         event.preventDefault()
         dispatch(logout())
         setShowMenuOptions(false)
@@ -53,7 +54,7 @@ const Header = () => {
                             <DropDownItem label={'Savings Goals'} handleLinkClick={handleLinkClick} path={'goals'}/>
                             <DropDownItem label={'Bank Accounts'} handleLinkClick={handleLinkClick} path={'bank-accounts'}/>
                             <DropDownItem label={'My Profile'} handleLinkClick={handleLinkClick} path={'goals'}/>
-                            <a className="dropdown-item" href='./' onClick={e => handleLogout(e)}>Logout</a>
+                            <a className="dropdown-item" href='./' onClick={e => handleLogout}>Logout</a>
                         </div>
                     </div>
                 </div>
