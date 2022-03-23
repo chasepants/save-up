@@ -1,5 +1,5 @@
 import { updateUserItems } from '../../redux/thunks/user'
-import { MouseEventHandler, useState } from 'react'
+import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import addSavingsGoalFormActions from '../../redux/actions/addSavingsGoalFormActions'
 import ClipLoader from 'react-spinners/ClipLoader'

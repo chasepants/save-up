@@ -1,4 +1,4 @@
-import '../App.css'
+import '../../App.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { removeUserItem } from '../../redux/thunks/user'
 import addSavingsGoalFormActions from '../../redux/actions/addSavingsGoalFormActions'

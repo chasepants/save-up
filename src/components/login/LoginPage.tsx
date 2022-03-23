@@ -16,6 +16,11 @@ import {
   SignupInputs 
 } from './types';
 
+const defaultLoginInputs: LoginInputs = { username: '', password: '' };
+const defaultSignupInputs: SignupInputs = { username: '', password: '', firstname: '', lastname: '', confirm_password: '' };
+const defaultLoginError: LoginErrors = { username: '', password: '' };
+const defaultSignupError: SignupErrors = { username: '', password: '', firstname: '', lastname: '', confirm_password: '' };
+
 function PageTitle(): JSX.Element {
   return (
     <div className="row">
@@ -26,8 +31,7 @@ function PageTitle(): JSX.Element {
   )
 }
 
-function FormInput(props: FormInputProps): JSX.Element {
-  // const showFormText = !!props['FormText']
+const FormInput = (props: FormInputProps): JSX.Element => {
   const {label, name, type, errors, handleInput} = props
 
   return (
@@ -39,7 +43,6 @@ function FormInput(props: FormInputProps): JSX.Element {
         onChange={(e) => handleInput(e)}
         isInvalid={!!errors[name]}
       />
-      {/* {showFormText ? <FormText/> : ''}  */}
       <Form.Control.Feedback type="invalid">
         {errors[name]}
       </Form.Control.Feedback>
@@ -66,7 +69,7 @@ function FormLink(props: FormLinkProps): JSX.Element {
   return (
     <Form.Group className='text-center'>
       <Form.Text muted>
-        <a href='/' className="a-pointer" onClick={(e) => props.handleFormSwitch(e)}>
+        <a href='/' className="a-pointer" onClick={props.handleFormSwitch}>
           {props.formBottomText}
         </a>
       </Form.Text>
@@ -84,10 +87,6 @@ function FormError(props: FormErrorProps): JSX.Element {
   )
 }
 
-function PasswordFormText(): JSX.Element {
-  return <Form.Text muted> 8 characters long using letters, number and characters </Form.Text>
-}
-
 function LoginPage(): JSX.Element {
   /** @todo: use typescript tooling here insteads of an array of keys if possible */
   const requiredLoginInputs = [
@@ -103,13 +102,13 @@ function LoginPage(): JSX.Element {
     'confirm_password'
   ]
 
-  const [inputs, setInputs] = useState<LoginInputs|SignupInputs|null>();
-  const [errors, setErrors] = useState<LoginErrors|SignupErrors|null>();
+  const [inputs, setInputs] = useState<LoginInputs|SignupInputs>(defaultLoginInputs);
+  const [errors, setErrors] = useState<LoginErrors|SignupErrors>(defaultLoginError);
   const [isLoginForm, setIsLoginForm] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const formButton = isLoginForm ? 'Login' : 'Signup'
   const formBottomText = isLoginForm ? "Don't have an account? Create one!" : 'Already have an account? Login!'
-
+  console.log(errors)
   const loginPage = useSelector((state: RootState) => state.loginPage)
   
   const dispatch = useDispatch()
@@ -117,11 +116,18 @@ function LoginPage(): JSX.Element {
   /** Helper function for getErrors */
   const isEmpty = (str: string) => !str || str === ''
 
+  const noErrors = (errors: LoginErrors|SignupErrors): boolean =>  {
+    for (const key of Object.keys(errors)) {
+      if (!isEmpty(errors[key])) return false
+    }
+    return true
+  }
+
   /** Validate inputs and return a list of new errors since last form submit */
   const getErrors = () => {
-    let newErrors: LoginErrors|SignupErrors;
-    const requiredInputs = isLoginForm ? requiredLoginInputs : requiredSignupInputs;
-
+    let newErrors: LoginErrors|SignupErrors = isLoginForm ? defaultLoginError : defaultSignupError;
+    const requiredInputs: Array<string> = isLoginForm ? requiredLoginInputs : requiredSignupInputs;
+    
     for (const key of requiredInputs) {
       if (isEmpty(inputs[key])) {
         newErrors[key] = `Please enter a ${key}`;
@@ -152,6 +158,7 @@ function LoginPage(): JSX.Element {
 
   /** Dispatch login thunk */
   const handleLogin = async () => {
+    console.log('logging in')
     dispatch(login(inputs.username, inputs.password))
   }
 
@@ -169,9 +176,9 @@ function LoginPage(): JSX.Element {
   /** On from submit: 1. validate, 2. showspinner, 3. login/signup 4. @TODO: navigate to homepage  */
   const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
-    const newErrors = getErrors()
+    const newErrors = getErrors();
 
-    if (Object.keys(newErrors).length > 0) {
+    if (!noErrors(newErrors)) {
       setErrors(newErrors)
       return
     }
@@ -188,8 +195,8 @@ function LoginPage(): JSX.Element {
   /** Handle bottom form link being clicked */
   const handleFormSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
+    setErrors(defaultLoginInputs)
     setIsLoginForm(!isLoginForm)
-    setErrors(null)
     dispatch(loginPageActions.setLoginPageError(''))
   }
 

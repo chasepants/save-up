@@ -1,3 +1,5 @@
+import { MouseEventHandler } from "react";
+
 export type FormInputProps = {
     label: string;
     name: string;
@@ -13,7 +15,7 @@ export type FormButtonProps = {
 }
 
 export type FormLinkProps = {
-    handleFormSwitch: Function;
+    handleFormSwitch: MouseEventHandler<HTMLAnchorElement>;
     formBottomText: string;
 }
 

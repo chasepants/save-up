@@ -6,7 +6,7 @@ import { PlaidItem, SavingsItem, User } from '../../utils/types'
 import { Dispatch } from 'redux'
 import UsersApi from '../../api/usersApi'
 import { RootState } from '../reducers'
-import { AxiosError, AxiosResponse } from 'axios'
+import { AxiosResponse } from 'axios'
 
 function updateUserPlaidItems(plaidItem: PlaidItem) {
     return async (dispatch: Dispatch, getState: any, usersApi: UsersApi) => {
@@ -32,7 +32,7 @@ function updateUserPlaidItems(plaidItem: PlaidItem) {
     }
 }
 
-function updateUserItems(item: SavingsItem) {
+function updateUserItems(item: any) {
     return async (dispatch: Dispatch, getState: any, usersApi: UsersApi) => {
         const state: RootState = getState()
         const user: User = state.user
@@ -105,7 +105,7 @@ function login(username: string, password: string) {
     }
 }
 
-function signup(user: User) {
+function signup(user: any) {
     return async (dispatch: Dispatch, getState: any, usersApi: UsersApi) => {
         try {
             const response = await usersApi.signup(user);

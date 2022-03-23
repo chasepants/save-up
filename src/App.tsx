@@ -2,9 +2,9 @@ import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import LoginPage from './components/login/LoginPage'
-import BankAccountsPage from './components/BankAccountsPage'
-import SavingsGoalsPage from './components/SavingsGoalsPage'
-import ViewSavingsGoalPage from './components/ViewSavingsGoalPage'
+import BankAccountsPage from './components/bankaccounts/BankAccountsPage'
+import SavingsGoalsPage from './components/savings-goals/SavingsGoalsPage'
+import ViewSavingsGoalPage from './components/savings-goals/ViewSavingsGoalPage'
 import RequireAuth from './components/RequireAuth'
 
 function App(): JSX.Element {

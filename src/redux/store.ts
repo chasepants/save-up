@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, CombinedState } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import reducer, { RootState } from './reducers'
 import UsersApi from '../api/usersApi'

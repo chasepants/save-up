@@ -1,4 +1,4 @@
-import '../App.css'
+import '../../App.css'
 import { ProgressBar } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { locateAccounts, findSavingsItemByName } from '../../utils/userParser'

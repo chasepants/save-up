@@ -1,5 +1,5 @@
 /** THIS MODULE CONTAINS HELPER FUNCTIONS WHEN PARSING USER DATA */
-import { Item, User, PlaidItem, SavingsItem, BankAccount } from './types'
+import { PlaidItem, SavingsItem, BankAccount } from './types'
 
 const locateAccounts = (plaid_items: Array<PlaidItem>, item: SavingsItem): Array<BankAccount> => {
     let fromAccount: BankAccount;
