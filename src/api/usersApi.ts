@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
+import { User } from '../utils/types'
 
 export default class UsersApi {
     LOGIN_END_POINT = 'login'
@@ -13,7 +14,7 @@ export default class UsersApi {
         });
     }
      
-    async updateUser(id: string, user: string, token: string): Promise<AxiosResponse> {
+    async updateUser(id: string, user: User, token: string): Promise<AxiosResponse> {
         return await this.client.post(`/${this.UPDATE_USER_END_POINT}/${id}`, user, { headers: { 'authorization': token} })
     }
 
@@ -21,7 +22,7 @@ export default class UsersApi {
         return await this.client.get(`/${this.LOGIN_END_POINT}/${username}/${password}`)
     }
 
-    async signup(user: string): Promise<AxiosResponse> {
+    async signup(user: User): Promise<AxiosResponse> {
         return await this.client.post(`/${this.SIGN_UP_END_POINT}`, user)
     }
 }

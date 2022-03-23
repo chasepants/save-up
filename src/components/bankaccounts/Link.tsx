@@ -1,12 +1,14 @@
 import { useCallback } from 'react'
-import { updateUserPlaidItems } from '../redux/thunks/user'
+import { updateUserPlaidItems } from '../../redux/thunks/user'
 import { useDispatch, useSelector } from 'react-redux'
 
 /** PLAID */
 import { usePlaidLink } from 'react-plaid-link';
+import { RootState } from '../../redux/reducers';
+import { LinkProps } from './types';
 
-const Link = (props) => {
-    const auth_token = useSelector(state => state.auth.token)
+const Link = (props: LinkProps): JSX.Element => {
+    const auth_token = useSelector((state: RootState) => state.auth.token)
     const dispatch = useDispatch()
     const onSuccess = useCallback(public_token => {
       // send public_token to server

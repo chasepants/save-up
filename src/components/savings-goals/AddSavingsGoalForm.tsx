@@ -1,13 +1,16 @@
-import { updateUserItems } from '../redux/thunks/user'
-import { useState } from 'react'
+import { updateUserItems } from '../../redux/thunks/user'
+import { MouseEventHandler, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import addSavingsGoalFormActions from '../redux/actions/addSavingsGoalFormActions'
+import addSavingsGoalFormActions from '../../redux/actions/addSavingsGoalFormActions'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { Button, Form  } from 'react-bootstrap'
+import { RootState } from '../../redux/reducers'
+import { FormErrorProps, FormInputProps } from '../login/types'
+import { AutomaticTransfersTitleProps, FormButtonProps, RequiredSavingsGoalInputs, RequiredTransferInputs, SavingsGoalAccountOptionProps, SavingsPlanAccountDropDownProps, SavingsPlansInputProps } from './types'
 
 /** STOLEN FROM LOGINPAGE.JS */
-function FormInput(props) {
-  const showFormText = !!props['FormText']
+function FormInput(props: FormInputProps): JSX.Element {
+//   const showFormText = !!props['FormText']
   const {label, name, type, errors, handleInput} = props
 
   return (
@@ -28,12 +31,12 @@ function FormInput(props) {
 }
 
 /** STOLEN FROM LOGINPAGE.JS */
-function FormButton({handleFormSubmit, isSaving, itemForm, items}) {
+function FormButton({handleFormSubmit, isSaving, itemForm, items}: FormButtonProps): JSX.Element {
     const dispatch = useDispatch()
     return (
         <Form.Group className='col-sm-6 offset-sm-3 text-center mb-5'>
             <div className="input-group d-flex justify-content-evenly">
-                <Button onClick={e => handleFormSubmit(e)} className="btn-sharp btn-success">
+                <Button onClick={handleFormSubmit} className="btn-sharp btn-success">
                     { isSaving && '' === itemForm.add_error ? <ClipLoader color="#ffffff" loading={isSaving} size={20} /> : "Save" } 
                 </Button>
                 {
@@ -49,7 +52,7 @@ function FormButton({handleFormSubmit, isSaving, itemForm, items}) {
 }
 
 /** STOLEN FROM LOGINPAGE.JS */
-function FormError({error}) {
+function FormError({error}: FormErrorProps): JSX.Element {
     return (
       <div className="row mt-2">
         <div className="col-sm-6 offset-sm-3 text-center">
@@ -59,7 +62,7 @@ function FormError({error}) {
     )
 }
 
-function AccountOption({ account }) {
+function AccountOption({ account }: SavingsGoalAccountOptionProps ): JSX.Element {
     return (
         <option key={account.account_id} value={account.account_id}>
             {account.name}
@@ -67,10 +70,10 @@ function AccountOption({ account }) {
     )
 }
 
-function SavingsPlanAccountDropDown({handleInput, name, label, plaid_items, detail, errors}) {
+function SavingsPlanAccountDropDown({handleInput, name, label, plaid_items, detail, errors}: SavingsPlanAccountDropDownProps): JSX.Element {
     return (
         <Form.Group className='col-sm-3'>
-            <Form.Control onChange={(e) => handleInput(e)} as='select' name={name} isInvalid={!!errors[name]}>
+            <Form.Control onChange={handleInput} as='select' name={name} isInvalid={!!errors[name]}>
                 <option value=''>{label}</option>
                 {plaid_items.map(plaidItem => plaidItem.accounts.map(account => <AccountOption account={account} />))}
             </Form.Control>
@@ -82,7 +85,7 @@ function SavingsPlanAccountDropDown({handleInput, name, label, plaid_items, deta
     )
 } 
 
-function AutomaticTransfersSectionTitle({ length }) {
+function AutomaticTransfersSectionTitle({ length }: AutomaticTransfersTitleProps): JSX.Element {
     return (
         <div className='col-sm-12'>
             <h5>Saving's Plan - Set Up Automatic Transfers</h5>
@@ -91,7 +94,7 @@ function AutomaticTransfersSectionTitle({ length }) {
     )
 }
 
-function AddSavingsPlanInputs({plaid_items, handleInput, errors}) {
+function AddSavingsPlanInputs({plaid_items, handleInput, errors}: SavingsPlansInputProps): JSX.Element {
     const options = [
         { value: '', label: 'Every' },
         { value: 'daily', label: 'Day' },
@@ -118,35 +121,35 @@ function AddSavingsPlanInputs({plaid_items, handleInput, errors}) {
                         name="savings_amount"
                         type="text"
                         onChange={(e) => handleInput(e)}
-                        isInvalid={!!errors.savings_amount}
+                        isInvalid={!!(errors as RequiredTransferInputs).savings_amount}
                     />
                     <Form.Control.Feedback type="invalid">
-                        {errors.savings_amount}
+                        {(errors as RequiredTransferInputs).savings_amount}
                     </Form.Control.Feedback>
                 </div>
             </div>
             <SavingsPlanAccountDropDown handleInput={handleInput} name={'from_account_id'} label='From' plaid_items={plaid_items} detail='From which account?' errors={errors}/>
             <SavingsPlanAccountDropDown handleInput={handleInput} name={'to_account_id'} label='To' plaid_items={plaid_items} detail='To which account?' errors={errors}/>
             <Form.Group className='col-sm-2'>
-                <Form.Control as='select' isInvalid={!!errors.savings_rate} name="savings_rate" onChange={(e) => handleInput(e)}>
+                <Form.Control as='select' isInvalid={!!(errors as RequiredTransferInputs).savings_rate} name="savings_rate" onChange={(e) => handleInput(e)}>
                     { options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
                 </Form.Control>
                 <span className='text-muted'>How often?</span>
                 <Form.Control.Feedback type="invalid">
-                    {errors.savings_rate}
+                    {(errors as RequiredTransferInputs).savings_rate}
                 </Form.Control.Feedback>
             </Form.Group>
         </>
-    ) : ''
+    ) : <div></div>
 }
 
-function AddSavingsGoalForm() {
-    const [inputs, setInputs] = useState({})
-    const [errors, setErrors] = useState({})
+function AddSavingsGoalForm(): JSX.Element {
+    const [inputs, setInputs] = useState<RequiredTransferInputs|RequiredSavingsGoalInputs|{}>({})
+    const [errors, setErrors] = useState<any>({})
     const [isSaving, setIsSaving] = useState(false)
-    const items = useSelector(state => state.user.savings_items)
-    const itemForm = useSelector(state => state.addSavingsGoalForm)
-    const plaid_items = useSelector(state => state.user.plaid_items)
+    const items = useSelector((state: RootState) => state.user.savings_items)
+    const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
+    const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
 
     const requiredInputs = [
         'goal', 
@@ -166,14 +169,14 @@ function AddSavingsGoalForm() {
     const dispatch = useDispatch()
 
     /**COPIED LOGIN PAGE Helper function for getErrors */
-    const isEmpty = str => !str || str === ''
+    const isEmpty = (str: string) => !str || str === ''
 
     /**COPIED LOGIN PAGE Validate inputs and return a list of new errors since last form submit */
     const getErrors = () => {
         const newErrors = {}
-        const requiredInputs = plaid_items.length > 0 ? requiredTransferInputs : requiredInputs
+        const expectedInputs = plaid_items.length > 0 ? requiredTransferInputs : requiredInputs
         
-        for (const key of requiredInputs) {
+        for (const key of expectedInputs) {
             if (isEmpty(inputs[key])) {
               newErrors[key] = `Please enter a ${key}`
             }
@@ -184,20 +187,20 @@ function AddSavingsGoalForm() {
 
     const getUpdateObj = () => {
         return {
-            name: inputs.goal,
-            decription: inputs.description,
-            amount: Number.parseFloat(inputs.amount),
-            url: inputs.link,
+            name: (inputs as RequiredSavingsGoalInputs).goal,
+            decription: (inputs as RequiredSavingsGoalInputs).description,
+            amount: Number.parseFloat((inputs as RequiredSavingsGoalInputs).amount),
+            url: (inputs as RequiredSavingsGoalInputs).link,
             saving_plan: {
-                fromAccount: inputs.transfer_from_id,
-                toAccount: inputs.transfer_to_id,
-                amount: Number.parseFloat(inputs.savings_amount),
-                cadence: inputs.savings_rate
+                fromAccount: (inputs as RequiredTransferInputs).transfer_from_id,
+                toAccount: (inputs as RequiredTransferInputs).transfer_to_id,
+                amount: Number.parseFloat((inputs as RequiredTransferInputs).savings_amount),
+                cadence: (inputs as RequiredTransferInputs).savings_rate
             }
         }
     }
 
-    const handleInput = (e) => {
+    const handleInput = (e: any) => {
         setInputs({
             ...inputs,
             [e.target.name]: e.target.value,
@@ -212,11 +215,11 @@ function AddSavingsGoalForm() {
         }
     }
 
-    const handleFormSubmit = e => {
+    const handleFormSubmit = (e: any) => {
         e.preventDefault()
 
         const newErrors = getErrors()
-        console.log(newErrors)
+
         if (Object.keys(newErrors).length > 0) {
           setErrors(newErrors)
           setIsSaving(false)

@@ -1,10 +1,13 @@
 import '../App.css'
 import { ProgressBar } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
-import { locateAccounts, findSavingsItemByName } from '../utils/bank_accounts'
-import { useParams, useNavigate } from 'react-router-dom'
+import { locateAccounts, findSavingsItemByName } from '../../utils/userParser'
+import { useParams, useNavigate, NavigateFunction } from 'react-router-dom'
+import { RootState } from '../../redux/reducers'
+import { BankAccount } from '../../utils/types'
+import { SavingsItemPlanProps, SavingsItemProps } from './types'
 
-function HypeBoard() {
+function HypeBoard(): JSX.Element {
     return (
         <div className='row mt-3'>
             <div className='col-sm-6 offset-sm-3 text-center'>
@@ -37,33 +40,33 @@ function HypeBoard() {
     )
 }
 
-function SavingsItemTitle({ item }) {
-    return item.item_preview ? (
+function SavingsItemTitle(props: SavingsItemProps): JSX.Element {
+    return props.item.item_preview ? (
             <div className='row my-3 item-url-row'>
                 <div className='col-sm-6 offset-sm-3'>
                     <div className='border d-flex justify-content-between ' onClick={() => console.log('view image')}>
                         <div className='d-flex align-items-center thumbnail-image-block'>
-                            <img alt='Item' className='img-fluid' src={item.item_preview.img ?? item.item_preview.favicon}/>
+                            <img alt='Item' className='img-fluid' src={props.item.item_preview.img ?? props.item.item_preview.favicon}/>
                         </div>
                         <div className='align-items-between d-flex flex-column px-2 pt-1 thumbnail-link-block'>
-                            <b><a href={item.url}>Visit Website</a></b>
-                            <p>{item.item_preview.description}...</p>
+                            <b><a href={props.item.url}>Visit Website</a></b>
+                            <p>{props.item.item_preview.description}...</p>
                         </div>
                     </div>
                 </div>
             </div>
-        ) : ''
+        ) : <div></div>
 }
 
-function SavingPlan({item, fromAccount, toAccount}) {
-    return (
+function SavingPlan(props: SavingsItemPlanProps): JSX.Element {
+    return (props.fromAccount === {} || props.fromAccount === {}) ? <div></div> : (
         <div className='row mt-5'>
             <div className='col-sm-6 offset-sm-3'>
                 <div className="input-group">
                     <p className="form-control-no-border">
                         <b>Saving Plan</b> -
-                        Transfer ${item.saving_plan.amount} from the <b>{fromAccount.name}</b> to the <b>{toAccount.name}</b> -
-                        &nbsp;{item.saving_plan.cadence}
+                        Transfer ${props.item.saving_plan.amount} from the <b>{(props.fromAccount as BankAccount).name}</b> to the
+                        <b>{(props.toAccount as BankAccount).name}</b> - &nbsp;{props.item.saving_plan.cadence}
                     </p>
                 </div>
             </div>
@@ -71,7 +74,7 @@ function SavingPlan({item, fromAccount, toAccount}) {
     )
 }
 
-function SavingsProgress({ progressInstance }) {
+function SavingsProgress({ progressInstance }): JSX.Element {
     return (
         <div className='row mt-5'>
             <div className='col-sm-6 offset-sm-3 text-center'>
@@ -81,33 +84,32 @@ function SavingsProgress({ progressInstance }) {
     )
 }
 
-function SavingsItemPreview({ item }) {
+function SavingsItemPreview(props: SavingsItemProps): JSX.Element {
     return (
         <div className='row'>
             <div className='col-sm-6 offset-sm-3 d-flex justify-content-between'>
-                <h3>{item.item_preview.title}</h3>
-                <h3>${item.amount}</h3>
+                <h3>{props.item.item_preview.title}</h3>
+                <h3>${props.item.amount}</h3>
             </div>
         </div>
     )
 }
 
-function ViewSavingsGoalPage() {
+function ViewSavingsGoalPage(): JSX.Element {
     let { item_name } = useParams();
-    const user = useSelector(state => state.user)
+    const user = useSelector((state: RootState) => state.user)
     const item = findSavingsItemByName(item_name, user.savings_items)
-    const plaid_items = useSelector(state => state.user.plaid_items)
+    const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
 
-    const navigate = useNavigate()
-    const progress = Math.round(10 / item.amount * 100);
-    const progressInstance = <ProgressBar now={progress} label={`${progress}%`} />
-    let [toAccount, fromAccount] = plaid_items ? locateAccounts(plaid_items, item) : [{}, {}]
+    const navigate: NavigateFunction = useNavigate()
+    const progress: number = Math.round(10 / (item.amount * 100));
+    let [toAccount, fromAccount]: Array<BankAccount>|Array<{}> = plaid_items ? locateAccounts(plaid_items, item) : [{}, {}];
 
     return (
         <div className='container mt-5'>
             <SavingsItemTitle item={item} />
             <SavingsItemPreview item={item} />
-            <SavingsProgress progressInstance={progressInstance} />
+            <SavingsProgress progressInstance={<ProgressBar now={progress} label={`${progress}%`} />} />
             <SavingPlan item={item} fromAccount={fromAccount} toAccount={toAccount} />
             <HypeBoard />
             <div className='row mt-5'>

@@ -1,9 +1,9 @@
-import { createStore, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware, CombinedState } from 'redux'
 import thunk from 'redux-thunk'
-import reducer from './reducers'
+import reducer, { RootState } from './reducers'
 import UsersApi from '../api/usersApi'
 
-const loadState = () => {
+const loadState = (): undefined|any => {
   try {
     const serializedState = localStorage.getItem('state');
     if(serializedState === null) {
@@ -15,7 +15,7 @@ const loadState = () => {
   }
 };
   
-const saveState = (state) => {
+const saveState = (state: RootState): void => {
   try {
     const serializedState = JSON.stringify(state);
     localStorage.setItem('state', serializedState);
@@ -25,9 +25,9 @@ const saveState = (state) => {
 };
   
 const peristedState = loadState();
-const usersApi = new UsersApi()
+const usersApi: UsersApi = new UsersApi()
 
-let store = createStore(
+let store: any = createStore(
   reducer,
   peristedState,
   applyMiddleware(thunk.withExtraArgument(usersApi))

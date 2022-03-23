@@ -1,35 +1,38 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { RootState } from '../../redux/reducers';
 import Link from './Link'
+import { BankAccountRowProps } from './types';
+import { BankAccount, PlaidItem } from '../../utils/types';
 
-function BankAccountRow({ account }) {
+function BankAccountRow(props: BankAccountRowProps): JSX.Element {
   return (
-    <div key={account.account_id} className='row'>
+    <div key={props.account.account_id} className='row'>
       <div className='col-sm-12'>
         <div className="input-group">
-          <p className="form-control">{account.name}</p>
-          <p className="form-control">{account.subtype}</p>
-          <p className="form-control">{account.mask}</p>
+          <p className="form-control">{props.account.name}</p>
+          <p className="form-control">{props.account.subtype}</p>
+          <p className="form-control">{props.account.mask}</p>
         </div>
       </div>
     </div>
   )
 }
 
-function BankAccountsPage() {
+function BankAccountsPage(): JSX.Element {
   const [linkToken, setLinkToken] = useState(null);
-  const user = useSelector(state => state.user)
-  const public_token = useSelector(state => state.auth.token)
+  const user = useSelector((state: RootState) => state.user)
+  const public_token = useSelector((state: RootState) => state.auth.token)
 
   const generateToken = async () => {
-    const response = await fetch('http://localhost:8081/api/create_link_token', {
+    const response: Response = await fetch('http://localhost:8081/api/create_link_token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'authorization': public_token
       },
     });
-    console.log(response)
+
     const data = await response.json();
     setLinkToken(data.link_token);
   };
@@ -44,8 +47,8 @@ function BankAccountsPage() {
         <div className='col-sm-12 text-center'>
           <h3>Accounts</h3>
           {
-            user.plaid_items.map(plaidItem => {
-              return plaidItem.accounts.map(account => <BankAccountRow account={account} />)
+            user.plaid_items.map((plaidItem: PlaidItem) => {
+              return plaidItem.accounts.map((account: BankAccount) => <BankAccountRow account={account} />)
             })
           }
           {linkToken != null ? <Link linkToken={linkToken} /> : <></>}

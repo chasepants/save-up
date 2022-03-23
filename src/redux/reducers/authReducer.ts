@@ -1,6 +1,11 @@
+import { Action } from 'redux';
 import actions from '../actions/actionLang'
 
-export default function auth(auth = {valid: false, token: '', error: ''}, action) {
+export type AuthAction = Action & {payload: AuthActionPayload};
+export type DefaultAuth = {valid: boolean, token: string, error: string};
+export type AuthActionPayload = Action & DefaultAuth;
+const defaultAuth: DefaultAuth = {valid: false, token: '', error: ''};
+export default function auth(auth = defaultAuth, action: AuthAction): DefaultAuth {
     switch (action.type) {
         case actions.UPDATE_AUTH_VALID:
             return {

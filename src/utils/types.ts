@@ -19,6 +19,7 @@ export type BankAccount = {
     name: string;
     official_name: string;
     type: string;
+    subtype: string;
 }
 
 export type Item = {    
@@ -45,7 +46,7 @@ export type Balance = {
 export type SavingsItem = {
     name: string;  
     description: string;  
-    amount: Number;  
+    amount: number;  
     url: string;  
     saving_plan: SavingPlan;  
     item_preview: ItemPreview;

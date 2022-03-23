@@ -2,13 +2,18 @@ import addSavingsGoalFormActions from '../actions/addSavingsGoalFormActions'
 import authActions from '../actions/authActions'
 import loginPageActions from '../actions/loginPageActions'
 import userActions from '../actions/userActions'
+import { PlaidItem, SavingsItem, User } from '../../utils/types'
+import { Dispatch } from 'redux'
+import UsersApi from '../../api/usersApi'
+import { RootState } from '../reducers'
+import { AxiosError, AxiosResponse } from 'axios'
 
-function updateUserPlaidItems(plaidItem) {
-    return async (dispatch, getState, usersApi) => {
-        const state = getState()
-        const user = state.user
+function updateUserPlaidItems(plaidItem: PlaidItem) {
+    return async (dispatch: Dispatch, getState: any, usersApi: UsersApi) => {
+        const state: RootState = getState()
+        const user: User = state.user
 
-        let updated_user = {
+        let updated_user: User = {
             ...user,
             plaid_items: [
                 ...user.plaid_items,
@@ -17,22 +22,22 @@ function updateUserPlaidItems(plaidItem) {
         }
         
         try {
-            const response = await usersApi.updateUser(user._id, updated_user, state.auth.token);
+            const response: AxiosResponse = await usersApi.updateUser((user as any)._id, updated_user, state.auth.token);
             localStorage.removeItem('state')
             dispatch(userActions.updateUser(response.data.user))
-        } catch (error) {
+        } catch (error: any) {
             console.log(error)
             // todo: dispatch error
         }
     }
 }
 
-function updateUserItems(item) {
-    return async (dispatch, getState, usersApi) => {
-        const state = getState()
-        const user = state.user
+function updateUserItems(item: SavingsItem) {
+    return async (dispatch: Dispatch, getState: any, usersApi: UsersApi) => {
+        const state: RootState = getState()
+        const user: User = state.user
 
-        let updated_user = {
+        let updated_user: User = {
             ...user,
             savings_items: [
                 ...user.savings_items,
@@ -41,23 +46,23 @@ function updateUserItems(item) {
         }
 
         try {
-            const response = await usersApi.updateUser(user._id, updated_user, state.auth.token);
+            const response: AxiosResponse = await usersApi.updateUser((user as any)._id, updated_user, state.auth.token);
             localStorage.removeItem('state')
             dispatch(userActions.updateUser(response.data.user))
             dispatch(addSavingsGoalFormActions.hideAddSavingsGoalForm())
-        } catch (error) {
+        } catch (error: any) {
             dispatch(addSavingsGoalFormActions.setAddSavingsGoalFormAddError('NETWORK ERROR: Could not add item at this time'))
         }
     }
 }
 
-function removeUserItem(delete_item) {
-    return async (dispatch, getState, usersApi) => {
-        const state = getState()
-        const user = state.user
+function removeUserItem(delete_item: SavingsItem) {
+    return async (dispatch: Dispatch, getState: any, usersApi: UsersApi) => {
+        const state: RootState = getState()
+        const user: User = state.user
 
-        let index;
-        let updated_items = user.savings_items.map((item, i) => {
+        let index: number;
+        let updated_items = user.savings_items.map((item: SavingsItem, i: number) => {
             if (item !== delete_item)
                 return item 
             index = i
@@ -66,28 +71,28 @@ function removeUserItem(delete_item) {
 
         updated_items.splice(index, 1);
 
-        let updated_user = {
+        let updated_user: User = {
             ...user,
-            savings_items: updated_items
+            savings_items: (updated_items as Array<SavingsItem>)
         }
 
         try {
-            const response = await usersApi.updateUser(user._id, updated_user, state.auth.token)
+            const response: AxiosResponse = await usersApi.updateUser((user as any)._id, updated_user, state.auth.token)
             dispatch(userActions.updateUser(response.data.user))
-        } catch (error) {
+        } catch (error: any) {
             dispatch(addSavingsGoalFormActions.setItemFormAddError('NETWORK ERROR: Could not add item at this time'))
         }
     }
 }
 
-function login(username, password) {
-    return async (dispatch, getState, usersApi) => {
+function login(username: string, password: string) {
+    return async (dispatch: Dispatch, getState: any, usersApi: UsersApi) => {
         try {
-            const response = await usersApi.login(username, password);
+            const response: AxiosResponse = await usersApi.login(username, password);
             localStorage.setItem('auth', response.data.auth)
             dispatch(authActions.updateAuth(true))
             dispatch(userActions.updateUser(response.data.user))
-        } catch (error) {
+        } catch (error: any) {
             if (error.hasOwnProperty('response') && error.response.hasOwnProperty('status') && error.response.status === 400) {
                 dispatch(loginPageActions.setLoginPageError('Incorrect password'))
             } else {
@@ -100,14 +105,14 @@ function login(username, password) {
     }
 }
 
-function signup(user) {
-    return async (dispatch, getState, usersApi) => {
+function signup(user: User) {
+    return async (dispatch: Dispatch, getState: any, usersApi: UsersApi) => {
         try {
             const response = await usersApi.signup(user);
             localStorage.setItem('auth', response.data.auth)
             dispatch(authActions.updateAuth(response.data.auth))
             dispatch(userActions.updateUser(response.data.user))
-        } catch (error) {
+        } catch (error: any) {
             if (error.hasOwnProperty('response') && error.response.hasOwnProperty('status') && error.response.status === 403) {
                 dispatch(loginPageActions.setLoginPageError('Username taken'))
             }
@@ -119,7 +124,7 @@ function signup(user) {
 }
 
 const logout = () => {
-    return (dispatch) => {
+    return (dispatch: Dispatch) => {
         localStorage.removeItem('auth')
         localStorage.removeItem('state')
         dispatch(authActions.clearAuth())

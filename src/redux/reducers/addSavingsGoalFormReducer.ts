@@ -1,8 +1,13 @@
+import { Action } from 'redux'
 import actions from '../actions/actionLang'
 
-const defaultItemForm = {show_form: false, add_error: '', remove_error: ''}
+export type AddSavingsGoalItemAction = Action & {payload: AddSavingsGoalItemActionPayload};
+export type DefaultAddSavingsGoalItem = {show_form: boolean, add_error: string, remove_error: string};
+export type AddSavingsGoalItemActionPayload = Action & DefaultAddSavingsGoalItem;
 
-export default function addSavingsGoalFormReducer(itemForm = defaultItemForm, action) {
+const defaultItemForm: DefaultAddSavingsGoalItem = {show_form: false, add_error: '', remove_error: ''}
+
+export default function addSavingsGoalFormReducer(itemForm = defaultItemForm, action: AddSavingsGoalItemAction) {
     switch (action.type) {
         case actions.SHOW_ADD_SAVINGS_GOAL_FORM:
             return {
