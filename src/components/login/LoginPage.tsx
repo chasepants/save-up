@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Form } from 'react-bootstrap';
 import { login, signup } from '../../redux/thunks/user';
@@ -7,19 +7,14 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { RootState } from '../../redux/reducers/index';
 import { 
   FormButtonProps,
-  FormErrorProps,
   FormInputProps,
   FormLinkProps,
-  LoginErrors,
-  LoginInputs,
-  SignupErrors,
-  SignupInputs 
 } from './types';
+import { 
+  LoginInputErrors,
+  SignupInputErrors 
+} from '../../redux/reducers/loginPageReducer';
 
-const defaultLoginInputs: LoginInputs = { username: '', password: '' };
-const defaultSignupInputs: SignupInputs = { username: '', password: '', firstname: '', lastname: '', confirm_password: '' };
-const defaultLoginError: LoginErrors = { username: '', password: '' };
-const defaultSignupError: SignupErrors = { username: '', password: '', firstname: '', lastname: '', confirm_password: '' };
 
 function PageTitle(): JSX.Element {
   return (
@@ -32,7 +27,9 @@ function PageTitle(): JSX.Element {
 }
 
 const FormInput = (props: FormInputProps): JSX.Element => {
-  const {label, name, type, errors, handleInput} = props
+  const {label, name, type, handleInput} = props
+  const loginPage = useSelector((state: RootState) => state.loginPage);
+  const errors = loginPage.isLoginForm ? loginPage.login_input_errors : loginPage.signup_input_errors;
 
   return (
     <Form.Group className="mb-3">
@@ -51,15 +48,17 @@ const FormInput = (props: FormInputProps): JSX.Element => {
 }
 
 function FormButton(props: FormButtonProps) {
+  const isSaving: boolean = useSelector((state: RootState) => state.loginPage.isSaving)
+
   return (
     <Form.Group className='text-center'> 
       <Button
         className="mb-3"
         variant="primary"
         type="submit"
-        onClick={(e) => props.handleFormSubmit(e)}
+        onClick={props.handleFormSubmit}
       >
-        { props.isSaving ? <ClipLoader color="#ffffff" loading={props.isSaving} size={20} /> : props.formButtonText } 
+        { isSaving ? <ClipLoader color="#ffffff" loading={isSaving} size={20} /> : props.formButtonText } 
       </Button>
     </Form.Group>
   )
@@ -77,128 +76,132 @@ function FormLink(props: FormLinkProps): JSX.Element {
   )
 }
 
-function FormError(props: FormErrorProps): JSX.Element {
+function FormError(): JSX.Element {
+  const login_error: string = useSelector((state: RootState) => state.loginPage.login_error)
+
   return (
     <div className="row mt-2">
       <div className="col-sm-6 offset-sm-3 text-center">
-        <Form.Text className='text-danger'>{props.error}</Form.Text>
+        <Form.Text className='text-danger'>{login_error}</Form.Text>
       </div>
     </div>
   )
 }
 
 function LoginPage(): JSX.Element {
-  /** @todo: use typescript tooling here insteads of an array of keys if possible */
-  const requiredLoginInputs = [
-    'username',
-    'password',
-  ]
-
-  /** @todo: use typescript tooling here insteads of an array of keys if possible */
-  const requiredSignupInputs = [
-    ...requiredLoginInputs,
-    'firstname',
-    'lastname',
-    'confirm_password'
-  ]
-
-  const [inputs, setInputs] = useState<LoginInputs|SignupInputs>(defaultLoginInputs);
-  const [errors, setErrors] = useState<LoginErrors|SignupErrors>(defaultLoginError);
-  const [isLoginForm, setIsLoginForm] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const formButton = isLoginForm ? 'Login' : 'Signup'
-  const formBottomText = isLoginForm ? "Don't have an account? Create one!" : 'Already have an account? Login!'
-  console.log(errors)
   const loginPage = useSelector((state: RootState) => state.loginPage)
-  
+
+  const formButton = loginPage.isLoginForm ? 'Login' : 'Signup'
+  const formBottomText = loginPage.isLoginForm ? "Don't have an account? Create one!" : 'Already have an account? Login!'
+
   const dispatch = useDispatch()
 
-  /** Helper function for getErrors */
-  const isEmpty = (str: string) => !str || str === ''
+  const empty = (input: string): boolean => !input || input === ''; 
 
-  const noErrors = (errors: LoginErrors|SignupErrors): boolean =>  {
-    for (const key of Object.keys(errors)) {
-      if (!isEmpty(errors[key])) return false
+  const getLoginInputErrors = (): LoginInputErrors => {
+    let errors: LoginInputErrors = {};
+    if (empty(loginPage.login_inputs.username)) {
+      errors.username = 'Please enter a username';
     }
-    return true
+
+    if (empty(loginPage.login_inputs.password)) {
+      errors.password = 'Please enter a password';
+    }
+
+    return errors;
   }
 
-  /** Validate inputs and return a list of new errors since last form submit */
-  const getErrors = () => {
-    let newErrors: LoginErrors|SignupErrors = isLoginForm ? defaultLoginError : defaultSignupError;
-    const requiredInputs: Array<string> = isLoginForm ? requiredLoginInputs : requiredSignupInputs;
-    
-    for (const key of requiredInputs) {
-      if (isEmpty(inputs[key])) {
-        newErrors[key] = `Please enter a ${key}`;
-      }
+  const getSignupInputErrors = (): SignupInputErrors => {
+    let errors: SignupInputErrors = {};
+
+    if (empty(loginPage.signup_inputs.username)) {
+      errors.username = 'Please enter a username';
     }
 
-    if (!isLoginForm && ((inputs as SignupInputs).confirm_password !== inputs.password)) {
-      (newErrors as SignupErrors).confirm_password = 'Passwords do not match';
+    if (empty(loginPage.signup_inputs.password)) {
+      errors.password = 'Please enter a password';
     }
 
-    return newErrors;
+    if (
+      empty(loginPage.signup_inputs.confirm_password) ||
+      loginPage.signup_inputs.confirm_password !== loginPage.signup_inputs.password
+    ) {
+      errors.confirm_password = 'Please confirm the password';
+    }
+
+    if (empty(loginPage.signup_inputs.firstname)) {
+      errors.firstname = 'Please enter a first name';
+    }
+
+    if (empty(loginPage.signup_inputs.lastname)) {
+      errors.lastname = 'Please enter a last name';
+    }
+
+    return errors;
   }
 
   /** On input change: 1. update state, 2. wipe out old errors */
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputs({
-      ...inputs,
-      [e.target.name]: e.target.value,
+    console.log('handling input', e.target.name, e.target.value)
+    const updateInputsAction = loginPage.isLoginForm ? loginPageActions.updateLoginInputs({
+      ...loginPage.login_inputs,
+      [e.target.name]: e.target.value
+    }) : loginPageActions.updateSignupInputs({
+      ...loginPage.signup_inputs,
+      [e.target.name]: e.target.value
     })
 
-    if (!!errors[e.target.name]) {
-      setErrors({
-        ...errors,
-        [e.target.name]: null,
-      })
-    }
+    dispatch(updateInputsAction);
+
+    const updateInputErrorsAction = loginPage.isLoginForm ? loginPageActions.updateLoginInputErrors({
+      ...loginPage.login_input_errors, 
+      [e.target.name]: ''
+    }) : loginPageActions.updateSignupInputErrors({
+      ...loginPage.signup_input_errors, 
+      [e.target.name]: ''
+    })
+
+    dispatch(updateInputErrorsAction);
   }
 
   /** Dispatch login thunk */
   const handleLogin = async () => {
-    console.log('logging in')
-    dispatch(login(inputs.username, inputs.password))
+    dispatch(login(loginPage.login_inputs))
   }
 
   /** Dispatch signup thunk */
   const handleSignup = async () => {
-    dispatch(signup({
-      username: inputs.username, 
-      password: inputs.password,
-      fullname: `${(inputs as SignupInputs).firstname} ${(inputs as SignupInputs).lastname}`,
-      savings_items: [],
-      plaid_items: []
-    }))
+    dispatch(signup(loginPage.signup_inputs))
   }
 
   /** On from submit: 1. validate, 2. showspinner, 3. login/signup 4. @TODO: navigate to homepage  */
   const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
-    const newErrors = getErrors();
-
-    if (!noErrors(newErrors)) {
-      setErrors(newErrors)
-      return
+    const newErrors: LoginInputErrors|SignupInputErrors = loginPage.isLoginForm ? getLoginInputErrors() : getSignupInputErrors();
+    
+    if (Object.keys(newErrors).length > 0) {
+      let action = loginPage.isLoginForm ? loginPageActions.updateLoginInputErrors : loginPageActions.updateSignupInputErrors;
+      dispatch(action(newErrors));
+      return;
     }
 
-    setIsSaving(true)
-
-    if (isLoginForm) {
-      handleLogin()
-    } else {
-      handleSignup()
-    } 
+    dispatch(loginPageActions.toggleIsSaving())
+    loginPage.isLoginForm ? handleLogin() : handleSignup();
   }
 
   /** Handle bottom form link being clicked */
   const handleFormSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault()
-    setErrors(defaultLoginInputs)
-    setIsLoginForm(!isLoginForm)
-    dispatch(loginPageActions.setLoginPageError(''))
+    e.preventDefault();
+    const action = loginPage.isLoginForm ? loginPageActions.handleFormSwitchToSignup : loginPageActions.handleFormSwitchToLogin;
+    dispatch(action());
   }
+
+  useEffect(() => {
+    const inputs = loginPage.isLoginForm ? loginPage.login_inputs : loginPage.signup_inputs;
+    const inputAction = loginPage.isLoginForm ? loginPageActions.updateLoginInputs : loginPageActions.updateSignupInputs;
+    dispatch(loginPageActions.clearForm())
+    dispatch(inputAction(inputs))
+  }, [dispatch, loginPageActions])
 
   return (
     <>
@@ -207,21 +210,21 @@ function LoginPage(): JSX.Element {
         <div className="row mt-5">
           <div className="col-sm-6 offset-sm-3">
             <Form>
-              <FormInput label="Email Address" name="username" type="text" errors={errors} handleInput={handleInput}/>
-              <FormInput label="Password" name="password" type="password" errors={errors} handleInput={handleInput}/>
-              {!isLoginForm && (
+              <FormInput label="Email Address" name="username" type="text" handleInput={handleInput}/>
+              <FormInput label="Password" name="password" type="password" handleInput={handleInput}/>
+              {!loginPage.isLoginForm && (
                 <>
-                  <FormInput label="First Name" name="firstname" type="text" errors={errors} handleInput={handleInput}/>
-                  <FormInput label="Last Name" name="lastname" type="text" errors={errors} handleInput={handleInput}/>
-                  <FormInput label="Confirm Password" name="confirm_password" type="password" errors={errors} handleInput={handleInput}/>
+                  <FormInput label="First Name" name="firstname" type="text" handleInput={handleInput}/>
+                  <FormInput label="Last Name" name="lastname" type="text" handleInput={handleInput}/>
+                  <FormInput label="Confirm Password" name="confirm_password" type="password" handleInput={handleInput}/>
                 </>
               )}
-              <FormButton handleFormSubmit={handleFormSubmit} isSaving={isSaving} formButtonText={formButton}/>
+              <FormButton handleFormSubmit={handleFormSubmit} formButtonText={formButton}/>
               <FormLink handleFormSwitch={handleFormSwitch} formBottomText={formBottomText}/>
             </Form>
           </div>
         </div>
-        { loginPage.login_error && <FormError error={loginPage.login_error}/> }
+        { loginPage.login_error && <FormError /> }
       </div>
     </>
   )

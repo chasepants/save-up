@@ -1,6 +1,7 @@
+import { User } from '../../utils/types'
 import actions from './actionLang'
 
-const updateUser = (user) => {
+const updateUser = (user: User) => {
     return {
         type: actions.UPDATE_USER,
         payload: { user }

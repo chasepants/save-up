@@ -7,6 +7,7 @@ import { Dispatch } from 'redux'
 import UsersApi from '../../api/usersApi'
 import { RootState } from '../reducers'
 import { AxiosResponse } from 'axios'
+import { LoginInputs } from '../reducers/loginPageReducer'
 
 function updateUserPlaidItems(plaidItem: PlaidItem) {
     return async (dispatch: Dispatch, getState: any, usersApi: UsersApi) => {
@@ -85,10 +86,10 @@ function removeUserItem(delete_item: SavingsItem) {
     }
 }
 
-function login(username: string, password: string) {
+function login(user: LoginInputs) {
     return async (dispatch: Dispatch, getState: any, usersApi: UsersApi) => {
         try {
-            const response: AxiosResponse = await usersApi.login(username, password);
+            const response: AxiosResponse = await usersApi.login(user.username, user.password);
             localStorage.setItem('auth', response.data.auth)
             dispatch(authActions.updateAuth(true))
             dispatch(userActions.updateUser(response.data.user))
