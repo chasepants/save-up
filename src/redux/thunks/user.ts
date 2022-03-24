@@ -91,7 +91,7 @@ function login(user: LoginInputs) {
         try {
             const response: AxiosResponse = await usersApi.login(user.username, user.password);
             localStorage.setItem('auth', response.data.auth)
-            dispatch(authActions.updateAuth(true))
+            dispatch(authActions.updateAuth(response.data.auth))
             dispatch(userActions.updateUser(response.data.user))
         } catch (error: any) {
             if (error.hasOwnProperty('response') && error.response.hasOwnProperty('status') && error.response.status === 400) {

@@ -11,10 +11,6 @@ export default class UsersApi {
     constructor() {
         this.client = axios.create({
             baseURL: 'http://localhost:8081',
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json'
-            },
         });
     }
      

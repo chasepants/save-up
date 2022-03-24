@@ -16,7 +16,7 @@ const updateAuthToken = (token) => {
     }
 }
 
-const updateAuth = (token) => {
+const updateAuth = (token: string) => {
     return {
         type: actions.UPDATE_AUTH,
         payload: { 

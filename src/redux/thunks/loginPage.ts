@@ -16,7 +16,7 @@ const updateViewSavingsGoalItemImagePreview = (url: string) => {
                     'authorization': state.auth.token
                 }
             })
-            dispatch(viewSavingsGoalPageActions.updateViewSavingsGoalItemImagePreview({ ...resp.data.preview }))
+            dispatch(viewSavingsGoalPageActions.updateViewSavingsGoalPagePreview({ ...resp.data.preview }))
         } catch (err) {
             console.log(err)
         }
