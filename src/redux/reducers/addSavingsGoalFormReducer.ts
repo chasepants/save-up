@@ -2,10 +2,42 @@ import { Action } from 'redux'
 import actions from '../actions/actionLang'
 
 export type AddSavingsGoalItemAction = Action & {payload: AddSavingsGoalItemActionPayload};
-export type DefaultAddSavingsGoalItem = {show_form: boolean, add_error: string, remove_error: string};
+export type DefaultAddSavingsGoalItem = { 
+    show_form: boolean,
+    savings_goal_inputs: SavingsGoalInputs, 
+    savings_goal_input_errors: SavingsGoalInputErrors, 
+    add_error: string, 
+    remove_error: string
+};
 export type AddSavingsGoalItemActionPayload = Action & DefaultAddSavingsGoalItem;
+export type SavingsGoalInputErrors = { 
+    name?: string;
+    description?: string;
+    amount?: string;
+    link?: string;
+    fromAccount?: string;
+    toAccount?: string;
+    savings_amount?: string;
+    cadence?: string
+};
+export type SavingsGoalInputs = { 
+    name?: string;
+    description?: string;
+    amount?: string;
+    link?: string;
+    fromAccount?: string;
+    toAccount?: string;
+    savings_amount?: string;
+    cadence?: string
+};
 
-const defaultItemForm: DefaultAddSavingsGoalItem = {show_form: false, add_error: '', remove_error: ''}
+const defaultItemForm: DefaultAddSavingsGoalItem = {
+    show_form: false,
+    savings_goal_inputs: {},
+    savings_goal_input_errors: {},
+    add_error: '',
+    remove_error: ''
+}
 
 export default function addSavingsGoalFormReducer(itemForm = defaultItemForm, action: AddSavingsGoalItemAction) {
     switch (action.type) {
@@ -18,7 +50,9 @@ export default function addSavingsGoalFormReducer(itemForm = defaultItemForm, ac
             return {
                 ...itemForm,
                 show_form: false,
-                add_error: ''
+                add_error: '',
+                savings_goal_inputs: {},
+                savings_goal_input_errors: {}
             }
         case actions.SET_ADD_SAVINGS_GOAL_ERROR:
             return {
@@ -29,6 +63,16 @@ export default function addSavingsGoalFormReducer(itemForm = defaultItemForm, ac
             return {
                 ...itemForm,
                 remove_error: action.payload.remove_error
+            }
+        case actions.UPDATE_SAVINGS_GOAL_INPUTS:
+            return {
+                ...itemForm,
+                savings_goal_inputs: action.payload.savings_goal_inputs
+            }
+        case actions.UPDATE_SAVINGS_GOAL_INPUT_ERRORS:
+            return {
+                ...itemForm,
+                savings_goal_input_errors: action.payload.savings_goal_input_errors
             }
         default:
             return itemForm

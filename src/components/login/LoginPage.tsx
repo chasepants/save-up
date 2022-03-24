@@ -142,7 +142,6 @@ function LoginPage(): JSX.Element {
 
   /** On input change: 1. update state, 2. wipe out old errors */
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('handling input', e.target.name, e.target.value)
     const updateInputsAction = loginPage.isLoginForm ? loginPageActions.updateLoginInputs({
       ...loginPage.login_inputs,
       [e.target.name]: e.target.value

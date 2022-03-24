@@ -16,7 +16,6 @@ const updateLoginInputs = (login_inputs: LoginInputs) => {
 }
 
 const updateSignupInputs = (signup_inputs: SignupInputs) => {
-    console.log(signup_inputs)
     return {
         type: actions.UPDATE_SIGNUP_INPUTS,
         payload: { signup_inputs }

@@ -1,3 +1,4 @@
+import { SavingsGoalInputErrors, SavingsGoalInputs } from '../reducers/addSavingsGoalFormReducer'
 import actions from './actionLang'
 
 const showAddSavingsGoalForm = () => {
@@ -22,11 +23,27 @@ const setAddSavingsGoalFormRemoveError = remove_error => {
     }
 }
 
+const updateSavingsGoalInputs = (savings_goal_inputs: SavingsGoalInputs) => {
+    return {
+        type: actions.UPDATE_SAVINGS_GOAL_INPUTS,
+        payload: { savings_goal_inputs }
+    }
+}
+
+const updateSavingsGoalInputErrors = (savings_goal_input_errors: SavingsGoalInputErrors) => {
+    return {
+        type: actions.UPDATE_SAVINGS_GOAL_INPUT_ERRORS,
+        payload: { savings_goal_input_errors }
+    }
+}
+
 const AddSavingsGoalFormActions = {
     showAddSavingsGoalForm,
     hideAddSavingsGoalForm,
     setAddSavingsGoalFormAddError,
-    setAddSavingsGoalFormRemoveError
+    setAddSavingsGoalFormRemoveError,
+    updateSavingsGoalInputs,
+    updateSavingsGoalInputErrors
 }
 
 export default AddSavingsGoalFormActions

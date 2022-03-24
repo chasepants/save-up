@@ -10,7 +10,11 @@ export default class UsersApi {
 
     constructor() {
         this.client = axios.create({
-            baseURL: 'localhost:3000'
+            baseURL: 'http://localhost:8081',
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
+            },
         });
     }
      
@@ -19,6 +23,7 @@ export default class UsersApi {
     }
 
     async login(username: string, password: string): Promise<AxiosResponse> {
+        console.log()
         return await this.client.get(`/${this.LOGIN_END_POINT}/${username}/${password}`)
     }
 

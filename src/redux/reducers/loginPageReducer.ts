@@ -41,7 +41,6 @@ export default function loginPageReducer(loginPage = defaultLoginPage, action: L
                 login_inputs: action.payload.login_inputs
             }
         case actions.UPDATE_SIGNUP_INPUTS:
-            console.log(action.payload.signup_inputs)
             return {
                 ...loginPage,
                 signup_inputs: action.payload.signup_inputs

@@ -110,7 +110,7 @@ function ViewSavingsGoalPage(): JSX.Element {
             <SavingsItemTitle item={item} />
             <SavingsItemPreview item={item} />
             <SavingsProgress progressInstance={<ProgressBar now={progress} label={`${progress}%`} />} />
-            <SavingPlan item={item} fromAccount={fromAccount} toAccount={toAccount} />
+            {/* <SavingPlan item={item} fromAccount={fromAccount} toAccount={toAccount} /> */}
             <HypeBoard />
             <div className='row mt-5'>
                 <div className='col-sm-6 offset-sm-3 text-center'>

@@ -10,17 +10,17 @@ const defaultSavingsGoalPage = { item: {}, item_preview: {} };
 
 export default function viewSavingsGoalPageReducer(viewSavingsGoalPage = defaultSavingsGoalPage, action: ViewSavingsGoalPageAction) {
     switch (action.type) {
-        case actions.UPDATE_PAGE_ITEM_PREVIEW:
+        case actions.UPDATE_VIEW_SAVINGS_GOAL_PAGE_ITEM_PREVIEW:
             return {
                 ...viewSavingsGoalPage,
                 item_preview: action.payload.item_preview
             }
-        case actions.UPDATE_PAGE_ITEM:
+        case actions.UPDATE_VIEW_SAVINGS_GOAL_PAGE_ITEM:
             return {
                 ...viewSavingsGoalPage,
                 item: action.payload.item
             }
-        case actions.UPDATE_PAGE:
+        case actions.UPDATE_VIEW_SAVINGS_GOAL_PAGE:
             return {
                 item: action.payload.item,
             }

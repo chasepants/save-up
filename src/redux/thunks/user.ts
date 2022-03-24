@@ -81,7 +81,7 @@ function removeUserItem(delete_item: SavingsItem) {
             const response: AxiosResponse = await usersApi.updateUser((user as any)._id, updated_user, state.auth.token)
             dispatch(userActions.updateUser(response.data.user))
         } catch (error: any) {
-            dispatch(addSavingsGoalFormActions.setItemFormAddError('NETWORK ERROR: Could not add item at this time'))
+            dispatch(addSavingsGoalFormActions.setAddSavingsGoalFormRemoveError('NETWORK ERROR: Could not add item at this time'))
         }
     }
 }
