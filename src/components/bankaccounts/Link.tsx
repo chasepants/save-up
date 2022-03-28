@@ -12,7 +12,7 @@ const Link = (props: LinkProps): JSX.Element => {
     const dispatch = useDispatch()
     const onSuccess = useCallback(public_token => {
       // send public_token to server
-      fetch('http://localhost:8081/api/set_access_token', {
+      fetch('http://localhost:3001/plaid/set_access_token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

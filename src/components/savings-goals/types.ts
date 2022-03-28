@@ -22,7 +22,6 @@ export type SavingsGoalAddButtonProps = {
 
 export type FormButtonProps = {
     handleFormSubmit: any;
-    isSaving: boolean;
     itemForm: any;
     items: Array<SavingsItem>
 }

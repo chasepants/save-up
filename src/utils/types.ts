@@ -1,4 +1,5 @@
 export type User = {
+    _id?: string,
     username: string;
     name: string;
     plaid_items: Array<PlaidItem>;

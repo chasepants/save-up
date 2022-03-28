@@ -7,7 +7,8 @@ export type DefaultAddSavingsGoalItem = {
     savings_goal_inputs: SavingsGoalInputs, 
     savings_goal_input_errors: SavingsGoalInputErrors, 
     add_error: string, 
-    remove_error: string
+    remove_error: string,
+    isSaving: boolean
 };
 export type AddSavingsGoalItemActionPayload = Action & DefaultAddSavingsGoalItem;
 export type SavingsGoalInputErrors = { 
@@ -36,7 +37,8 @@ const defaultItemForm: DefaultAddSavingsGoalItem = {
     savings_goal_inputs: {},
     savings_goal_input_errors: {},
     add_error: '',
-    remove_error: ''
+    remove_error: '',
+    isSaving: false
 }
 
 export default function addSavingsGoalFormReducer(itemForm = defaultItemForm, action: AddSavingsGoalItemAction) {
@@ -73,6 +75,11 @@ export default function addSavingsGoalFormReducer(itemForm = defaultItemForm, ac
             return {
                 ...itemForm,
                 savings_goal_input_errors: action.payload.savings_goal_input_errors
+            }
+        case actions.TOGGLE_ADD_SAVINGS_GOAL_FORM_IS_SAVING:
+            return {
+                ...itemForm,
+                isSaving: !itemForm.isSaving
             }
         default:
             return itemForm

@@ -1,12 +1,17 @@
 import { updateUserItems } from '../../redux/thunks/user'
-import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import addSavingsGoalFormActions from '../../redux/actions/addSavingsGoalFormActions'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { Button, Form  } from 'react-bootstrap'
 import { RootState } from '../../redux/reducers'
 import { FormErrorProps, FormInputProps } from '../login/types'
-import { AutomaticTransfersTitleProps, FormButtonProps, SavingsGoalAccountOptionProps, SavingsPlanAccountDropDownProps, SavingsPlansInputProps } from './types'
+import { 
+    AutomaticTransfersTitleProps, 
+    FormButtonProps, 
+    SavingsGoalAccountOptionProps,
+    SavingsPlanAccountDropDownProps, 
+    SavingsPlansInputProps 
+} from './types'
 import { SavingsGoalInputErrors } from '../../redux/reducers/addSavingsGoalFormReducer'
 
 /** STOLEN FROM LOGINPAGE.JS */
@@ -33,8 +38,10 @@ function FormInput(props: FormInputProps): JSX.Element {
 }
 
 /** STOLEN FROM LOGINPAGE.JS */
-function FormButton({handleFormSubmit, isSaving, itemForm, items}: FormButtonProps): JSX.Element {
+function FormButton({handleFormSubmit, itemForm, items}: FormButtonProps): JSX.Element {
     const dispatch = useDispatch()
+    const isSaving = useSelector((state: RootState) => state.addSavingsGoalForm.isSaving)
+
     return (
         <Form.Group className='col-sm-6 offset-sm-3 text-center mb-5'>
             <div className="input-group d-flex justify-content-evenly">
@@ -150,7 +157,6 @@ function AddSavingsPlanInputs({plaid_items, handleInput}: SavingsPlansInputProps
 }
 
 function AddSavingsGoalForm(): JSX.Element {
-    const [isSaving, setIsSaving] = useState(false)
     const items = useSelector((state: RootState) => state.user.savings_items)
     const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
     const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
@@ -251,7 +257,7 @@ function AddSavingsGoalForm(): JSX.Element {
                     <FormInput label='Add A Goal Amount' name='amount' type='text' handleInput={handleInput}/>
                     <AutomaticTransfersSectionTitle length={plaid_items.length}/>
                     <AddSavingsPlanInputs plaid_items={plaid_items} handleInput={handleInput} />
-                    <FormButton handleFormSubmit={handleFormSubmit} isSaving={isSaving} itemForm={itemForm} items={items}/>
+                    <FormButton handleFormSubmit={handleFormSubmit} itemForm={itemForm} items={items}/>
                     {'' !== itemForm.add_error && <FormError error={itemForm.add_error}/>}
                 </Form>
             </div>

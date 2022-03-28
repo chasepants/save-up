@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { NavigateFunction, useNavigate } from 'react-router-dom'
 import { RootState } from '../redux/reducers'
 
+
 function DropDownItem({label, handleLinkClick, path}): JSX.Element {
     return (
         <a className="dropdown-item" href='./' onClick={e => handleLinkClick(e, path)}>
@@ -15,9 +16,12 @@ function DropDownItem({label, handleLinkClick, path}): JSX.Element {
 
 function Logo(): JSX.Element {
     const navigate: NavigateFunction = useNavigate()
+
     return (
         <div className="align-items-center d-flex navbar-brand pointer"> 
-            <strong onClick={() => navigate('/goals', { replace: true }) }>Save Up</strong> 
+            <strong onClick={() => {
+                navigate('/goals', { replace: true })
+            }}>Save Up</strong> 
         </div>
     )
 }
@@ -35,7 +39,7 @@ function Header(): JSX.Element {
         setShowMenuOptions(false)
     }
 
-    const handleLogout = async (event: MouseEvent) => {
+    const handleLogout = async (event) => {
         event.preventDefault()
         dispatch(logout())
         setShowMenuOptions(false)
@@ -54,7 +58,7 @@ function Header(): JSX.Element {
                             <DropDownItem label={'Savings Goals'} handleLinkClick={handleLinkClick} path={'goals'}/>
                             <DropDownItem label={'Bank Accounts'} handleLinkClick={handleLinkClick} path={'bank-accounts'}/>
                             <DropDownItem label={'My Profile'} handleLinkClick={handleLinkClick} path={'goals'}/>
-                            <a className="dropdown-item" href='./' onClick={e => handleLogout}>Logout</a>
+                            <a className="dropdown-item" href='./' onClick={handleLogout}>Logout</a>
                         </div>
                     </div>
                 </div>

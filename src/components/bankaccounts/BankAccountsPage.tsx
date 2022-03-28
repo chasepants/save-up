@@ -25,7 +25,7 @@ function BankAccountsPage(): JSX.Element {
   const public_token = useSelector((state: RootState) => state.auth.token)
 
   const generateToken = async () => {
-    const response: Response = await fetch('http://localhost:8081/api/create_link_token', {
+    const response: Response = await fetch('http://localhost:3001/plaid/create_link_token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

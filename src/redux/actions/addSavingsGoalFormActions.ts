@@ -37,13 +37,20 @@ const updateSavingsGoalInputErrors = (savings_goal_input_errors: SavingsGoalInpu
     }
 }
 
+const toggleAddSavingsGoalFormIsSaving = () => {
+    return {
+        type: actions.TOGGLE_ADD_SAVINGS_GOAL_FORM_IS_SAVING
+    }
+}
+
 const AddSavingsGoalFormActions = {
     showAddSavingsGoalForm,
     hideAddSavingsGoalForm,
     setAddSavingsGoalFormAddError,
     setAddSavingsGoalFormRemoveError,
     updateSavingsGoalInputs,
-    updateSavingsGoalInputErrors
+    updateSavingsGoalInputErrors,
+    toggleAddSavingsGoalFormIsSaving
 }
 
 export default AddSavingsGoalFormActions

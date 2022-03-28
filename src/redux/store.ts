@@ -2,6 +2,7 @@ import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import reducer, { RootState } from './reducers'
 import UsersApi from '../api/usersApi'
+import UsersService from '../services/usersService';
 
 const loadState = (): undefined|any => {
   try {
@@ -25,12 +26,12 @@ const saveState = (state: RootState): void => {
 };
   
 const peristedState = loadState();
-const usersApi: UsersApi = new UsersApi()
-
+const usersApi: UsersApi = new UsersApi();
+const usersService: UsersService = new UsersService(usersApi);
 let store: any = createStore(
   reducer,
   peristedState,
-  applyMiddleware(thunk.withExtraArgument(usersApi))
+  applyMiddleware(thunk.withExtraArgument(usersService))
 )
 
 store.subscribe(() => {

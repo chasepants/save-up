@@ -14,6 +14,7 @@ import {
   LoginInputErrors,
   SignupInputErrors 
 } from '../../redux/reducers/loginPageReducer';
+import { useNavigate } from 'react-router-dom';
 
 
 function PageTitle(): JSX.Element {
@@ -95,6 +96,7 @@ function LoginPage(): JSX.Element {
   const formBottomText = loginPage.isLoginForm ? "Don't have an account? Create one!" : 'Already have an account? Login!'
 
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const empty = (input: string): boolean => !input || input === ''; 
 
@@ -186,6 +188,7 @@ function LoginPage(): JSX.Element {
 
     dispatch(loginPageActions.toggleIsSaving())
     loginPage.isLoginForm ? handleLogin() : handleSignup();
+    setTimeout(() => navigate('/goals'), 1000);
   }
 
   /** Handle bottom form link being clicked */
