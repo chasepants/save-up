@@ -35,8 +35,9 @@ export default class UsersService {
         }
     }
 
-    async overwriteUserSavingsItems(id: string, savings_item: SavingsItem): Promise<User> {
+    async addUserSavingsItem(id: string, savings_item: SavingsItem): Promise<User> {
         try {
+            console.log(id)
             return (await this.usersApi.addUserSavingsItems(id, savings_item)).data;
         } catch(error) {
             console.log(error);

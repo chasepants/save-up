@@ -86,7 +86,11 @@ function SavingsPlanAccountDropDown({handleInput, name, label, plaid_items, deta
         <Form.Group className='col-sm-3'>
             <Form.Control onChange={handleInput} as='select' name={name} isInvalid={!!itemForm.savings_goal_input_errors[name]}>
                 <option value=''>{label}</option>
-                {plaid_items.map(plaidItem => plaidItem.accounts.map(account => <AccountOption account={account} />))}
+                {plaid_items.map(
+                    plaidItem => plaidItem.accounts.map(
+                        account => <AccountOption key={account.account_id} account={account} />
+                    )
+                )}
             </Form.Control>
             <span className='text-muted'>{detail}</span>
             <Form.Control.Feedback type="invalid">
@@ -203,8 +207,8 @@ function AddSavingsGoalForm(): JSX.Element {
             amount: Number.parseFloat(itemForm.savings_goal_inputs.amount),
             url: itemForm.savings_goal_inputs.link,
             saving_plan: {
-                fromAccount: itemForm.savings_goal_inputs.fromAccount,
-                toAccount: itemForm.savings_goal_inputs.toAccount,
+                from_account_id: itemForm.savings_goal_inputs.fromAccount,
+                to_account_id: itemForm.savings_goal_inputs.toAccount,
                 amount: Number.parseFloat(itemForm.savings_goal_inputs.savings_amount),
                 cadence: itemForm.savings_goal_inputs.cadence
             }

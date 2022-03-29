@@ -14,7 +14,8 @@ function updateUserPlaidItems(item: PlaidItem) {
         const user: User = state.user
         
         try {
-            const updatedUser = await usersService.addUserPlaidItem(user._id, item);
+            let updatedUser = await usersService.addUserPlaidItem(user._id, item);
+            updatedUser._id = user._id
             localStorage.removeItem('state')
             dispatch(userActions.updateUser(updatedUser))
         } catch (error: any) {
@@ -28,11 +29,12 @@ function updateUserItems(item: SavingsItem) {
     return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
         const state: RootState = getState()
         const user: User = state.user
-
         try {
-            const updatedUser = await usersService.overwriteUserSavingsItems(user._id, item);
+            await usersService.addUserSavingsItem(user._id, item);
+            
             localStorage.removeItem('state')
-            dispatch(userActions.updateUser(updatedUser))
+            user.savings_items.push(item)
+            dispatch(userActions.updateUser(user))
             dispatch(addSavingsGoalFormActions.hideAddSavingsGoalForm())
         } catch (error: any) {
             dispatch(addSavingsGoalFormActions.setAddSavingsGoalFormAddError('NETWORK ERROR: Could not add item at this time'))
@@ -46,8 +48,10 @@ function removeUserItem(item: SavingsItem) {
         const user: User = state.user
 
         try {
-            const updatedUser = await usersService.removeUserSavingsItems(user._id, item)
-            dispatch(userActions.updateUser(updatedUser))
+            let updatedUser = await usersService.removeUserSavingsItems(user._id, item)
+
+            updatedUser._id = user._id; 
+            dispatch(userActions.updateUser(updatedUser));
         } catch (error: any) {
             dispatch(addSavingsGoalFormActions.setAddSavingsGoalFormRemoveError('NETWORK ERROR: Could not add item at this time'))
         }

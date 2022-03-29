@@ -2,7 +2,7 @@ import '../../App.css'
 import { ProgressBar } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { locateAccounts, findSavingsItemByName } from '../../utils/userParser'
-import { useParams, useNavigate, NavigateFunction } from 'react-router-dom'
+import { useParams, useNavigate, NavigateFunction, Navigate } from 'react-router-dom'
 import { RootState } from '../../redux/reducers'
 import { BankAccount } from '../../utils/types'
 import { SavingsItemPlanProps, SavingsItemProps } from './types'
@@ -59,7 +59,9 @@ function SavingsItemTitle(props: SavingsItemProps): JSX.Element {
 }
 
 function SavingPlan(props: SavingsItemPlanProps): JSX.Element {
-    return (props.fromAccount === {} || props.fromAccount === {}) ? <div></div> : (
+    console.log('Saving Plan props')
+    console.log(props)
+    return (props.fromAccount === {} || props.toAccount === {}) ? <div></div> : (
         <div className='row mt-5'>
             <div className='col-sm-6 offset-sm-3'>
                 <div className="input-group">
@@ -85,10 +87,11 @@ function SavingsProgress({ progressInstance }): JSX.Element {
 }
 
 function SavingsItemPreview(props: SavingsItemProps): JSX.Element {
+    const title = props.item.item_preview ? props.item.item_preview : props.item.name;
     return (
         <div className='row'>
             <div className='col-sm-6 offset-sm-3 d-flex justify-content-between'>
-                <h3>{props.item.item_preview.title}</h3>
+                <h3>{title}</h3>
                 <h3>${props.item.amount}</h3>
             </div>
         </div>
@@ -100,17 +103,16 @@ function ViewSavingsGoalPage(): JSX.Element {
     const user = useSelector((state: RootState) => state.user)
     const item = findSavingsItemByName(item_name, user.savings_items)
     const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
-
     const navigate: NavigateFunction = useNavigate()
     const progress: number = Math.round(10 / (item.amount * 100));
     let [toAccount, fromAccount]: Array<BankAccount>|Array<{}> = plaid_items ? locateAccounts(plaid_items, item) : [{}, {}];
 
-    return (
+    return item ? (
         <div className='container mt-5'>
             <SavingsItemTitle item={item} />
             <SavingsItemPreview item={item} />
-            <SavingsProgress progressInstance={<ProgressBar now={progress} label={`${progress}%`} />} />
-            {/* <SavingPlan item={item} fromAccount={fromAccount} toAccount={toAccount} /> */}
+            { item.saving_plan.amount &&<SavingsProgress progressInstance={<ProgressBar now={progress} label={`${progress}%`} />} />}
+            { item.saving_plan.amount && <SavingPlan item={item} fromAccount={fromAccount} toAccount={toAccount} /> }
             <HypeBoard />
             <div className='row mt-5'>
                 <div className='col-sm-6 offset-sm-3 text-center'>
@@ -121,7 +123,7 @@ function ViewSavingsGoalPage(): JSX.Element {
             <br/>
             <br/>
         </div>
-    );
+    ) : <Navigate to='/goals' />;
 }
 
 export default ViewSavingsGoalPage;

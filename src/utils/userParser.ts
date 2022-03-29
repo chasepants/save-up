@@ -4,7 +4,9 @@ import { PlaidItem, SavingsItem, BankAccount } from './types'
 const locateAccounts = (plaid_items: Array<PlaidItem>, item: SavingsItem): Array<BankAccount> => {
     let fromAccount: BankAccount;
     let toAccount: BankAccount;
-    
+    console.log(item.saving_plan.from_account_id)
+    console.log(item.saving_plan.to_account_id)
+
     if (plaid_items.length) {
         plaid_items.forEach(plaidItem => {
             plaidItem.accounts.forEach(bankAccount => {
@@ -23,8 +25,13 @@ const locateAccounts = (plaid_items: Array<PlaidItem>, item: SavingsItem): Array
 
 const findSavingsItemByName = (needle: string, items: Array<SavingsItem>): SavingsItem => {
     let matchedItem: SavingsItem;
+    console.log('looking for');
+    console.log(needle)
+    console.log('in')
+    console.log(items)
     items.forEach(item => {
         if (item.name === needle) {
+            console.log('matched!')
             matchedItem = item
             return
         }

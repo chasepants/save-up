@@ -47,9 +47,9 @@ function BankAccountsPage(): JSX.Element {
         <div className='col-sm-12 text-center'>
           <h3>Accounts</h3>
           {
-            user.plaid_items.map((plaidItem: PlaidItem) => {
-              return plaidItem.accounts.map((account: BankAccount) => <BankAccountRow account={account} />)
-            })
+            user.plaid_items && user.plaid_items.map((plaidItem: PlaidItem) => {
+                return plaidItem.accounts.map((account: BankAccount) => <BankAccountRow key={account.account_id} account={account} />)
+              })
           }
           {linkToken != null ? <Link linkToken={linkToken} /> : <></>}
         </div>

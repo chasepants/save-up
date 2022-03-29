@@ -188,7 +188,6 @@ function LoginPage(): JSX.Element {
 
     dispatch(loginPageActions.toggleIsSaving())
     loginPage.isLoginForm ? handleLogin() : handleSignup();
-    setTimeout(() => navigate('/goals'), 1000);
   }
 
   /** Handle bottom form link being clicked */

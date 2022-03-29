@@ -1,5 +1,5 @@
-import axios, { Axios, AxiosResponse } from 'axios'
-import { PlaidItem, SavingsItem, User } from '../utils/types'
+import axios, { AxiosResponse } from 'axios'
+import { PlaidItem, SavingsItem } from '../utils/types'
 
 export default class UsersApi {
     LOGIN_END_POINT = '/authentication/login';
@@ -8,7 +8,6 @@ export default class UsersApi {
     UPDATE_USER_PLAID_ITEMS_END_POINT = '/users/add_plaid_item';
     UPDATE_USER_SAVINGS_ITEM_END_POINT = '/users/add_savings_item';
     REMOVE_SAVINGS_ITEM_END_POINT = '/users/remove_savings_item';
-
 
     constructor() {
         axios.defaults.withCredentials = true;
@@ -19,7 +18,7 @@ export default class UsersApi {
     }
 
     async register(username: string, password: string, name: string): Promise<AxiosResponse> {
-        return axios.post(`/${this.SIGN_UP_END_POINT}`, { username, password, name })
+        return axios.post(`${this.SIGN_UP_END_POINT}`, { username, password, name })
     }
 
     async logout(): Promise<AxiosResponse> {

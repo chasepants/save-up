@@ -46,11 +46,11 @@ export type Balance = {
 /** SAVINGS ITEMS TYPES */
 export type SavingsItem = {
     name: string;  
-    description: string;  
+    description?: string;  
     amount: number;  
     url: string;  
     saving_plan: SavingPlan;  
-    item_preview: ItemPreview;
+    item_preview?: ItemPreview;
 }
 
 export type SavingPlan = {  

@@ -6,6 +6,7 @@ import BankAccountsPage from './components/bankaccounts/BankAccountsPage'
 import SavingsGoalsPage from './components/savings-goals/SavingsGoalsPage'
 import ViewSavingsGoalPage from './components/savings-goals/ViewSavingsGoalPage'
 import RequireAuth from './components/RequireAuth'
+import AuthListener from './components/AuthListener'
 
 function App(): JSX.Element {
   const notFound = (): JSX.Element => <main style={{ padding: "1rem" }}><p>There's nothing here!</p></main> 
@@ -13,8 +14,8 @@ function App(): JSX.Element {
     <div>
       <Header/>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="login" element={<LoginPage />} />
+        <Route path="/" element={<AuthListener><LoginPage /></AuthListener>} />
+        <Route path="login" element={<AuthListener><LoginPage /></AuthListener>} />
         <Route path="goals" element={<RequireAuth><SavingsGoalsPage /></RequireAuth>} />
         <Route path="goal/:item_name" element={<RequireAuth><ViewSavingsGoalPage /></RequireAuth>} />
         <Route path="bank-accounts" element={<RequireAuth><BankAccountsPage /></RequireAuth>} />        
