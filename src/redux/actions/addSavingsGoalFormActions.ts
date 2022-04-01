@@ -9,14 +9,14 @@ const hideAddSavingsGoalForm = () => {
     return { type: actions.HIDE_ADD_SAVINGS_GOAL_FORM }
 }
 
-const setAddSavingsGoalFormAddError = add_error => {
+const setAddSavingsGoalFormAddError = (add_error: string) => {
     return {
         type: actions.SET_ADD_SAVINGS_GOAL_ERROR,
         payload: { add_error }
     }
 }
 
-const setAddSavingsGoalFormRemoveError = remove_error => {
+const setAddSavingsGoalFormRemoveError = (remove_error: string) => {
     return {
         type: actions.SET_REMOVE_SAVINGS_GOAL_ERROR,
         payload: { remove_error }

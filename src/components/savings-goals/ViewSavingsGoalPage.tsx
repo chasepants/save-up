@@ -59,16 +59,17 @@ function SavingsItemTitle(props: SavingsItemProps): JSX.Element {
 }
 
 function SavingPlan(props: SavingsItemPlanProps): JSX.Element {
-    console.log('Saving Plan props')
-    console.log(props)
+    let amount = props.item.saving_plan ? props.item.saving_plan.amount ?? '' : '';
+    let cadence = props.item.saving_plan ? props.item.saving_plan.cadence ?? '' : '';
+
     return (props.fromAccount === {} || props.toAccount === {}) ? <div></div> : (
         <div className='row mt-5'>
             <div className='col-sm-6 offset-sm-3'>
                 <div className="input-group">
                     <p className="form-control-no-border">
                         <b>Saving Plan</b> -
-                        Transfer ${props.item.saving_plan.amount} from the <b>{(props.fromAccount as BankAccount).name}</b> to the
-                        <b>{(props.toAccount as BankAccount).name}</b> - &nbsp;{props.item.saving_plan.cadence}
+                        Transfer ${amount} from the <b>{(props.fromAccount as BankAccount).name}</b> to the
+                        <b>{(props.toAccount as BankAccount).name}</b> - &nbsp;{cadence}
                     </p>
                 </div>
             </div>
@@ -76,11 +77,13 @@ function SavingPlan(props: SavingsItemPlanProps): JSX.Element {
     )
 }
 
-function SavingsProgress({ progressInstance }): JSX.Element {
+type SavingsProgressProps = { progressInstance: JSX.Element }
+
+function SavingsProgress(props: SavingsProgressProps): JSX.Element {
     return (
         <div className='row mt-5'>
             <div className='col-sm-6 offset-sm-3 text-center'>
-                {progressInstance}
+                {props.progressInstance}
             </div>
         </div>
     )
@@ -104,15 +107,16 @@ function ViewSavingsGoalPage(): JSX.Element {
     const item = findSavingsItemByName(item_name, user.savings_items)
     const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
     const navigate: NavigateFunction = useNavigate()
-    const progress: number = Math.round(10 / (item.amount * 100));
+    let amount = item.amount ?? 0.01;
+    const progress: number = Math.round(10 / (amount * 100));
     let [toAccount, fromAccount]: Array<BankAccount>|Array<{}> = plaid_items ? locateAccounts(plaid_items, item) : [{}, {}];
 
     return item ? (
         <div className='container mt-5'>
             <SavingsItemTitle item={item} />
             <SavingsItemPreview item={item} />
-            { item.saving_plan.amount &&<SavingsProgress progressInstance={<ProgressBar now={progress} label={`${progress}%`} />} />}
-            { item.saving_plan.amount && <SavingPlan item={item} fromAccount={fromAccount} toAccount={toAccount} /> }
+            { (item.saving_plan && item.saving_plan.amount) && <SavingsProgress progressInstance={<ProgressBar now={progress} label={`${progress}%`} />} />}
+            { (item.saving_plan && item.saving_plan.amount) && <SavingPlan item={item} fromAccount={fromAccount} toAccount={toAccount} /> }
             <HypeBoard />
             <div className='row mt-5'>
                 <div className='col-sm-6 offset-sm-3 text-center'>

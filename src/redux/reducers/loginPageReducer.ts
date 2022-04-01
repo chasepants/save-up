@@ -4,8 +4,8 @@ import actions from '../actions/actionLang'
 export type LoginPageAction = Action & {payload: LoginPageActionPayload};
 export type LoginInputs = { username?: string, password?: string}
 export type SignupInputs = { username?: string, password?: string, confirm_password?: string, firstname?: string, lastname?: string }
-export type LoginInputErrors = { username?: string, password?: string}
-export type SignupInputErrors = { username?: string, password?: string, confirm_password?: string, firstname?: string, lastname?: string }
+export interface LoginInputErrors { username?: string, password?: string}
+export interface SignupInputErrors { username?: string, password?: string, confirm_password?: string, firstname?: string, lastname?: string }
 
 export type DefaultLoginPage = { 
     login_error: string,

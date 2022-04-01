@@ -11,7 +11,7 @@ export type DefaultAddSavingsGoalItem = {
     isSaving: boolean
 };
 export type AddSavingsGoalItemActionPayload = Action & DefaultAddSavingsGoalItem;
-export type SavingsGoalInputErrors = { 
+export interface SavingsGoalInputErrors { 
     name?: string;
     description?: string;
     amount?: string;

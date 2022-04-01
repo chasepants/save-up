@@ -1,26 +1,10 @@
 import actions from './actionLang'
 
-const updateAuthIsValid = (is_valid) => {
+const updateAuthIsValid = (is_valid: boolean) => {
     return {
         type: actions.UPDATE_AUTH_VALID,
         payload: {
             valid: is_valid
-        }
-    }
-}
-
-const updateAuthToken = (token) => {
-    return {
-        type: actions.UPDATE_AUTH_TOKEN,
-        payload: { token }
-    }
-}
-
-const updateAuth = (token: string) => {
-    return {
-        type: actions.UPDATE_AUTH,
-        payload: { 
-            token: token
         }
     }
 }
@@ -33,8 +17,6 @@ const clearAuth = () => {
 
 const authActions = {
     updateAuthIsValid,
-    updateAuthToken,
-    updateAuth,
     clearAuth
 }
 

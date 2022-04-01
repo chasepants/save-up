@@ -14,13 +14,12 @@ function updateUserPlaidItems(item: PlaidItem) {
         const user: User = state.user
         
         try {
-            let updatedUser = await usersService.addUserPlaidItem(user._id, item);
+            let updatedUser = await usersService.addUserPlaidItem((user._id as string), item);
             updatedUser._id = user._id
             localStorage.removeItem('state')
             dispatch(userActions.updateUser(updatedUser))
         } catch (error: any) {
             console.log(error)
-            // todo: dispatch error
         }
     }
 }
@@ -30,7 +29,7 @@ function updateUserItems(item: SavingsItem) {
         const state: RootState = getState()
         const user: User = state.user
         try {
-            await usersService.addUserSavingsItem(user._id, item);
+            await usersService.addUserSavingsItem((user._id as string), item);
             
             localStorage.removeItem('state')
             user.savings_items.push(item)
@@ -48,7 +47,7 @@ function removeUserItem(item: SavingsItem) {
         const user: User = state.user
 
         try {
-            let updatedUser = await usersService.removeUserSavingsItems(user._id, item)
+            let updatedUser = await usersService.removeUserSavingsItems((user._id as string), item)
 
             updatedUser._id = user._id; 
             dispatch(userActions.updateUser(updatedUser));
@@ -61,7 +60,7 @@ function removeUserItem(item: SavingsItem) {
 function login(user: LoginInputs) {
     return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
         try {
-            const loggedInUser: User = await usersService.login(user.username, user.password);
+            const loggedInUser: User = await usersService.login((user.username as string), (user.password as string));
             dispatch(authActions.updateAuthIsValid(true))
             dispatch(userActions.updateUser(loggedInUser))
         } catch (error: any) {
@@ -75,7 +74,7 @@ function signup(signupUser: SignupInputs) {
     return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
         try {
             const name = `${signupUser.firstname} ${signupUser.lastname}`;
-            const user: User = await usersService.signup(signupUser.username, signupUser.password, name);
+            const user: User = await usersService.signup((signupUser.username as string), (signupUser.password as string), name);
             dispatch(authActions.updateAuthIsValid(true))
             dispatch(userActions.updateUser(user))
         } catch (error: any) {

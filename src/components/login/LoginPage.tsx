@@ -17,6 +17,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 
+
 function PageTitle(): JSX.Element {
   return (
     <div className="row">
@@ -31,6 +32,7 @@ const FormInput = (props: FormInputProps): JSX.Element => {
   const {label, name, type, handleInput} = props
   const loginPage = useSelector((state: RootState) => state.loginPage);
   const errors = loginPage.isLoginForm ? loginPage.login_input_errors : loginPage.signup_input_errors;
+  const key: keyof LoginInputErrors = (name as keyof LoginInputErrors);
 
   return (
     <Form.Group className="mb-3">
@@ -39,10 +41,10 @@ const FormInput = (props: FormInputProps): JSX.Element => {
         name={name}
         type={type}
         onChange={(e) => handleInput(e)}
-        isInvalid={!!errors[name]}
+        isInvalid={!!errors[key]}
       />
       <Form.Control.Feedback type="invalid">
-        {errors[name]}
+        {errors[key]}
       </Form.Control.Feedback>
     </Form.Group>
   )
@@ -96,9 +98,8 @@ function LoginPage(): JSX.Element {
   const formBottomText = loginPage.isLoginForm ? "Don't have an account? Create one!" : 'Already have an account? Login!'
 
   const dispatch = useDispatch()
-  const navigate = useNavigate()
 
-  const empty = (input: string): boolean => !input || input === ''; 
+  const empty = (input: string|undefined): boolean => !input || input === ''; 
 
   const getLoginInputErrors = (): LoginInputErrors => {
     let errors: LoginInputErrors = {};

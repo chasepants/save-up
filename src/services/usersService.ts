@@ -31,16 +31,15 @@ export default class UsersService {
         try {
             await this.usersApi.logout();
         } catch (error) {
-            console.error(error);
+            throw error;
         }
     }
 
     async addUserSavingsItem(id: string, savings_item: SavingsItem): Promise<User> {
         try {
-            console.log(id)
             return (await this.usersApi.addUserSavingsItems(id, savings_item)).data;
         } catch(error) {
-            console.log(error);
+            throw error;
         }
     }
 
@@ -48,7 +47,7 @@ export default class UsersService {
         try {
             return (await this.usersApi.removeUserSavingsItems(id, savings_item)).data;
         } catch(error) {
-            console.log(error);
+            throw error;
         }
     }
 
@@ -56,7 +55,7 @@ export default class UsersService {
         try {
             return (await this.usersApi.addUserPlaidItem(id, plaidItem)).data;
         } catch(error) {
-            console.log(error);
+            throw error;
         }
     }
 }

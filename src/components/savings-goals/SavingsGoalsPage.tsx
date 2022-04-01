@@ -28,12 +28,11 @@ function SavingsGoalRow(props: SavingsItemProps) {
     )
 }
 
-function SavingsGoalAddButton(props: SavingsGoalAddButtonProps) {
+function SavingsGoalAddButton(props: SavingsGoalAddButtonProps): JSX.Element {
     const dispatch = useDispatch()
     const toggleForm = () => dispatch(addSavingsGoalFormActions.showAddSavingsGoalForm())
 
-    return (
-        (!props.itemForm.show_form && props.user.savings_items.length !== 0) && 
+    return (!props.itemForm.show_form && props.user.savings_items.length !== 0) ? (
         <div className='row'>
             <div className='col-sm-6 offset-sm-3 text-center'>
                 <button onClick={toggleForm} className="btn-sharp btn-success">
@@ -41,17 +40,17 @@ function SavingsGoalAddButton(props: SavingsGoalAddButtonProps) {
                 </button>
             </div>
         </div>
-    )
+    ) : <div></div>
 }
 
 function SavingsGoalError(props: SavingsGoalErrorProps): JSX.Element {
-    return (
-        ('' === props.itemForm.remove_error) && <div className='row'>
+    return ('' === props.itemForm.remove_error) ? (
+        <div className='row'>
             <div className='col-sm-6 offset-sm-3'>
                 <p>{props.itemForm.remove_error}</p>
             </div>
         </div>
-    )
+    ) : <div></div>
 }
 
 function SavingsGoalsPage(): JSX.Element {    

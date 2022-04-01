@@ -13,13 +13,14 @@ import {
     SavingsPlansInputProps 
 } from './types'
 import { SavingsGoalInputErrors } from '../../redux/reducers/addSavingsGoalFormReducer'
+import { SavingsItem } from '../../utils/types'
 
 /** STOLEN FROM LOGINPAGE.JS */
 function FormInput(props: FormInputProps): JSX.Element {
 //   const showFormText = !!props['FormText']
     const {label, name, type, handleInput} = props
     const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
-
+    let key: keyof SavingsGoalInputErrors = (name as keyof SavingsGoalInputErrors)
     return (
         <Form.Group className='col-sm-6'>
         <Form.Label>{label}</Form.Label>
@@ -27,11 +28,11 @@ function FormInput(props: FormInputProps): JSX.Element {
             name={name}
             type={type}
             onChange={(e) => handleInput(e)}
-            isInvalid={!!itemForm.savings_goal_input_errors[name]}
+            isInvalid={!!itemForm.savings_goal_input_errors[key]}
         />
         {/* {showFormText ? <FormText/> : ''}  */}
         <Form.Control.Feedback type="invalid">
-            {itemForm.savings_goal_input_errors[name]}
+            {itemForm.savings_goal_input_errors[key]}
         </Form.Control.Feedback>
         </Form.Group>
     )
@@ -81,10 +82,11 @@ function AccountOption({ account }: SavingsGoalAccountOptionProps ): JSX.Element
 
 function SavingsPlanAccountDropDown({handleInput, name, label, plaid_items, detail}: SavingsPlanAccountDropDownProps): JSX.Element {
     const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
+    let key: keyof SavingsGoalInputErrors = (name as keyof SavingsGoalInputErrors)
 
     return (
         <Form.Group className='col-sm-3'>
-            <Form.Control onChange={handleInput} as='select' name={name} isInvalid={!!itemForm.savings_goal_input_errors[name]}>
+            <Form.Control onChange={handleInput} as='select' name={name} isInvalid={!!itemForm.savings_goal_input_errors[key]}>
                 <option value=''>{label}</option>
                 {plaid_items.map(
                     plaidItem => plaidItem.accounts.map(
@@ -94,7 +96,7 @@ function SavingsPlanAccountDropDown({handleInput, name, label, plaid_items, deta
             </Form.Control>
             <span className='text-muted'>{detail}</span>
             <Form.Control.Feedback type="invalid">
-                {itemForm.savings_goal_input_errors[name]}
+                {itemForm.savings_goal_input_errors[key]}
             </Form.Control.Feedback>
         </Form.Group>
     )
@@ -168,7 +170,7 @@ function AddSavingsGoalForm(): JSX.Element {
     const dispatch = useDispatch()
 
     /**COPIED LOGIN PAGE Helper function for getErrors */
-    const empty = (input: string): boolean => !input || input === ''; 
+    const empty = (input: string | undefined): boolean => !input || input === ''; 
 
     /**COPIED LOGIN PAGE Validate inputs and return a list of new errors since last form submit */
     const getSavingsGoalErrors = (): SavingsGoalInputErrors => {
@@ -200,33 +202,34 @@ function AddSavingsGoalForm(): JSX.Element {
         return errors;
     }
 
-    const getUpdateObj = () => {
+    const getUpdateObj = (): SavingsItem => {
+        let amount: string = itemForm.savings_goal_inputs.amount ?? '0'
+        let saving_amount: string = itemForm.savings_goal_inputs.savings_amount ?? '0'
+
         return {
             name: itemForm.savings_goal_inputs.name,
-            decription: itemForm.savings_goal_inputs.description,
-            amount: Number.parseFloat(itemForm.savings_goal_inputs.amount),
+            description: itemForm.savings_goal_inputs.description,
+            amount: Number.parseFloat(amount),
             url: itemForm.savings_goal_inputs.link,
             saving_plan: {
                 from_account_id: itemForm.savings_goal_inputs.fromAccount,
                 to_account_id: itemForm.savings_goal_inputs.toAccount,
-                amount: Number.parseFloat(itemForm.savings_goal_inputs.savings_amount),
+                amount: Number.parseFloat(saving_amount),
                 cadence: itemForm.savings_goal_inputs.cadence
             }
         }
     }
 
     const handleInput = (e: any) => {
-        console.log({
-            ...itemForm.savings_goal_inputs,
-            [e.target.name]: e.target.value
-        })
+        let key: keyof SavingsGoalInputErrors = (e.target.name as keyof SavingsGoalInputErrors)
+
         dispatch(addSavingsGoalFormActions.updateSavingsGoalInputs({
             ...itemForm.savings_goal_inputs,
             [e.target.name]: e.target.value,
         }))
     
         //check for previous error, reset error for new input
-        if (!!itemForm.savings_goal_input_errors[e.target.name]) {
+        if (!!itemForm.savings_goal_input_errors[key]) {
             dispatch(addSavingsGoalFormActions.updateSavingsGoalInputErrors({
                 ...itemForm.savings_goal_input_errors,
                 [e.target.name]: '',

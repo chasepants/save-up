@@ -1,25 +1,25 @@
+import { SavingsItem } from '../../utils/types'
 import actions from './actionLang'
 
-const updateViewSavingsGoalPageItem = item => {
+const updateViewSavingsGoalPageItem = (item: SavingsItem) => {
     return {
         type: actions.UPDATE_VIEW_SAVINGS_GOAL_PAGE_ITEM,
         payload: { item }
     }
 }
 
-const updateViewSavingsGoalPagePreview = pageItemPreview => {
+const updateViewSavingsGoalPagePreview = (pageItemPreview: any) => {
     return {
         type: actions.UPDATE_VIEW_SAVINGS_GOAL_PAGE_ITEM_PREVIEW,
         payload: { item_preview: pageItemPreview }
     }
 }
 
-const updateViewSavingsGoalPage = (item, number) => {
+const updateViewSavingsGoalPage = (item: SavingsItem) => {
     return {
         type: actions.UPDATE_VIEW_SAVINGS_GOAL_PAGE,
         payload: { 
-            item,
-            number
+            item
         }
     }
 }

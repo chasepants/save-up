@@ -1,7 +1,7 @@
 import { LoginInputErrors, LoginInputs, SignupInputErrors, SignupInputs } from '../reducers/loginPageReducer'
 import actions from './actionLang'
 
-const setLoginPageError = login_error => {
+const setLoginPageError = (login_error: string) => {
     return {
         type: actions.SET_LOGIN_ERROR,
         payload: { login_error }
