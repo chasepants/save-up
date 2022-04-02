@@ -1,5 +1,5 @@
 import { ChangeEventHandler, MouseEventHandler } from "react";
-import { BankAccount, PlaidItem, SavingsItem, User } from "../../utils/types"
+import { BankAccount, PlaidItem, SavingsItem, User } from "../../library/types"
 
 export type SavingsItemProps = {
     item: SavingsItem;

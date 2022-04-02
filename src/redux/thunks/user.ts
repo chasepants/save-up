@@ -2,11 +2,11 @@ import addSavingsGoalFormActions from '../actions/addSavingsGoalFormActions'
 import authActions from '../actions/authActions'
 import loginPageActions from '../actions/loginPageActions'
 import userActions from '../actions/userActions'
-import { PlaidItem, SavingsItem, User } from '../../utils/types'
+import { PlaidItem, SavingsItem, User } from '../../library/types'
 import { Dispatch } from 'redux'
 import { RootState } from '../reducers'
 import { LoginInputs, SignupInputs } from '../reducers/loginPageReducer'
-import UsersService from '../../services/usersService'
+import UsersService from '../../library/usersService'
 
 function updateUserPlaidItems(item: PlaidItem) {
     return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {

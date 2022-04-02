@@ -1,23 +1,7 @@
-import { Action } from 'redux';
 import actions from '../actions/actionLang'
+import { DefaultLoginPage, LoginInputs, LoginPageAction, SignupInputs } from '../types/loginPageTypes';
 
-export type LoginPageAction = Action & {payload: LoginPageActionPayload};
-export type LoginInputs = { username?: string, password?: string}
-export type SignupInputs = { username?: string, password?: string, confirm_password?: string, firstname?: string, lastname?: string }
-export interface LoginInputErrors { username?: string, password?: string}
-export interface SignupInputErrors { username?: string, password?: string, confirm_password?: string, firstname?: string, lastname?: string }
 
-export type DefaultLoginPage = { 
-    login_error: string,
-    login_inputs: LoginInputs,
-    signup_inputs: SignupInputs,
-    login_input_errors: LoginInputErrors,
-    signup_input_errors: SignupInputErrors,
-    isSaving: boolean,
-    isLoginForm: boolean
-}
-
-export type LoginPageActionPayload = Action & DefaultLoginPage;
 const defaultLoginPage: DefaultLoginPage = { 
     login_error: '',
     login_inputs: {},

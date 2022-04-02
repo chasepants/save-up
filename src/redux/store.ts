@@ -1,8 +1,8 @@
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import reducer, { RootState } from './reducers'
-import UsersApi from '../api/usersApi'
-import UsersService from '../services/usersService';
+import UsersApi from '../library/usersApi'
+import UsersService from '../library/usersService';
 
 const loadState = (): undefined|any => {
   try {

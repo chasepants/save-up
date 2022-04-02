@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../redux/reducers';
 import Link from './Link'
 import { BankAccountRowProps } from './types';
-import { BankAccount, PlaidItem } from '../../utils/types';
+import { BankAccount, PlaidItem } from '../../library/types';
 
 function BankAccountRow(props: BankAccountRowProps): JSX.Element {
   return (

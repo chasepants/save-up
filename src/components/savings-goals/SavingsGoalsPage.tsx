@@ -5,7 +5,7 @@ import addSavingsGoalFormActions from '../../redux/actions/addSavingsGoalFormAct
 import AddSavingsGoalForm from './AddSavingsGoalForm'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { RootState } from '../../redux/reducers'
-import { SavingsItem } from '../../utils/types'
+import { SavingsItem } from '../../library/types'
 import { SavingsGoalAddButtonProps, SavingsGoalErrorProps, SavingsItemProps } from './types'
 
 function SavingsGoalRow(props: SavingsItemProps) {

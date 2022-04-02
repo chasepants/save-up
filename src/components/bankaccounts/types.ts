@@ -1,4 +1,4 @@
-import { BankAccount } from '../../utils/types'
+import { BankAccount } from '../../library/types'
 
 export type BankAccountRowProps = {
     account: BankAccount

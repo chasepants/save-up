@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios'
-import { PlaidItem, SavingsItem } from '../utils/types'
+import { PlaidItem, SavingsItem } from './types'
 
 export default class UsersApi {
     LOGIN_END_POINT = '/authentication/login';

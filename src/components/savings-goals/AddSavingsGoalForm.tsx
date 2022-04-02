@@ -13,7 +13,7 @@ import {
     SavingsPlansInputProps 
 } from './types'
 import { SavingsGoalInputErrors } from '../../redux/reducers/addSavingsGoalFormReducer'
-import { SavingsItem } from '../../utils/types'
+import { SavingsItem } from '../../library/types'
 
 /** STOLEN FROM LOGINPAGE.JS */
 function FormInput(props: FormInputProps): JSX.Element {

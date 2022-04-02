@@ -1,7 +1,10 @@
 import axios from "axios";
-import UsersApi from "../api/usersApi";
-import { PlaidItem, SavingsItem, User } from "../utils/types";
+import UsersApi from "./usersApi";
+import { PlaidItem, SavingsItem, User } from "./types";
  
+/**
+ * The purpose of this class is to handle the business logic around users
+ */
 export default class UsersService {
     private usersApi: UsersApi;
 

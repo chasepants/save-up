@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { ItemPreview, SavingsItem } from '../../utils/types';
+import { ItemPreview, SavingsItem } from '../../library/types';
 import actions from '../actions/actionLang'
 
 export type ViewSavingsGoalPageAction = Action & {payload: ViewSavingsGoalPageActionPayload};

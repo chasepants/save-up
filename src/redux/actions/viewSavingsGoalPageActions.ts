@@ -1,4 +1,4 @@
-import { SavingsItem } from '../../utils/types'
+import { SavingsItem } from '../../library/types'
 import actions from './actionLang'
 
 const updateViewSavingsGoalPageItem = (item: SavingsItem) => {

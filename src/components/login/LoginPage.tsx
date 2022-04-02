@@ -5,17 +5,12 @@ import { login, signup } from '../../redux/thunks/user';
 import loginPageActions from '../../redux/actions/loginPageActions';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { RootState } from '../../redux/reducers/index';
+import { LoginInputErrors, SignupInputErrors, getLoginInputErrorByKey, getSignupInputErrorByKey } from '../../redux/types/loginPageTypes';
 import { 
   FormButtonProps,
   FormInputProps,
   FormLinkProps,
 } from './types';
-import { 
-  LoginInputErrors,
-  SignupInputErrors 
-} from '../../redux/reducers/loginPageReducer';
-import { useNavigate } from 'react-router-dom';
-
 
 
 function PageTitle(): JSX.Element {
@@ -28,11 +23,11 @@ function PageTitle(): JSX.Element {
   )
 }
 
-const FormInput = (props: FormInputProps): JSX.Element => {
+export function FormInput(props: FormInputProps): JSX.Element {
   const {label, name, type, handleInput} = props
   const loginPage = useSelector((state: RootState) => state.loginPage);
   const errors = loginPage.isLoginForm ? loginPage.login_input_errors : loginPage.signup_input_errors;
-  const key: keyof LoginInputErrors = (name as keyof LoginInputErrors);
+  const error = loginPage.isLoginForm ? getLoginInputErrorByKey(name, errors) : getSignupInputErrorByKey(name, errors);
 
   return (
     <Form.Group className="mb-3">
@@ -41,16 +36,16 @@ const FormInput = (props: FormInputProps): JSX.Element => {
         name={name}
         type={type}
         onChange={(e) => handleInput(e)}
-        isInvalid={!!errors[key]}
+        isInvalid={error === ''}
       />
       <Form.Control.Feedback type="invalid">
-        {errors[key]}
+        {error}
       </Form.Control.Feedback>
     </Form.Group>
   )
 }
 
-function FormButton(props: FormButtonProps) {
+export function FormButton(props: FormButtonProps) {
   const isSaving: boolean = useSelector((state: RootState) => state.loginPage.isSaving)
 
   return (

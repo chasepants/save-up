@@ -1,5 +1,5 @@
 import actions from '../actions/actionLang'
-import { User } from '../../utils/types'
+import { User } from '../../library/types'
 import { Action } from 'redux';
 
 export type UserAction = Action & {payload: UserActionPayload};
