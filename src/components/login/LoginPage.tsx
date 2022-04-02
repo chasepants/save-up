@@ -5,12 +5,13 @@ import { login, signup } from '../../redux/thunks/user';
 import loginPageActions from '../../redux/actions/loginPageActions';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { RootState } from '../../redux/reducers/index';
-import { LoginInputErrors, SignupInputErrors, getLoginInputErrorByKey, getSignupInputErrorByKey } from '../../redux/types/loginPageTypes';
+import { LoginInputErrors, SignupInputErrors, getLoginInputErrorByKey, getSignupInputErrorByKey, DefaultLoginPage } from '../../redux/types/loginPageTypes';
 import { 
   FormButtonProps,
   FormInputProps,
   FormLinkProps,
 } from './types';
+import { getLoginInputErrors, getSignupInputErrors } from '../../library/helpers';
 
 
 function PageTitle(): JSX.Element {
@@ -26,9 +27,10 @@ function PageTitle(): JSX.Element {
 export function FormInput(props: FormInputProps): JSX.Element {
   const {label, name, type, handleInput} = props
   const loginPage = useSelector((state: RootState) => state.loginPage);
+  console.log(loginPage)
   const errors = loginPage.isLoginForm ? loginPage.login_input_errors : loginPage.signup_input_errors;
   const error = loginPage.isLoginForm ? getLoginInputErrorByKey(name, errors) : getSignupInputErrorByKey(name, errors);
-
+  console.log(error)
   return (
     <Form.Group className="mb-3">
       <Form.Label>{label}</Form.Label>
@@ -46,7 +48,7 @@ export function FormInput(props: FormInputProps): JSX.Element {
 }
 
 export function FormButton(props: FormButtonProps) {
-  const isSaving: boolean = useSelector((state: RootState) => state.loginPage.isSaving)
+  const loginPage: DefaultLoginPage = useSelector((state: RootState) => state.loginPage)
 
   return (
     <Form.Group className='text-center'> 
@@ -56,7 +58,7 @@ export function FormButton(props: FormButtonProps) {
         type="submit"
         onClick={props.handleFormSubmit}
       >
-        { isSaving ? <ClipLoader color="#ffffff" loading={isSaving} size={20} /> : props.formButtonText } 
+        { loginPage.isSaving ? <ClipLoader color="#ffffff" loading={loginPage.isSaving} size={20} /> : props.formButtonText } 
       </Button>
     </Form.Group>
   )
@@ -94,50 +96,6 @@ function LoginPage(): JSX.Element {
 
   const dispatch = useDispatch()
 
-  const empty = (input: string|undefined): boolean => !input || input === ''; 
-
-  const getLoginInputErrors = (): LoginInputErrors => {
-    let errors: LoginInputErrors = {};
-    if (empty(loginPage.login_inputs.username)) {
-      errors.username = 'Please enter a username';
-    }
-
-    if (empty(loginPage.login_inputs.password)) {
-      errors.password = 'Please enter a password';
-    }
-
-    return errors;
-  }
-
-  const getSignupInputErrors = (): SignupInputErrors => {
-    let errors: SignupInputErrors = {};
-
-    if (empty(loginPage.signup_inputs.username)) {
-      errors.username = 'Please enter a username';
-    }
-
-    if (empty(loginPage.signup_inputs.password)) {
-      errors.password = 'Please enter a password';
-    }
-
-    if (
-      empty(loginPage.signup_inputs.confirm_password) ||
-      loginPage.signup_inputs.confirm_password !== loginPage.signup_inputs.password
-    ) {
-      errors.confirm_password = 'Please confirm the password';
-    }
-
-    if (empty(loginPage.signup_inputs.firstname)) {
-      errors.firstname = 'Please enter a first name';
-    }
-
-    if (empty(loginPage.signup_inputs.lastname)) {
-      errors.lastname = 'Please enter a last name';
-    }
-
-    return errors;
-  }
-
   /** On input change: 1. update state, 2. wipe out old errors */
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const updateInputsAction = loginPage.isLoginForm ? loginPageActions.updateLoginInputs({
@@ -174,8 +132,11 @@ function LoginPage(): JSX.Element {
   /** On from submit: 1. validate, 2. showspinner, 3. login/signup 4. @TODO: navigate to homepage  */
   const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
-    const newErrors: LoginInputErrors|SignupInputErrors = loginPage.isLoginForm ? getLoginInputErrors() : getSignupInputErrors();
-    
+
+    const newErrors: LoginInputErrors|SignupInputErrors = loginPage.isLoginForm ? 
+      getLoginInputErrors(loginPage.login_inputs) : 
+      getSignupInputErrors(loginPage.signup_inputs);
+
     if (Object.keys(newErrors).length > 0) {
       let action = loginPage.isLoginForm ? loginPageActions.updateLoginInputErrors : loginPageActions.updateSignupInputErrors;
       dispatch(action(newErrors));
@@ -211,9 +172,9 @@ function LoginPage(): JSX.Element {
               <FormInput label="Password" name="password" type="password" handleInput={handleInput}/>
               {!loginPage.isLoginForm && (
                 <>
+                  <FormInput label="Confirm Password" name="confirm_password" type="password" handleInput={handleInput}/>
                   <FormInput label="First Name" name="firstname" type="text" handleInput={handleInput}/>
                   <FormInput label="Last Name" name="lastname" type="text" handleInput={handleInput}/>
-                  <FormInput label="Confirm Password" name="confirm_password" type="password" handleInput={handleInput}/>
                 </>
               )}
               <FormButton handleFormSubmit={handleFormSubmit} formButtonText={formButton}/>

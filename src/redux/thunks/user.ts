@@ -5,7 +5,7 @@ import userActions from '../actions/userActions'
 import { PlaidItem, SavingsItem, User } from '../../library/types'
 import { Dispatch } from 'redux'
 import { RootState } from '../reducers'
-import { LoginInputs, SignupInputs } from '../reducers/loginPageReducer'
+import { LoginInputs, SignupInputs } from '../types/loginPageTypes'
 import UsersService from '../../library/usersService'
 
 function updateUserPlaidItems(item: PlaidItem) {

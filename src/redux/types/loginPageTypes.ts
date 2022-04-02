@@ -21,6 +21,10 @@ export type LoginPageActionPayload = Action & DefaultLoginPage;
 
 /** HELPERS */
 export function getLoginInputErrorByKey(key: string, errors: LoginInputErrors) {
+    console.log(errors)
+    if (!errors) {
+        return '';
+    }
     switch(key) {
       case 'username':
           return errors.username ?? '';
@@ -32,6 +36,9 @@ export function getLoginInputErrorByKey(key: string, errors: LoginInputErrors) {
 }
   
 export function getSignupInputErrorByKey(key: string, errors: SignupInputErrors) {
+    if (!errors) {
+        return '';
+    }
     switch(key) {
       case 'username':
           return errors.username ?? '';
