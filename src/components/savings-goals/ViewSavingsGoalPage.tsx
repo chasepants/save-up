@@ -42,20 +42,20 @@ function HypeBoard(): JSX.Element {
 
 function SavingsItemTitle(props: SavingsItemProps): JSX.Element {
     return props.item.item_preview ? (
-            <div className='row my-3 item-url-row'>
-                <div className='col-sm-6 offset-sm-3'>
-                    <div className='border d-flex justify-content-between ' onClick={() => console.log('view image')}>
-                        <div className='d-flex align-items-center thumbnail-image-block'>
-                            <img alt='Item' className='img-fluid' src={props.item.item_preview.img ?? props.item.item_preview.favicon}/>
-                        </div>
-                        <div className='align-items-between d-flex flex-column px-2 pt-1 thumbnail-link-block'>
-                            <b><a href={props.item.url}>Visit Website</a></b>
-                            <p>{props.item.item_preview.description}...</p>
-                        </div>
+        <div className='row my-3 item-url-row'>
+            <div className='col-sm-6 offset-sm-3'>
+                <div className='border d-flex justify-content-between ' onClick={() => console.log('view image')}>
+                    <div className='d-flex align-items-center thumbnail-image-block'>
+                        <img alt='Item' className='img-fluid' src={props.item.item_preview.img ?? props.item.item_preview.favicon}/>
+                    </div>
+                    <div className='align-items-between d-flex flex-column px-2 pt-1 thumbnail-link-block'>
+                        <b><a href={props.item.url}>Visit Website</a></b>
+                        <p>{props.item.item_preview.description}...</p>
                     </div>
                 </div>
             </div>
-        ) : <div></div>
+        </div>
+    ) : <div></div>
 }
 
 function SavingPlan(props: SavingsItemPlanProps): JSX.Element {
@@ -90,7 +90,7 @@ function SavingsProgress(props: SavingsProgressProps): JSX.Element {
 }
 
 function SavingsItemPreview(props: SavingsItemProps): JSX.Element {
-    const title = props.item.item_preview ? props.item.item_preview : props.item.name;
+    const title = props.item.item_preview ? props.item.item_preview.title : props.item.name;
     return (
         <div className='row'>
             <div className='col-sm-6 offset-sm-3 d-flex justify-content-between'>

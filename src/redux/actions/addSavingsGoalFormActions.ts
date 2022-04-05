@@ -1,4 +1,4 @@
-import { SavingsGoalInputErrors, SavingsGoalInputs } from '../reducers/addSavingsGoalFormReducer'
+import { SavingsGoalInputErrors, SavingsGoalInputs } from '../types/addSavingsGoalFormTypes'
 import actions from './actionLang'
 
 const showAddSavingsGoalForm = () => {

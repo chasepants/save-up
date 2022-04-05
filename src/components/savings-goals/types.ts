@@ -20,22 +20,8 @@ export type SavingsGoalAddButtonProps = {
     itemForm: any
 }
 
-export type FormButtonProps = {
-    handleFormSubmit: any;
-    itemForm: any;
-    items: Array<SavingsItem>
-}
-
 export type SavingsGoalAccountOptionProps = {
     account: BankAccount
-}
-
-export type SavingsPlanAccountDropDownProps = {
-    handleInput: ChangeEventHandler<any>;
-    name: string; 
-    label: string;
-    plaid_items: Array<PlaidItem>;
-    detail: string;
 }
 
 export type AutomaticTransfersTitleProps = {

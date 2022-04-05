@@ -1,7 +1,5 @@
-// jest.mock('react-redux');
-
 import { fireEvent, render } from "@testing-library/react";
-import LoginPage, {FormButton, FormInput} from "./LoginPage";
+import LoginPage from "./LoginPage";
 import { useDispatch, useSelector } from 'react-redux';
 import loginPageReducer from "../../redux/reducers/loginPageReducer";
 import loginPageActions from '../../redux/actions/loginPageActions';
@@ -14,151 +12,20 @@ jest.mock('react-redux', () => ({
 
 afterEach(() => jest.clearAllMocks())
 
-describe('FormInput', () => {
-    const dataProvider = [
-        {
-            description: 'renders for LoginForm correctly with no errors',
-            props: {
-                label: "Username",
-                name: "username",
-                type: "text",
-                handleInput: () => {}
-            },
-            loginPageState: {
-                isLoginForm: true,
-                login_input_errors: {},
-                signup_input_errors: {}
-            },
-            hasErrors: false,
-            expectedError: '' //this should match loginPageState.login_input_errors.key
-        },
-        {
-            description: 'renders for LoginForm correctly with errors',
-            props: {
-                label: "Username",
-                name: "username",
-                type: "text",
-                handleInput: () => {}
-            },
-            loginPageState: {
-                isLoginForm: true,
-                login_input_errors: { username: 'error'},
-                signup_input_errors: {}
-            },
-            hasErrors: true,
-            expectedError: 'error' //this should match loginPageState.login_input_errors.key
-        },
-        {
-            description: 'renders for Signup correctly with no errors',
-            props: {
-                label: "Username",
-                name: "username",
-                type: "text",
-                handleInput: () => {}
-            },
-            loginPageState: {
-                isLoginForm: false,
-                login_input_errors: {},
-                signup_input_errors: {}
-            },
-            hasErrors: false,
-            expectedError: '' //this should match loginPageState.login_input_errors.key
-        },
-        {
-            description: 'renders for SignupForm correctly with errors',
-            props: {
-                label: "Username",
-                name: "username",
-                type: "text",
-                handleInput: () => {}
-            },
-            loginPageState: {
-                isLoginForm: false,
-                login_input_errors: {},
-                signup_input_errors: { username: 'error' }
-            },
-            hasErrors: true,
-            expectedError: 'error' //this should match loginPageState.signup_input_errors.key
-        }
-    ]
-    dataProvider.forEach(data => {
-        it(data.description, () => {
-            // Arrange
-            useSelector.mockReturnValue(data.loginPageState)
-            
-            // Act 
-            const { container, getByText } = render(
-                <FormInput 
-                    label={data.props.label} 
-                    name={data.props.name}
-                    type={data.props.type} 
-                    handleInput={data.props.handleInput}/>
-            )
-            // Assert
-            expect(container.getElementsByTagName('input').length).toEqual(1);
-            expect(getByText(data.props.label)).toBeVisible();
-            if (data.hasErrors) {
-                expect(getByText(data.expectedError)).toBeVisible();
-            }
-        })
-    })
-})
-
-describe('FormButton', () => {
-    const dataProvider = [
-        {
-            description: 'shows ClipLoader when saving',
-            loginPage: { isSaving: true },
-            willClick: false
-        },
-        {
-            description: 'does not show ClipLoader when not saving',
-            loginPage: { isSaving: false },
-            willClick: false
-        },
-        {
-            description: 'calls handleFormSubmit on click',
-            loginPage: { isSaving: false },
-            willClick: true
-        }
-    ]
-
-    dataProvider.forEach(data => {
-        it(data.description, async () => {
-            //Arrange
-            useSelector.mockReturnValue(data.loginPage)
-
-            const props = {
-                handleFormSubmit: jest.fn(),
-                formButtonText: 'Login'
-            }
-
-            //Act
-            const { getByText, container } = render(
-                <FormButton formButtonText={props.formButtonText} handleFormSubmit={props.handleFormSubmit}/>
-            );
-
-            //Assert
-            data.loginPage.isSaving ? 
-                expect(container.getElementsByTagName('span').item(0)).toBeVisible() :
-                expect(getByText(props.formButtonText)).toBeVisible();
-
-            if (!data.willClick) {
-                return;
-            }
-
-            fireEvent.click(container.getElementsByTagName('button').item(0));
-            expect(props.handleFormSubmit).toHaveBeenCalled();
-        })
-    })
-})
-
 describe('LoginPage', () => {
     let dataProvider = [
-        { isLoginForm: true },
-        { isLoginForm: false }
+        { 
+            isLoginForm: true,
+            updateInputsAction: loginPageActions.updateLoginInputs,
+            clearInputsAction: loginPageActions.updateLoginInputErrors
+        },
+        { 
+            isLoginForm: false,
+            updateInputsAction: loginPageActions.updateSignupInputs,
+            clearInputsAction: loginPageActions.updateSignupInputErrors
+        }
     ];
-    dataProvider.forEach(({isLoginForm}) => {
+    dataProvider.forEach(({isLoginForm, updateInputsAction, clearInputsAction}) => {
         it('displays input on input change - login form and signup form', () => {
             //Arrange
             let loginPage = {
@@ -170,16 +37,29 @@ describe('LoginPage', () => {
                 login_input_errors: { username: '', password: '' },
                 signup_input_errors: { username: '', password: '', confirm_password: '', firstname: '', lastname: '' },
             }
-            useSelector.mockReturnValue(loginPage)
-            const dispatchMock = action => {
+
+            const dispatchMock = jest.fn().mockImplementation(action => {
                 loginPage = loginPageReducer(loginPage, action)
-            }
+            })
+
             useDispatch.mockReturnValue(dispatchMock)
+            useSelector.mockReturnValue(loginPage)
+
+            let actionUpdate = isLoginForm ? { ...loginPage.login_inputs } : { ...loginPage.signup_inputs }
+            let actionErrorUpdate = isLoginForm ? { ...loginPage.login_inputs } : { ...loginPage.signup_input_errors }
+            actionUpdate.username = 'John Doe'
+            actionErrorUpdate.username = ''
+
             //Act 
             const { container } = render(<LoginPage />)
             const usernameInput = container.getElementsByTagName('input').item(0)
             fireEvent.change(usernameInput, {target: {value: 'John Doe'}})
+
             //Assert
+            expect(dispatchMock).toHaveBeenCalledTimes(4)
+            expect(dispatchMock).toHaveBeenCalledWith(updateInputsAction(actionUpdate))
+            expect(dispatchMock).toHaveBeenCalledWith(clearInputsAction(actionErrorUpdate))
+
             if (loginPage.isLoginForm) {
                 expect(loginPage.login_inputs.username).toEqual('John Doe')
                 expect(loginPage.login_input_errors.username).toEqual('')
@@ -232,10 +112,7 @@ describe('LoginPage', () => {
     dataProvider.forEach(data => {
         it(data.title, () => {
             //Arrange
-            useSelector
-                .mockReturnValue(data.loginPage) //default
-                .mockReturnValueOnce(data.loginPage) //first call
-                .mockReturnValueOnce(data.loginPage.isSaving) //second call
+            useSelector.mockReturnValue(data.loginPage)
             
             const dispatchMock = jest.fn()
             useDispatch.mockReturnValue(dispatchMock)
@@ -251,11 +128,67 @@ describe('LoginPage', () => {
         })
     })
 
-    // it('wipes errors on input change - login')
-    // it('wipes errors on input change - signup')
-
     // it('on successful login it calls dispatch with login')
-    // it('on successful signup it calls dispatch with signup')
-
+    dataProvider = [
+        {
+            title: 'on successful login it calls dispatch with login',
+            buttonText: 'Login',
+            loginPage: {
+                isLoginForm: true,
+                isSaving: false,
+                login_error: '',
+                login_inputs: { 
+                    username: 'johndoe', 
+                    password: '1234'
+                },
+                signup_inputs: { 
+                    username: '', 
+                    password: '',
+                    confirm_password: '',
+                    firstname: '',
+                    lastname: '' 
+                },
+                login_input_errors: { username: '', password: '' },
+                signup_input_errors: { username: '', password: '', confirm_password: '', firstname: '', lastname: '' },
+            }
+        },
+        {
+            title: 'on successful signup it calls dispatch with signup',
+            buttonText: 'Signup',
+            loginPage: {
+                isLoginForm: false,
+                isSaving: false,
+                login_error: '',
+                login_inputs: { username: '', password: '' },
+                signup_inputs: { 
+                    username: 'johndoe', 
+                    password: '1234',
+                    confirm_password: '1234',
+                    firstname: 'John',
+                    lastname: 'Doe' 
+                },
+                login_input_errors: { username: '', password: '' },
+                signup_input_errors: { username: '', password: '', confirm_password: '', firstname: '', lastname: '' },
+            }
+        }
+    ]
+    dataProvider.forEach(data => {
+        it(data.title, () => {
+            // Arrange build up login page
+            const dispatchMock = jest.fn()
+            useSelector.mockReturnValue(data.loginPage)
+            useDispatch.mockReturnValue(dispatchMock)
+    
+            // Act
+            const { getByText } = render(<LoginPage />)
+            const submitButton = getByText(data.buttonText)
+            fireEvent.click(submitButton)
+    
+            // Assert
+            expect(dispatchMock).toHaveBeenCalledTimes(4)
+            expect(dispatchMock).toHaveBeenCalledWith(loginPageActions.toggleIsSaving())  
+        })
+    })
+    
     // it('switches forms on bottom link click')
 })

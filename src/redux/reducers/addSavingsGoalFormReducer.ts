@@ -1,36 +1,5 @@
-import { Action } from 'redux'
 import actions from '../actions/actionLang'
-
-export type AddSavingsGoalItemAction = Action & {payload: AddSavingsGoalItemActionPayload};
-export type DefaultAddSavingsGoalItem = { 
-    show_form: boolean,
-    savings_goal_inputs: SavingsGoalInputs, 
-    savings_goal_input_errors: SavingsGoalInputErrors, 
-    add_error: string, 
-    remove_error: string,
-    isSaving: boolean
-};
-export type AddSavingsGoalItemActionPayload = Action & DefaultAddSavingsGoalItem;
-export interface SavingsGoalInputErrors { 
-    name?: string;
-    description?: string;
-    amount?: string;
-    link?: string;
-    fromAccount?: string;
-    toAccount?: string;
-    savings_amount?: string;
-    cadence?: string
-};
-export type SavingsGoalInputs = { 
-    name?: string;
-    description?: string;
-    amount?: string;
-    link?: string;
-    fromAccount?: string;
-    toAccount?: string;
-    savings_amount?: string;
-    cadence?: string
-};
+import { DefaultAddSavingsGoalItem, AddSavingsGoalItemAction } from '../types/addSavingsGoalFormTypes'
 
 const defaultItemForm: DefaultAddSavingsGoalItem = {
     show_form: false,

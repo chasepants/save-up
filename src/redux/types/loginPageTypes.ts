@@ -19,9 +19,8 @@ export type DefaultLoginPage = {
 }
 export type LoginPageActionPayload = Action & DefaultLoginPage;
 
-/** HELPERS */
+/** HELPERS FOR TYPES */
 export function getLoginInputErrorByKey(key: string, errors: LoginInputErrors) {
-    console.log(errors)
     if (!errors) {
         return '';
     }
@@ -52,6 +51,5 @@ export function getSignupInputErrorByKey(key: string, errors: SignupInputErrors)
           return errors.lastname ?? '';
       default:
         return '';
-
     }
 }

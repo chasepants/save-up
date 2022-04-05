@@ -1,18 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Form } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { login, signup } from '../../redux/thunks/user';
 import loginPageActions from '../../redux/actions/loginPageActions';
-import ClipLoader from 'react-spinners/ClipLoader';
 import { RootState } from '../../redux/reducers/index';
-import { LoginInputErrors, SignupInputErrors, getLoginInputErrorByKey, getSignupInputErrorByKey, DefaultLoginPage } from '../../redux/types/loginPageTypes';
-import { 
-  FormButtonProps,
-  FormInputProps,
-  FormLinkProps,
-} from './types';
+import { getLoginInputErrorByKey, getSignupInputErrorByKey } from '../../redux/types/loginPageTypes';
+import { FormLinkProps } from './types';
 import { getLoginInputErrors, getSignupInputErrors } from '../../library/helpers';
-
+import { FormButton, FormError, FormInput } from '../common/forms'
 
 function PageTitle(): JSX.Element {
   return (
@@ -21,46 +16,6 @@ function PageTitle(): JSX.Element {
         <h3>Save Up</h3> 
       </div>
     </div>
-  )
-}
-
-export function FormInput(props: FormInputProps): JSX.Element {
-  const {label, name, type, handleInput} = props
-  const loginPage = useSelector((state: RootState) => state.loginPage);
-  console.log(loginPage)
-  const errors = loginPage.isLoginForm ? loginPage.login_input_errors : loginPage.signup_input_errors;
-  const error = loginPage.isLoginForm ? getLoginInputErrorByKey(name, errors) : getSignupInputErrorByKey(name, errors);
-  console.log(error)
-  return (
-    <Form.Group className="mb-3">
-      <Form.Label>{label}</Form.Label>
-      <Form.Control
-        name={name}
-        type={type}
-        onChange={(e) => handleInput(e)}
-        isInvalid={error === ''}
-      />
-      <Form.Control.Feedback type="invalid">
-        {error}
-      </Form.Control.Feedback>
-    </Form.Group>
-  )
-}
-
-export function FormButton(props: FormButtonProps) {
-  const loginPage: DefaultLoginPage = useSelector((state: RootState) => state.loginPage)
-
-  return (
-    <Form.Group className='text-center'> 
-      <Button
-        className="mb-3"
-        variant="primary"
-        type="submit"
-        onClick={props.handleFormSubmit}
-      >
-        { loginPage.isSaving ? <ClipLoader color="#ffffff" loading={loginPage.isSaving} size={20} /> : props.formButtonText } 
-      </Button>
-    </Form.Group>
   )
 }
 
@@ -73,18 +28,6 @@ function FormLink(props: FormLinkProps): JSX.Element {
         </a>
       </Form.Text>
     </Form.Group>
-  )
-}
-
-function FormError(): JSX.Element {
-  const login_error: string = useSelector((state: RootState) => state.loginPage.login_error)
-
-  return (
-    <div className="row mt-2">
-      <div className="col-sm-6 offset-sm-3 text-center">
-        <Form.Text className='text-danger'>{login_error}</Form.Text>
-      </div>
-    </div>
   )
 }
 
@@ -133,13 +76,13 @@ function LoginPage(): JSX.Element {
   const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
 
-    const newErrors: LoginInputErrors|SignupInputErrors = loginPage.isLoginForm ? 
+    const { errors, allErrorsEmpty } = loginPage.isLoginForm ? 
       getLoginInputErrors(loginPage.login_inputs) : 
       getSignupInputErrors(loginPage.signup_inputs);
-
-    if (Object.keys(newErrors).length > 0) {
+    
+    if (!allErrorsEmpty) {
       let action = loginPage.isLoginForm ? loginPageActions.updateLoginInputErrors : loginPageActions.updateSignupInputErrors;
-      dispatch(action(newErrors));
+      dispatch(action(errors));
       return;
     }
 
@@ -161,6 +104,13 @@ function LoginPage(): JSX.Element {
     dispatch(inputAction(inputs))
   }, [dispatch, loginPageActions])
 
+  const errors = loginPage.isLoginForm ? loginPage.login_input_errors : loginPage.signup_input_errors;
+  const username_error = loginPage.isLoginForm ? getLoginInputErrorByKey('username', errors) : getSignupInputErrorByKey('username', errors);
+  const password_error = loginPage.isLoginForm ? getLoginInputErrorByKey('password', errors) : getSignupInputErrorByKey('password', errors);
+  const confirm_password_error = loginPage.isLoginForm ? getLoginInputErrorByKey('confirm_password', errors) : getSignupInputErrorByKey('confirm_password', errors);
+  const firstname_error = loginPage.isLoginForm ? getLoginInputErrorByKey('firstname', errors) : getSignupInputErrorByKey('firstname', errors);
+  const lastname_error = loginPage.isLoginForm ? getLoginInputErrorByKey('lastname', errors) : getSignupInputErrorByKey('lastname', errors);
+
   return (
     <>
       <div className="container mt-5">
@@ -168,21 +118,27 @@ function LoginPage(): JSX.Element {
         <div className="row mt-5">
           <div className="col-sm-6 offset-sm-3">
             <Form>
-              <FormInput label="Email Address" name="username" type="text" handleInput={handleInput}/>
-              <FormInput label="Password" name="password" type="password" handleInput={handleInput}/>
+              <FormInput label="Email Address" name="username" type="text" handleInput={handleInput} error={username_error}/>
+              <FormInput label="Password" name="password" type="password" handleInput={handleInput} error={password_error}/>
               {!loginPage.isLoginForm && (
                 <>
-                  <FormInput label="Confirm Password" name="confirm_password" type="password" handleInput={handleInput}/>
-                  <FormInput label="First Name" name="firstname" type="text" handleInput={handleInput}/>
-                  <FormInput label="Last Name" name="lastname" type="text" handleInput={handleInput}/>
+                  <FormInput label="Confirm Password" name="confirm_password" type="password" handleInput={handleInput} error={confirm_password_error}/>
+                  <FormInput label="First Name" name="firstname" type="text" handleInput={handleInput} error={firstname_error}/>
+                  <FormInput label="Last Name" name="lastname" type="text" handleInput={handleInput} error={lastname_error}/>
                 </>
               )}
-              <FormButton handleFormSubmit={handleFormSubmit} formButtonText={formButton}/>
+              <FormButton 
+                handleFormSubmit={handleFormSubmit}
+                formButtonText={formButton} 
+                form='loginPage' 
+                customButton={<span></span>}
+                showCustomButton={false}
+                error={loginPage.login_error}/>
               <FormLink handleFormSwitch={handleFormSwitch} formBottomText={formBottomText}/>
             </Form>
           </div>
         </div>
-        { loginPage.login_error && <FormError /> }
+        { loginPage.login_error && <FormError error={loginPage.login_error} /> }
       </div>
     </>
   )

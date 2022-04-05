@@ -1,4 +1,4 @@
-import { LoginInputErrors, LoginInputs, SignupInputErrors, SignupInputs } from '../reducers/loginPageReducer'
+import { LoginInputErrors, LoginInputs, SignupInputErrors, SignupInputs } from '../types/loginPageTypes'
 import actions from './actionLang'
 
 const setLoginPageError = (login_error: string) => {

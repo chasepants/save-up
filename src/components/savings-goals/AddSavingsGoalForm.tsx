@@ -1,76 +1,14 @@
 import { updateUserItems } from '../../redux/thunks/user'
 import { useSelector, useDispatch } from 'react-redux'
 import addSavingsGoalFormActions from '../../redux/actions/addSavingsGoalFormActions'
-import ClipLoader from 'react-spinners/ClipLoader'
 import { Button, Form  } from 'react-bootstrap'
 import { RootState } from '../../redux/reducers'
-import { FormErrorProps, FormInputProps } from '../login/types'
-import { 
-    AutomaticTransfersTitleProps, 
-    FormButtonProps, 
-    SavingsGoalAccountOptionProps,
-    SavingsPlanAccountDropDownProps, 
-    SavingsPlansInputProps 
-} from './types'
-import { SavingsGoalInputErrors } from '../../redux/reducers/addSavingsGoalFormReducer'
+import { AutomaticTransfersTitleProps, SavingsGoalAccountOptionProps, SavingsPlansInputProps } from './types'
+import { SavingsGoalInputErrors, getAddGoalFormErrorByKey } from '../../redux/types/addSavingsGoalFormTypes'
 import { SavingsItem } from '../../library/types'
+import { getSavingsGoalErrors } from '../../library/helpers'
+import { FormButton, FormDropDown, FormError, FormInput } from '../common/forms'
 
-/** STOLEN FROM LOGINPAGE.JS */
-function FormInput(props: FormInputProps): JSX.Element {
-//   const showFormText = !!props['FormText']
-    const {label, name, type, handleInput} = props
-    const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
-    let key: keyof SavingsGoalInputErrors = (name as keyof SavingsGoalInputErrors)
-    return (
-        <Form.Group className='col-sm-6'>
-        <Form.Label>{label}</Form.Label>
-        <Form.Control
-            name={name}
-            type={type}
-            onChange={(e) => handleInput(e)}
-            isInvalid={!!itemForm.savings_goal_input_errors[key]}
-        />
-        {/* {showFormText ? <FormText/> : ''}  */}
-        <Form.Control.Feedback type="invalid">
-            {itemForm.savings_goal_input_errors[key]}
-        </Form.Control.Feedback>
-        </Form.Group>
-    )
-}
-
-/** STOLEN FROM LOGINPAGE.JS */
-function FormButton({handleFormSubmit, itemForm, items}: FormButtonProps): JSX.Element {
-    const dispatch = useDispatch()
-    const isSaving = useSelector((state: RootState) => state.addSavingsGoalForm.isSaving)
-
-    return (
-        <Form.Group className='col-sm-6 offset-sm-3 text-center mb-5'>
-            <div className="input-group d-flex justify-content-evenly">
-                <Button onClick={handleFormSubmit} className="btn-sharp btn-success">
-                    { isSaving && '' === itemForm.add_error ? <ClipLoader color="#ffffff" loading={isSaving} size={20} /> : "Save" } 
-                </Button>
-                {
-                    items.length > 0 && (
-                        <Button onClick={() => dispatch(addSavingsGoalFormActions.hideAddSavingsGoalForm())} className="btn-sharp btn-warning">
-                            Close
-                        </Button>
-                    )
-                }
-            </div>
-        </Form.Group>
-    )
-}
-
-/** STOLEN FROM LOGINPAGE.JS */
-function FormError({error}: FormErrorProps): JSX.Element {
-    return (
-      <div className="row mt-2">
-        <div className="col-sm-6 offset-sm-3 text-center">
-          <Form.Text className='text-danger'>{error}</Form.Text>
-        </div>
-      </div>
-    )
-}
 
 function AccountOption({ account }: SavingsGoalAccountOptionProps ): JSX.Element {
     return (
@@ -80,29 +18,7 @@ function AccountOption({ account }: SavingsGoalAccountOptionProps ): JSX.Element
     )
 }
 
-function SavingsPlanAccountDropDown({handleInput, name, label, plaid_items, detail}: SavingsPlanAccountDropDownProps): JSX.Element {
-    const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
-    let key: keyof SavingsGoalInputErrors = (name as keyof SavingsGoalInputErrors)
-
-    return (
-        <Form.Group className='col-sm-3'>
-            <Form.Control onChange={handleInput} as='select' name={name} isInvalid={!!itemForm.savings_goal_input_errors[key]}>
-                <option value=''>{label}</option>
-                {plaid_items.map(
-                    plaidItem => plaidItem.accounts.map(
-                        account => <AccountOption key={account.account_id} account={account} />
-                    )
-                )}
-            </Form.Control>
-            <span className='text-muted'>{detail}</span>
-            <Form.Control.Feedback type="invalid">
-                {itemForm.savings_goal_input_errors[key]}
-            </Form.Control.Feedback>
-        </Form.Group>
-    )
-} 
-
-function AutomaticTransfersSectionTitle({ length }: AutomaticTransfersTitleProps): JSX.Element {
+export function AutomaticTransfersSectionTitle({ length }: AutomaticTransfersTitleProps): JSX.Element {
     return (
         <div className='col-sm-12'>
             <h5>Saving's Plan - Set Up Automatic Transfers</h5>
@@ -124,40 +40,30 @@ function AddSavingsPlanInputs({plaid_items, handleInput}: SavingsPlansInputProps
     ]
 
     const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
+    const savings_amount_error = getAddGoalFormErrorByKey('savings_amount', itemForm.savings_goal_input_errors);
+    const from_account_error = getAddGoalFormErrorByKey('fromAccount', itemForm.savings_goal_input_errors);
+    const to_account_error = getAddGoalFormErrorByKey('toAccount', itemForm.savings_goal_input_errors);
+    const cadence_error = getAddGoalFormErrorByKey('cadence', itemForm.savings_goal_input_errors);
+
+    const accountOptions: Array<JSX.Element> = [];
+    plaid_items.forEach(plaidItem => {
+        plaidItem.accounts.forEach(account => accountOptions.push(<AccountOption key={account.account_id} account={account}/>));
+    });
+    const savingsRateOptions: Array<JSX.Element> = [];
+    options.forEach(option => savingsRateOptions.push(<option key={option.value} value={option.value}>{option.label}</option>));
 
     return plaid_items.length > 0 ? (
         <>
             <div className='col-sm-1'>
                 <span>TRANSFER:</span>    
             </div>
-            <div className='col-sm-3'>
-                <div className="input-group mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text">$</span>
-                    </div>
-                    <Form.Control
-                        className='form-control'
-                        name="savings_amount"
-                        type="text"
-                        onChange={(e) => handleInput(e)}
-                        isInvalid={!!itemForm.savings_goal_input_errors.savings_amount}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        {itemForm.savings_goal_input_errors.savings_amount}
-                    </Form.Control.Feedback>
-                </div>
-            </div>
-            <SavingsPlanAccountDropDown handleInput={handleInput} name={'fromAccount'} label='From' plaid_items={plaid_items} detail='From which account?'/>
-            <SavingsPlanAccountDropDown handleInput={handleInput} name={'toAccount'} label='To' plaid_items={plaid_items} detail='To which account?'/>
-            <Form.Group className='col-sm-2'>
-                <Form.Control as='select' isInvalid={!!itemForm.savings_goal_input_errors.cadence} name="cadence" onChange={(e) => handleInput(e)}>
-                    { options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-                </Form.Control>
-                <span className='text-muted'>How often?</span>
-                <Form.Control.Feedback type="invalid">
-                    {itemForm.savings_goal_input_errors.cadence}
-                </Form.Control.Feedback>
-            </Form.Group>
+            <FormInput label='Add A Savings Amount' name='savings_amount' type='text' handleInput={handleInput} error={savings_amount_error}/>
+            <FormDropDown 
+                handleInput={handleInput} name={'fromAccount'} label='From' detail='From which account?' error={from_account_error} options={accountOptions}/>
+            <FormDropDown 
+                handleInput={handleInput} name={'toAccount'} label='To' detail='To which account?' error={to_account_error} options={accountOptions}/>
+            <FormDropDown 
+                handleInput={handleInput} name={'cadence'} label='Savings Rate' detail='How often?' error={cadence_error} options={savingsRateOptions}/>
         </>
     ) : <div></div>
 }
@@ -168,39 +74,6 @@ function AddSavingsGoalForm(): JSX.Element {
     const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
 
     const dispatch = useDispatch()
-
-    /**COPIED LOGIN PAGE Helper function for getErrors */
-    const empty = (input: string | undefined): boolean => !input || input === ''; 
-
-    /**COPIED LOGIN PAGE Validate inputs and return a list of new errors since last form submit */
-    const getSavingsGoalErrors = (): SavingsGoalInputErrors => {
-        let errors: SavingsGoalInputErrors = {};
-        if (empty(itemForm.savings_goal_inputs.name)) {
-            errors.name = 'Please enter a name';
-        }
-    
-        if (empty(itemForm.savings_goal_inputs.description)) {
-            errors.description = 'Please enter a description';
-        }
-
-        if (empty(itemForm.savings_goal_inputs.amount)) {
-            errors.amount = 'Please enter an amount';
-        }
-
-        if (empty(itemForm.savings_goal_inputs.link)) {
-            errors.link = 'Please enter a link';
-        }
-
-        if (plaid_items.length > 0 &&  empty(itemForm.savings_goal_inputs.link)) {
-            errors.fromAccount = empty(itemForm.savings_goal_inputs.fromAccount) ? 'Please enter a link' : '';
-            errors.toAccount = empty(itemForm.savings_goal_inputs.toAccount) ? 
-                'Please enter an account to save to' : '';
-            errors.savings_amount = empty(itemForm.savings_goal_inputs.savings_amount) ? 'Please enter an amount to save' : '';
-            errors.cadence = empty(itemForm.savings_goal_inputs.cadence) ? 'Please enter a savings rate' : '';
-        }
-    
-        return errors;
-    }
 
     const getUpdateObj = (): SavingsItem => {
         let amount: string = itemForm.savings_goal_inputs.amount ?? '0'
@@ -237,19 +110,27 @@ function AddSavingsGoalForm(): JSX.Element {
         }
     }
 
-    /** On from submit: 1. validate, 2. showspinner, 3. login/signup 4. @TODO: navigate to homepage  */
     const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
-        const newErrors: SavingsGoalInputErrors = getSavingsGoalErrors();
+        const { errors, allErrorsEmpty } = getSavingsGoalErrors(itemForm.savings_goal_inputs, plaid_items.length > 0);
 
-        if (Object.keys(newErrors).length > 0) {
-            dispatch(addSavingsGoalFormActions.updateSavingsGoalInputErrors(newErrors));
+        if (!allErrorsEmpty) {
+            dispatch(addSavingsGoalFormActions.updateSavingsGoalInputErrors(errors));
             return;
         }
 
         dispatch(updateUserItems(getUpdateObj()))
     }
-
+    
+    const name_error = getAddGoalFormErrorByKey('name', itemForm.savings_goal_input_errors);
+    const description_error = getAddGoalFormErrorByKey('description', itemForm.savings_goal_input_errors);
+    const link_error = getAddGoalFormErrorByKey('link', itemForm.savings_goal_input_errors);
+    const amount_error = getAddGoalFormErrorByKey('amount', itemForm.savings_goal_input_errors);
+    const customButton = (
+        <Button onClick={() => dispatch(addSavingsGoalFormActions.hideAddSavingsGoalForm())} className="btn-sharp btn-warning">
+            Close
+        </Button>
+    ); 
 
     return (
         <div className="row mb-5">
@@ -258,14 +139,20 @@ function AddSavingsGoalForm(): JSX.Element {
                     <h3>Add A Saving's Goal</h3>
                 </div>
                 <Form className='row g-3 mt-3'>
-                    <FormInput label='Add A Name' name='name' type='text' handleInput={handleInput}/>
-                    <FormInput label='Add A Description' name='description' type='text' handleInput={handleInput}/>
-                    <FormInput label='Add A Link' name='link' type='text' handleInput={handleInput}/>
-                    <FormInput label='Add A Goal Amount' name='amount' type='text' handleInput={handleInput}/>
+                    <FormInput label='Add A Name' name='name' type='text' handleInput={handleInput} error={name_error}/>
+                    <FormInput label='Add A Description' name='description' type='text' handleInput={handleInput} error={description_error}/>
+                    <FormInput label='Add A Link' name='link' type='text' handleInput={handleInput} error={link_error}/>
+                    <FormInput label='Add A Goal Amount' name='amount' type='text' handleInput={handleInput} error={amount_error}/>
                     <AutomaticTransfersSectionTitle length={plaid_items.length}/>
                     <AddSavingsPlanInputs plaid_items={plaid_items} handleInput={handleInput} />
-                    <FormButton handleFormSubmit={handleFormSubmit} itemForm={itemForm} items={items}/>
-                    {'' !== itemForm.add_error && <FormError error={itemForm.add_error}/>}
+                    <FormButton 
+                        formButtonText='Save'
+                        error={itemForm.add_error}
+                        handleFormSubmit={handleFormSubmit}
+                        showCustomButton={ items.length > 0}
+                        customButton={customButton}
+                        form='addSavingsGoalForm'/>
+                        {'' !== itemForm.add_error && <FormError error={itemForm.add_error}/>}
                 </Form>
             </div>
         </div>
