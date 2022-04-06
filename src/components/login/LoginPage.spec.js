@@ -178,17 +178,116 @@ describe('LoginPage', () => {
             const dispatchMock = jest.fn()
             useSelector.mockReturnValue(data.loginPage)
             useDispatch.mockReturnValue(dispatchMock)
-    
+            const inputData = data.loginPage.isLoginForm ? data.loginPage.login_inputs : data.loginPage.signup_inputs;
+
             // Act
             const { getByText } = render(<LoginPage />)
             const submitButton = getByText(data.buttonText)
             fireEvent.click(submitButton)
     
             // Assert
+            expect(getByText('Email Address')).toBeVisible()
+            expect(getByText('Password')).toBeVisible()
+            if (!data.loginPage.isLoginForm) {
+                expect(getByText('Confirm Password')).toBeVisible()
+                expect(getByText('First Name')).toBeVisible()
+                expect(getByText('Last Name')).toBeVisible()
+            }
             expect(dispatchMock).toHaveBeenCalledTimes(4)
             expect(dispatchMock).toHaveBeenCalledWith(loginPageActions.toggleIsSaving())  
         })
     })
     
-    // it('switches forms on bottom link click')
+    dataProvider = [
+        {
+            title: `loginPage is login form then the form button says login and the bottom link says "Don't have an account? Create one!"`,
+            buttonText: 'Login',
+            linkText: "Don't have an account? Create one!",
+            action: loginPageActions.handleFormSwitchToSignup,
+            loginPage: {
+                isLoginForm: true,
+                isSaving: false,
+                login_error: '',
+                login_inputs: { username: '', password: '' },
+                signup_inputs: { 
+                    username: '', 
+                    password: '',
+                    confirm_password: '',
+                    firstname: '',
+                    lastname: '' 
+                },
+                login_input_errors: { username: '', password: '' },
+                signup_input_errors: { username: '', password: '', confirm_password: '', firstname: '', lastname: '' },
+            }
+        },
+        {
+            title: "loginPage is not login form then the form button says signup and the bottom says 'Already have an account? Login!'",
+            buttonText: 'Signup',
+            linkText: 'Already have an account? Login!',
+            action: loginPageActions.handleFormSwitchToLogin,
+            loginPage: {
+                isLoginForm: false,
+                isSaving: false,
+                login_error: '',
+                login_inputs: { username: '', password: '' },
+                signup_inputs: { 
+                    username: '', 
+                    password: '',
+                    confirm_password: '',
+                    firstname: '',
+                    lastname: '' 
+                },
+                login_input_errors: { username: '', password: '' },
+                signup_input_errors: { username: '', password: '', confirm_password: '', firstname: '', lastname: '' },
+            }
+        }
+    ]
+
+    dataProvider.forEach(data => {
+        it(data.title, () => {
+             // Arrange build up login page
+             const dispatchMock = jest.fn();
+             useSelector.mockReturnValue(data.loginPage);
+             useDispatch.mockReturnValue(dispatchMock);
+ 
+             // Act
+             const { getByText } = render(<LoginPage />);
+
+             // Assert 
+            expect(getByText(data.buttonText)).toBeVisible();
+            expect(getByText(data.linkText)).toBeVisible();
+            fireEvent.click(getByText(data.linkText));
+            expect(dispatchMock).toHaveBeenCalledTimes(3);
+            expect(dispatchMock).toHaveBeenLastCalledWith(data.action());
+        })
+    })
+
+    it('Shows error after login error', () => {
+        // Arrange
+        const loginPage = {
+            isLoginForm: false,
+            isSaving: false,
+            login_error: 'There has been a problem',
+            login_inputs: { username: '', password: '' },
+            signup_inputs: { 
+                username: '', 
+                password: '',
+                confirm_password: '',
+                firstname: '',
+                lastname: '' 
+            },
+            login_input_errors: { username: '', password: '' },
+            signup_input_errors: { username: '', password: '', confirm_password: '', firstname: '', lastname: '' },
+        }
+
+        const dispatchMock = jest.fn();
+        useSelector.mockReturnValue(loginPage);
+        useDispatch.mockReturnValue(dispatchMock);
+
+        // Act
+        const { getByText } = render(<LoginPage />);
+
+        // Assert
+        expect(getByText(loginPage.login_error)).toBeVisible();
+    })
 })

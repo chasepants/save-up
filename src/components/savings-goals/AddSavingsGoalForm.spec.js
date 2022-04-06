@@ -16,9 +16,3 @@ describe('AutomaticTransfersSectionTitle', () => {
         expect(getByText("Only available after linking more than one bank account")).toBeVisible()
     })
 })
-
-// describe('SavingsPlanAccountDropDown')
-// describe('AddSavingsPlanInputs')
-    // A LOT
-// describe('AddSavingsGoalForm')
-    // A LOT

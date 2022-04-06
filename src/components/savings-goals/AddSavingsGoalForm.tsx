@@ -5,10 +5,18 @@ import { Button, Form  } from 'react-bootstrap'
 import { RootState } from '../../redux/reducers'
 import { AutomaticTransfersTitleProps, SavingsGoalAccountOptionProps, SavingsPlansInputProps } from './types'
 import { SavingsGoalInputErrors, getAddGoalFormErrorByKey } from '../../redux/types/addSavingsGoalFormTypes'
-import { SavingsItem } from '../../library/types'
 import { getSavingsGoalErrors } from '../../library/helpers'
 import { FormButton, FormDropDown, FormError, FormInput } from '../common/forms'
+import { getUpdateObj } from '../../redux/types/addSavingsGoalFormTypes';
+import { PlaidItem } from '../../library/types'
 
+function getPlaidItemAccounts(plaid_items: Array<PlaidItem>) {
+    const accountOptions: Array<JSX.Element> = [];
+    plaid_items.forEach(plaidItem => {
+        plaidItem.accounts.forEach(account => accountOptions.push(<AccountOption key={account.account_id} account={account}/>));
+    });
+    return accountOptions;
+}
 
 function AccountOption({ account }: SavingsGoalAccountOptionProps ): JSX.Element {
     return (
@@ -28,15 +36,15 @@ export function AutomaticTransfersSectionTitle({ length }: AutomaticTransfersTit
 }
 
 function AddSavingsPlanInputs({plaid_items, handleInput}: SavingsPlansInputProps): JSX.Element {
-    const options = [
-        { value: '', label: 'Every' },
-        { value: 'daily', label: 'Day' },
-        { value: 'weekly', label: 'Week' },
-        { value: 'bi-weekly', label: 'Other Week' },
-        { value: 'monthly', label: 'Month' },
-        { value: 'quarterly', label: '3 Months' },
-        { value: 'semi-annually', label: '6 Months' },
-        { value: 'annually', label: 'Year' }
+    const savingsRateOptions: Array<JSX.Element> = [
+        <option key='' value='Every'>Every</option>,
+        <option key='daily' value='daily'>Day</option>,
+        <option key='weekly' value='weekly'>Week</option>,
+        <option key='bi-weekly' value='bi-weekly'>Other Week</option>,
+        <option key='monthly' value='monthly'>Month</option>,
+        <option key='quarterly' value='quarterly'>3 Months</option>,
+        <option key='semi-annually' value='semi-annually'>6 Months</option>,
+        <option key='annually' value='annually'>Year</option>
     ]
 
     const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
@@ -45,12 +53,7 @@ function AddSavingsPlanInputs({plaid_items, handleInput}: SavingsPlansInputProps
     const to_account_error = getAddGoalFormErrorByKey('toAccount', itemForm.savings_goal_input_errors);
     const cadence_error = getAddGoalFormErrorByKey('cadence', itemForm.savings_goal_input_errors);
 
-    const accountOptions: Array<JSX.Element> = [];
-    plaid_items.forEach(plaidItem => {
-        plaidItem.accounts.forEach(account => accountOptions.push(<AccountOption key={account.account_id} account={account}/>));
-    });
-    const savingsRateOptions: Array<JSX.Element> = [];
-    options.forEach(option => savingsRateOptions.push(<option key={option.value} value={option.value}>{option.label}</option>));
+    const accountOptions: Array<JSX.Element> = getPlaidItemAccounts(plaid_items);
 
     return plaid_items.length > 0 ? (
         <>
@@ -74,24 +77,6 @@ function AddSavingsGoalForm(): JSX.Element {
     const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
 
     const dispatch = useDispatch()
-
-    const getUpdateObj = (): SavingsItem => {
-        let amount: string = itemForm.savings_goal_inputs.amount ?? '0'
-        let saving_amount: string = itemForm.savings_goal_inputs.savings_amount ?? '0'
-
-        return {
-            name: itemForm.savings_goal_inputs.name,
-            description: itemForm.savings_goal_inputs.description,
-            amount: Number.parseFloat(amount),
-            url: itemForm.savings_goal_inputs.link,
-            saving_plan: {
-                from_account_id: itemForm.savings_goal_inputs.fromAccount,
-                to_account_id: itemForm.savings_goal_inputs.toAccount,
-                amount: Number.parseFloat(saving_amount),
-                cadence: itemForm.savings_goal_inputs.cadence
-            }
-        }
-    }
 
     const handleInput = (e: any) => {
         let key: keyof SavingsGoalInputErrors = (e.target.name as keyof SavingsGoalInputErrors)
@@ -119,7 +104,7 @@ function AddSavingsGoalForm(): JSX.Element {
             return;
         }
 
-        dispatch(updateUserItems(getUpdateObj()))
+        dispatch(updateUserItems(getUpdateObj(itemForm.savings_goal_inputs)))
     }
     
     const name_error = getAddGoalFormErrorByKey('name', itemForm.savings_goal_input_errors);

@@ -1,4 +1,5 @@
 import { Action } from 'redux'
+import { SavingsItem } from '../../library/types'
 
 /** INTERFACE */
 export interface SavingsGoalInputErrors { 
@@ -61,4 +62,22 @@ export const getAddGoalFormErrorByKey = (key: string, errors: SavingsGoalInputEr
     }
 
     return '';
+}
+
+export const getUpdateObj = (savings_goal_inputs: SavingsGoalInputs): SavingsItem => {
+    let amount: string = savings_goal_inputs.amount ?? '0'
+    let saving_amount: string = savings_goal_inputs.savings_amount ?? '0'
+
+    return {
+        name: savings_goal_inputs.name,
+        description: savings_goal_inputs.description,
+        amount: Number.parseFloat(amount),
+        url: savings_goal_inputs.link,
+        saving_plan: {
+            from_account_id: savings_goal_inputs.fromAccount,
+            to_account_id: savings_goal_inputs.toAccount,
+            amount: Number.parseFloat(saving_amount),
+            cadence: savings_goal_inputs.cadence
+        }
+    }
 }
