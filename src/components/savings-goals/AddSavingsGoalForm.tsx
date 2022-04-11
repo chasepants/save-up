@@ -35,7 +35,7 @@ export function AutomaticTransfersSectionTitle({ length }: AutomaticTransfersTit
     )
 }
 
-function AddSavingsPlanInputs({plaid_items, handleInput}: SavingsPlansInputProps): JSX.Element {
+export function AddSavingsPlanInputs({plaid_items, handleInput}: SavingsPlansInputProps): JSX.Element {
     const savingsRateOptions: Array<JSX.Element> = [
         <option key='' value='Every'>Every</option>,
         <option key='daily' value='daily'>Day</option>,
@@ -52,7 +52,6 @@ function AddSavingsPlanInputs({plaid_items, handleInput}: SavingsPlansInputProps
     const from_account_error = getAddGoalFormErrorByKey('fromAccount', itemForm.savings_goal_input_errors);
     const to_account_error = getAddGoalFormErrorByKey('toAccount', itemForm.savings_goal_input_errors);
     const cadence_error = getAddGoalFormErrorByKey('cadence', itemForm.savings_goal_input_errors);
-
     const accountOptions: Array<JSX.Element> = getPlaidItemAccounts(plaid_items);
 
     return plaid_items.length > 0 ? (
