@@ -6,7 +6,7 @@ import { Dispatch } from 'redux'
 import { RootState } from '../store'
 import { LoginInputs, SignupInputs } from '../../library/types'
 import UsersService from '../../library/usersService'
-import { hideForm, setAddGoalFormError, setRemoveGoalFormError } from '../reducers/savingsGoalForm'
+import { clearForm, hideForm, setAddGoalFormError, setRemoveGoalFormError } from '../reducers/savingsGoalForm'
 
 function updateUserPlaidItems(item: PlaidItem) {
     return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
@@ -52,7 +52,7 @@ function removeUserItem(item: SavingsItem) {
             updatedUser._id = user._id; 
             dispatch(updateUser(updatedUser));
         } catch (error: any) {
-            dispatch(setRemoveGoalFormError('NETWORK ERROR: Could not add item at this time'))
+            dispatch(setRemoveGoalFormError('Could not remove item at this time. If problem persists please contact support.'))
         }
     }
 }
@@ -90,6 +90,7 @@ const logout = () => {
         localStorage.removeItem('state')
         dispatch(clearAuth())
         dispatch(clearUser())
+        dispatch(clearForm())
         dispatch(updatePageError(''))
     }
 }

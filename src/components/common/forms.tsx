@@ -36,8 +36,7 @@ export function FormInput(props: FormInputProps): JSX.Element {
 export function FormButton({ formButtonText, handleFormSubmit, form, showCustomButton, customButton, error }: FormButtonProps): JSX.Element {
     const state = useSelector((state: RootState) => state)
     let isSaving = false;
-    //this try catch was added to get unit tests to pass as I could not mock useSelector here 
-    //those tests should probably be improved by wrapping the component in a Provider.
+
     try{
         switch(form) {
             case 'loginPage':
@@ -53,7 +52,6 @@ export function FormButton({ formButtonText, handleFormSubmit, form, showCustomB
     } catch(e) {
         // log the error: console.error(e)
     }
-    
 
     return (
         <Form.Group className='col-sm-6 offset-sm-3 text-center mb-5'>

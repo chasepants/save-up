@@ -6,7 +6,8 @@ import { AutomaticTransfersTitleProps, SavingsGoalAccountOptionProps, SavingsPla
 import { getSavingsGoalErrors } from '../../library/helpers'
 import { FormButton, FormDropDown, FormError, FormInput } from '../common/forms'
 import { PlaidItem, getUpdateObj, SavingsGoalInputErrors, getAddGoalFormErrorByKey } from '../../library/types'
-import { hideForm, updateFormInputErrors, updateFormInputs } from '../../redux/reducers/savingsGoalForm'
+import { hideForm, updateFormInputErrors, updateFormInputs, toggleFormIsSaving, setAddGoalFormError, setRemoveGoalFormError, clearForm } from '../../redux/reducers/savingsGoalForm'
+import { useEffect } from 'react'
 
 function getPlaidItemAccounts(plaid_items: Array<PlaidItem>) {
     const accountOptions: Array<JSX.Element> = [];
@@ -72,12 +73,11 @@ function AddSavingsGoalForm(): JSX.Element {
     const items = useSelector((state: RootState) => state.user.savings_items)
     const itemForm = useSelector((state: RootState) => state.savingsGoalForm)
     const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
-    const state = useSelector((state: RootState) => state)
     const dispatch = useDispatch()
 
     const handleInput = (e: any) => {
         let key: keyof SavingsGoalInputErrors = (e.target.name as keyof SavingsGoalInputErrors)
-
+ 
         dispatch(updateFormInputs({
             ...itemForm.savings_goal_inputs,
             [e.target.name]: e.target.value,
@@ -94,13 +94,16 @@ function AddSavingsGoalForm(): JSX.Element {
 
     const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
-        const { errors, allErrorsEmpty } = getSavingsGoalErrors(itemForm.savings_goal_inputs, plaid_items.length > 0);
 
+        dispatch(setAddGoalFormError(''));
+        dispatch(setRemoveGoalFormError(''));
+
+        const { errors, allErrorsEmpty } = getSavingsGoalErrors(itemForm.savings_goal_inputs, plaid_items.length > 0);
         if (!allErrorsEmpty) {
             dispatch(updateFormInputErrors(errors));
             return;
         }
-        console.log('dispatching')
+        dispatch(toggleFormIsSaving())
         dispatch(updateUserItems(getUpdateObj(itemForm.savings_goal_inputs)))
     }
     
@@ -108,6 +111,7 @@ function AddSavingsGoalForm(): JSX.Element {
     const description_error = getAddGoalFormErrorByKey('description', itemForm.savings_goal_input_errors);
     const link_error = getAddGoalFormErrorByKey('link', itemForm.savings_goal_input_errors);
     const amount_error = getAddGoalFormErrorByKey('amount', itemForm.savings_goal_input_errors);
+    console.log(amount_error)
     const customButton = (
         <Button onClick={() => dispatch(hideForm())} className="btn-sharp btn-warning">
             Close

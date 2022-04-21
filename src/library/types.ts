@@ -153,7 +153,7 @@ export const getAddGoalFormErrorByKey = (key: string, errors: SavingsGoalInputEr
         case 'link':
             return errors.link ?? '';
         case 'amount':
-            return errors.link ?? '';
+            return errors.amount ?? '';
         case 'savings_amount':
             return errors.savings_amount ?? '';
         case 'fromAccount':
