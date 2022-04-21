@@ -1,12 +1,12 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../redux/reducers';
+import { RootState } from '../redux/store';
 import { clearAuth } from '../redux/reducers/auth';
 
 function RequireAuth({ children }: any): JSX.Element {
-    let auth = useSelector((state: RootState) => state.auth);
-    let user = useSelector((state: RootState) => state.user);
-    let location = useLocation();
+    const auth = useSelector((state: RootState) => state.auth);
+    const user = useSelector((state: RootState) => state.user);
+    const location = useLocation();
     const dispatch = useDispatch()
 
     if (!user.username) {

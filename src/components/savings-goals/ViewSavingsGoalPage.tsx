@@ -1,7 +1,7 @@
 import '../../App.css'
 import { useSelector } from 'react-redux'
 import { ProgressBar } from 'react-bootstrap'
-import { RootState } from '../../redux/reducers'
+import { RootState } from '../../redux/store'
 import { BankAccount } from '../../library/types'
 import { SavingsItemPlanProps, SavingsItemProps } from './types'
 import { locateAccounts, findSavingsItemByName } from '../../library/userParser'

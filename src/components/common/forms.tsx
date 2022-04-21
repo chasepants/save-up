@@ -1,7 +1,7 @@
 import { Button, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { ClipLoader } from "react-spinners";
-import { RootState } from "../../redux/reducers";
+import { RootState } from "../../redux/store";
 import { FormButtonProps, FormDropDownProps, FormErrorProps, FormInputProps } from "./types";
 
 

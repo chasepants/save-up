@@ -1,7 +1,7 @@
 import { updateUserItems } from '../../redux/thunks/user'
 import { useSelector, useDispatch } from 'react-redux'
 import { Button, Form  } from 'react-bootstrap'
-import { RootState } from '../../redux/reducers'
+import { RootState } from '../../redux/store'
 import { AutomaticTransfersTitleProps, SavingsGoalAccountOptionProps, SavingsPlansInputProps } from './types'
 import { getSavingsGoalErrors } from '../../library/helpers'
 import { FormButton, FormDropDown, FormError, FormInput } from '../common/forms'
@@ -72,7 +72,7 @@ function AddSavingsGoalForm(): JSX.Element {
     const items = useSelector((state: RootState) => state.user.savings_items)
     const itemForm = useSelector((state: RootState) => state.savingsGoalForm)
     const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
-
+    const state = useSelector((state: RootState) => state)
     const dispatch = useDispatch()
 
     const handleInput = (e: any) => {
@@ -100,7 +100,7 @@ function AddSavingsGoalForm(): JSX.Element {
             dispatch(updateFormInputErrors(errors));
             return;
         }
-
+        console.log('dispatching')
         dispatch(updateUserItems(getUpdateObj(itemForm.savings_goal_inputs)))
     }
     

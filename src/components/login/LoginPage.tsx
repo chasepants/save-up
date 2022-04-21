@@ -1,7 +1,7 @@
 import { FormLinkProps } from './types'
 import React, { useEffect } from 'react';
 import { Form } from 'react-bootstrap';
-import { RootState } from '../../redux/reducers/index';
+import { RootState } from '../../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, signup } from '../../redux/thunks/user';
 import { FormButton, FormError, FormInput } from '../common/forms'
@@ -75,7 +75,6 @@ function LoginPage(): JSX.Element {
   /** On from submit: 1. validate, 2. showspinner, 3. login/signup 4. @TODO: navigate to homepage  */
   const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
-    console.log(loginPage.signup_inputs);
     const { errors, allErrorsEmpty } = loginPage.isLoginForm ? 
       getLoginInputErrors(loginPage.login_inputs) : 
       getSignupInputErrors(loginPage.signup_inputs);

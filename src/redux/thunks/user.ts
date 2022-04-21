@@ -3,7 +3,7 @@ import { updateUser, clearUser, UserState } from '../reducers/user'
 import { updatePageError } from '../reducers/login'
 import { clearAuth, updateIsValid } from '../reducers/auth'
 import { Dispatch } from 'redux'
-import { RootState } from '../reducers'
+import { RootState } from '../store'
 import { LoginInputs, SignupInputs } from '../../library/types'
 import UsersService from '../../library/usersService'
 import { hideForm, setAddGoalFormError, setRemoveGoalFormError } from '../reducers/savingsGoalForm'
@@ -30,14 +30,13 @@ function updateUserItems(item: SavingsItem) {
         const user: UserState = state.user
         
         try {
-            await usersService.addUserSavingsItem((user._id as string), item);
-            
+            const updatedUser = await usersService.addUserSavingsItem((user._id as string), item);
             localStorage.removeItem('state')
-            user.savings_items.push(item)
-            dispatch(updateUser(user))
+            dispatch(updateUser(updatedUser))
             dispatch(hideForm())
         } catch (error: any) {
-            dispatch(setAddGoalFormError('NETWORK ERROR: Could not add item at this time'))
+            console.log(error)
+            dispatch(setAddGoalFormError('Item could not be added at this time. If problem persists please contact support'))
         }
     }
 }

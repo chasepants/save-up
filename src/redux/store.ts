@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
-import reducer, { RootState } from './reducers'
+import reducer from './reducers'
 import UsersApi from '../library/usersApi'
 import UsersService from '../library/usersService';
 
@@ -38,4 +38,5 @@ store.subscribe(() => {
   saveState(store.getState());
 });
 
+export type RootState = ReturnType<typeof store.getState>
 export default store

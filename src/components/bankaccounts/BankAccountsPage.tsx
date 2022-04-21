@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../redux/reducers';
+import { RootState } from '../../redux/store';
 import Link from './Link'
 import { BankAccountRowProps } from './types';
 import { BankAccount, PlaidItem } from '../../library/types';

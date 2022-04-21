@@ -21,5 +21,4 @@ const initalState: UserState = { username: '', name: '', plaid_items: [], saving
 export const userReducer = createReducer<UserState>(initalState, builder => {
     builder.addCase(updateUser, (state: UserState, action) => state = action.payload);
     builder.addCase(clearUser, (state: UserState) => state = initalState);
-    builder.addDefaultCase((state: UserState) => state = initalState);
 });

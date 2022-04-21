@@ -40,6 +40,7 @@ export default class UsersService {
 
     async addUserSavingsItem(id: string, savings_item: SavingsItem): Promise<User> {
         try {
+            console.log(`updating ${id} with ${savings_item}`)
             return (await this.usersApi.addUserSavingsItems(id, savings_item)).data;
         } catch(error) {
             throw error;

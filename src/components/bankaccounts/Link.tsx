@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 /** PLAID */
 import { usePlaidLink } from 'react-plaid-link';
-import { RootState } from '../../redux/reducers';
+import { RootState } from '../../redux/store';
 import { LinkProps } from './types';
 
 const Link = (props: LinkProps): JSX.Element => {
@@ -22,7 +22,6 @@ const Link = (props: LinkProps): JSX.Element => {
       })
       .then(response => response.json())
       .then(data => {
-        console.log(data)
         dispatch(updateUserPlaidItems(data))
       })
       .catch(err => console.log(err))

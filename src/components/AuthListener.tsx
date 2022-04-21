@@ -1,6 +1,6 @@
 import { useLocation, Navigate} from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { RootState } from '../redux/reducers';
+import { RootState } from '../redux/store';
 
 function AuthListener({ children }: any): JSX.Element {
     let auth = useSelector((state: RootState) => state.auth);

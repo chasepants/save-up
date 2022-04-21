@@ -1,7 +1,7 @@
 import '../App.css'
 import React from 'react'
 import * as user from '../redux/thunks/user'
-import { RootState } from '../redux/reducers'
+import { RootState } from '../redux/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { NavigateFunction, useNavigate } from 'react-router-dom'
 
