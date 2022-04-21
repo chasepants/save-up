@@ -1,12 +1,12 @@
 import '../../App.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { removeUserItem } from '../../redux/thunks/user'
-import addSavingsGoalFormActions from '../../redux/actions/addSavingsGoalFormActions'
 import AddSavingsGoalForm from './AddSavingsGoalForm'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { RootState } from '../../redux/reducers'
 import { SavingsItem } from '../../library/types'
 import { SavingsGoalAddButtonProps, SavingsGoalErrorProps, SavingsItemProps } from './types'
+import { showForm } from '../../redux/reducers/savingsGoalForm'
 
 function SavingsGoalRow(props: SavingsItemProps) {
     const navigate = useNavigate()
@@ -30,7 +30,7 @@ function SavingsGoalRow(props: SavingsItemProps) {
 
 function SavingsGoalAddButton(props: SavingsGoalAddButtonProps): JSX.Element {
     const dispatch = useDispatch()
-    const toggleForm = () => dispatch(addSavingsGoalFormActions.showAddSavingsGoalForm())
+    const toggleForm = () => dispatch(showForm())
 
     return (!props.itemForm.show_form && props.user.savings_items.length !== 0) ? (
         <div className='row'>
@@ -54,7 +54,7 @@ function SavingsGoalError(props: SavingsGoalErrorProps): JSX.Element {
 }
 
 function SavingsGoalsPage(): JSX.Element {    
-    const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
+    const itemForm = useSelector((state: RootState) => state.savingsGoalForm)
     const user = useSelector((state: RootState) => state.user)
 
     return user ? (

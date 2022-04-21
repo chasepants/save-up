@@ -1,23 +1,23 @@
-import addSavingsGoalFormActions from '../actions/addSavingsGoalFormActions'
-import authActions from '../actions/authActions'
-import loginPageActions from '../actions/loginPageActions'
-import userActions from '../actions/userActions'
 import { PlaidItem, SavingsItem, User } from '../../library/types'
+import { updateUser, clearUser, UserState } from '../reducers/user'
+import { updatePageError } from '../reducers/login'
+import { clearAuth, updateIsValid } from '../reducers/auth'
 import { Dispatch } from 'redux'
 import { RootState } from '../reducers'
-import { LoginInputs, SignupInputs } from '../types/loginPageTypes'
+import { LoginInputs, SignupInputs } from '../../library/types'
 import UsersService from '../../library/usersService'
+import { hideForm, setAddGoalFormError, setRemoveGoalFormError } from '../reducers/savingsGoalForm'
 
 function updateUserPlaidItems(item: PlaidItem) {
     return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
         const state: RootState = getState()
-        const user: User = state.user
+        const user: UserState = state.user 
         
         try {
             let updatedUser = await usersService.addUserPlaidItem((user._id as string), item);
             updatedUser._id = user._id
             localStorage.removeItem('state')
-            dispatch(userActions.updateUser(updatedUser))
+            dispatch(updateUser(updatedUser))
         } catch (error: any) {
             console.log(error)
         }
@@ -27,16 +27,17 @@ function updateUserPlaidItems(item: PlaidItem) {
 function updateUserItems(item: SavingsItem) {
     return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
         const state: RootState = getState()
-        const user: User = state.user
+        const user: UserState = state.user
+        
         try {
             await usersService.addUserSavingsItem((user._id as string), item);
             
             localStorage.removeItem('state')
             user.savings_items.push(item)
-            dispatch(userActions.updateUser(user))
-            dispatch(addSavingsGoalFormActions.hideAddSavingsGoalForm())
+            dispatch(updateUser(user))
+            dispatch(hideForm())
         } catch (error: any) {
-            dispatch(addSavingsGoalFormActions.setAddSavingsGoalFormAddError('NETWORK ERROR: Could not add item at this time'))
+            dispatch(setAddGoalFormError('NETWORK ERROR: Could not add item at this time'))
         }
     }
 }
@@ -44,15 +45,15 @@ function updateUserItems(item: SavingsItem) {
 function removeUserItem(item: SavingsItem) {
     return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
         const state: RootState = getState()
-        const user: User = state.user
+        const user: UserState = state.user
 
         try {
             let updatedUser = await usersService.removeUserSavingsItems((user._id as string), item)
 
             updatedUser._id = user._id; 
-            dispatch(userActions.updateUser(updatedUser));
+            dispatch(updateUser(updatedUser));
         } catch (error: any) {
-            dispatch(addSavingsGoalFormActions.setAddSavingsGoalFormRemoveError('NETWORK ERROR: Could not add item at this time'))
+            dispatch(setRemoveGoalFormError('NETWORK ERROR: Could not add item at this time'))
         }
     }
 }
@@ -61,11 +62,11 @@ function login(user: LoginInputs) {
     return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
         try {
             const loggedInUser: User = await usersService.login((user.username as string), (user.password as string));
-            dispatch(authActions.updateAuthIsValid(true))
-            dispatch(userActions.updateUser(loggedInUser))
+            dispatch(updateIsValid(true))
+            dispatch(updateUser(loggedInUser))
         } catch (error: any) {
-            dispatch(loginPageActions.setLoginPageError(error.message))
-            dispatch(authActions.clearAuth())
+            dispatch(updatePageError(error.message))
+            dispatch(clearAuth())
         }
     }
 }
@@ -75,11 +76,11 @@ function signup(signupUser: SignupInputs) {
         try {
             const name = `${signupUser.firstname} ${signupUser.lastname}`;
             const user: User = await usersService.signup((signupUser.username as string), (signupUser.password as string), name);
-            dispatch(authActions.updateAuthIsValid(true))
-            dispatch(userActions.updateUser(user))
+            dispatch(updateIsValid(true))
+            dispatch(updateUser(user))
         } catch (error: any) {
-            dispatch(loginPageActions.setLoginPageError(error))
-            dispatch(authActions.clearAuth())
+            dispatch(updatePageError(error))
+            dispatch(clearAuth())
         }
     }
 }
@@ -88,9 +89,9 @@ const logout = () => {
     return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
         await usersService.logout()
         localStorage.removeItem('state')
-        dispatch(authActions.clearAuth())
-        dispatch(userActions.clearUser())
-        dispatch(loginPageActions.setLoginPageError(''))
+        dispatch(clearAuth())
+        dispatch(clearUser())
+        dispatch(updatePageError(''))
     }
 }
 

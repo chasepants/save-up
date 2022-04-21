@@ -1,11 +1,11 @@
 import '../../App.css'
-import { ProgressBar } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
-import { locateAccounts, findSavingsItemByName } from '../../library/userParser'
-import { useParams, useNavigate, NavigateFunction, Navigate } from 'react-router-dom'
+import { ProgressBar } from 'react-bootstrap'
 import { RootState } from '../../redux/reducers'
 import { BankAccount } from '../../library/types'
 import { SavingsItemPlanProps, SavingsItemProps } from './types'
+import { locateAccounts, findSavingsItemByName } from '../../library/userParser'
+import { useParams, useNavigate, NavigateFunction, Navigate } from 'react-router-dom'
 
 function HypeBoard(): JSX.Element {
     return (

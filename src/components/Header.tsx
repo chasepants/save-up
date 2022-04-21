@@ -1,14 +1,14 @@
 import '../App.css'
-import * as user from '../redux/thunks/user'
-import { useSelector, useDispatch } from 'react-redux'
 import React from 'react'
-import { NavigateFunction, useNavigate } from 'react-router-dom'
+import * as user from '../redux/thunks/user'
 import { RootState } from '../redux/reducers'
+import { useSelector, useDispatch } from 'react-redux'
+import { NavigateFunction, useNavigate } from 'react-router-dom'
 
 type DropDownItemProps = {
+    path: string,
     label: string,
-    handleLinkClick: Function,
-    path: string
+    handleLinkClick: Function
 }
 
 export function DropDownItem({label, handleLinkClick, path}: DropDownItemProps): JSX.Element {

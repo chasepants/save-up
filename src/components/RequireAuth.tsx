@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../redux/reducers';
-import authActions from '../redux/actions/authActions';
+import { clearAuth } from '../redux/reducers/auth';
 
 function RequireAuth({ children }: any): JSX.Element {
     let auth = useSelector((state: RootState) => state.auth);
@@ -10,7 +10,7 @@ function RequireAuth({ children }: any): JSX.Element {
     const dispatch = useDispatch()
 
     if (!user.username) {
-      dispatch(authActions.clearAuth())
+      dispatch(clearAuth())
     }
 
     if (!auth.valid) {

@@ -41,10 +41,10 @@ export function FormButton({ formButtonText, handleFormSubmit, form, showCustomB
     try{
         switch(form) {
             case 'loginPage':
-                isSaving = state.loginPage.isSaving ?? false;
+                isSaving = state.login.isSaving ?? false;
                 break;
             case 'addSavingsGoalForm':
-                isSaving = state.addSavingsGoalForm.isSaving ?? false;
+                isSaving = state.savingsGoalForm.isSaving ?? false;
                 break;
             default:
                 isSaving = false;

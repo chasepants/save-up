@@ -1,17 +1,17 @@
 
 import { combineReducers } from '@reduxjs/toolkit'
-import auth from './authReducer'
-import viewSavingsGoalPage from './viewSavingsGoalPageReducer'
-import addSavingsGoalForm from './addSavingsGoalFormReducer'
-import loginPage from './loginPageReducer'
-import user from './userReducer'
+import { authReducer as auth } from './auth'
+import { savingsGoalPageReducer as savingsGoalPage } from './savingsGoalPage'
+import { savingsGoalFormReducer as savingsGoalForm } from './savingsGoalForm'
+import { loginReducer as login } from './login'
+import { userReducer as user } from './user'
 
 const rootReducer = combineReducers({
     user,
     auth,
-    addSavingsGoalForm,
-    loginPage,
-    viewSavingsGoalPage,
+    login,
+    savingsGoalForm,
+    savingsGoalPage,
 });
 
 export default rootReducer;

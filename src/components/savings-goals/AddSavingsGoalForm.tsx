@@ -1,14 +1,12 @@
 import { updateUserItems } from '../../redux/thunks/user'
 import { useSelector, useDispatch } from 'react-redux'
-import addSavingsGoalFormActions from '../../redux/actions/addSavingsGoalFormActions'
 import { Button, Form  } from 'react-bootstrap'
 import { RootState } from '../../redux/reducers'
 import { AutomaticTransfersTitleProps, SavingsGoalAccountOptionProps, SavingsPlansInputProps } from './types'
-import { SavingsGoalInputErrors, getAddGoalFormErrorByKey } from '../../redux/types/addSavingsGoalFormTypes'
 import { getSavingsGoalErrors } from '../../library/helpers'
 import { FormButton, FormDropDown, FormError, FormInput } from '../common/forms'
-import { getUpdateObj } from '../../redux/types/addSavingsGoalFormTypes';
-import { PlaidItem } from '../../library/types'
+import { PlaidItem, getUpdateObj, SavingsGoalInputErrors, getAddGoalFormErrorByKey } from '../../library/types'
+import { hideForm, updateFormInputErrors, updateFormInputs } from '../../redux/reducers/savingsGoalForm'
 
 function getPlaidItemAccounts(plaid_items: Array<PlaidItem>) {
     const accountOptions: Array<JSX.Element> = [];
@@ -47,7 +45,7 @@ export function AddSavingsPlanInputs({plaid_items, handleInput}: SavingsPlansInp
         <option key='annually' value='annually'>Year</option>
     ]
 
-    const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
+    const itemForm = useSelector((state: RootState) => state.savingsGoalForm)
     const savings_amount_error = getAddGoalFormErrorByKey('savings_amount', itemForm.savings_goal_input_errors);
     const from_account_error = getAddGoalFormErrorByKey('fromAccount', itemForm.savings_goal_input_errors);
     const to_account_error = getAddGoalFormErrorByKey('toAccount', itemForm.savings_goal_input_errors);
@@ -72,7 +70,7 @@ export function AddSavingsPlanInputs({plaid_items, handleInput}: SavingsPlansInp
 
 function AddSavingsGoalForm(): JSX.Element {
     const items = useSelector((state: RootState) => state.user.savings_items)
-    const itemForm = useSelector((state: RootState) => state.addSavingsGoalForm)
+    const itemForm = useSelector((state: RootState) => state.savingsGoalForm)
     const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
 
     const dispatch = useDispatch()
@@ -80,14 +78,14 @@ function AddSavingsGoalForm(): JSX.Element {
     const handleInput = (e: any) => {
         let key: keyof SavingsGoalInputErrors = (e.target.name as keyof SavingsGoalInputErrors)
 
-        dispatch(addSavingsGoalFormActions.updateSavingsGoalInputs({
+        dispatch(updateFormInputs({
             ...itemForm.savings_goal_inputs,
             [e.target.name]: e.target.value,
         }))
     
         //check for previous error, reset error for new input
         if (!!itemForm.savings_goal_input_errors[key]) {
-            dispatch(addSavingsGoalFormActions.updateSavingsGoalInputErrors({
+            dispatch(updateFormInputErrors({
                 ...itemForm.savings_goal_input_errors,
                 [e.target.name]: '',
             }))
@@ -99,7 +97,7 @@ function AddSavingsGoalForm(): JSX.Element {
         const { errors, allErrorsEmpty } = getSavingsGoalErrors(itemForm.savings_goal_inputs, plaid_items.length > 0);
 
         if (!allErrorsEmpty) {
-            dispatch(addSavingsGoalFormActions.updateSavingsGoalInputErrors(errors));
+            dispatch(updateFormInputErrors(errors));
             return;
         }
 
@@ -111,7 +109,7 @@ function AddSavingsGoalForm(): JSX.Element {
     const link_error = getAddGoalFormErrorByKey('link', itemForm.savings_goal_input_errors);
     const amount_error = getAddGoalFormErrorByKey('amount', itemForm.savings_goal_input_errors);
     const customButton = (
-        <Button onClick={() => dispatch(addSavingsGoalFormActions.hideAddSavingsGoalForm())} className="btn-sharp btn-warning">
+        <Button onClick={() => dispatch(hideForm())} className="btn-sharp btn-warning">
             Close
         </Button>
     ); 

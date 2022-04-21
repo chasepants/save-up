@@ -1,5 +1,5 @@
-import { SavingsGoalInputErrors, SavingsGoalInputs } from "../redux/types/addSavingsGoalFormTypes";
-import { LoginInputErrors, LoginInputs, SignupInputErrors, SignupInputs } from "../redux/types/loginPageTypes";
+import { SavingsGoalInputErrors, SavingsGoalInputs } from '../library/types'
+import { LoginInputErrors, LoginInputs, SignupInputErrors, SignupInputs } from '../library/types';
 
 export const empty = (input: string|undefined): boolean => !input || input === ''; 
 
@@ -49,7 +49,7 @@ export const getSignupInputErrors = (signup_inputs: SignupInputs) => {
         errors.lastname = 'Please enter a last name';
         allErrorsEmpty = false;
     }
-
+    
     return { errors, allErrorsEmpty };
 }
 

@@ -1,13 +1,13 @@
+import { FormLinkProps } from './types'
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Form } from 'react-bootstrap';
-import { login, signup } from '../../redux/thunks/user';
-import loginPageActions from '../../redux/actions/loginPageActions';
 import { RootState } from '../../redux/reducers/index';
-import { getLoginInputErrorByKey, getSignupInputErrorByKey } from '../../redux/types/loginPageTypes';
-import { FormLinkProps } from './types';
-import { getLoginInputErrors, getSignupInputErrors } from '../../library/helpers';
+import { useDispatch, useSelector } from 'react-redux';
+import { login, signup } from '../../redux/thunks/user';
 import { FormButton, FormError, FormInput } from '../common/forms'
+import { getLoginInputErrors, getSignupInputErrors } from '../../library/helpers';
+import { getLoginInputErrorByKey, getSignupInputErrorByKey } from '../../library/types';
+import { clearForm, switchToLoginForm, switchToSignupForm, toggleIsSaving, updateLoginFormErrors, updateLoginFormInputs, updateSignupFormErrors, updateSignupFormInputs } from '../../redux/reducers/login';
 
 function PageTitle(): JSX.Element {
   return (
@@ -32,7 +32,7 @@ function FormLink(props: FormLinkProps): JSX.Element {
 }
 
 function LoginPage(): JSX.Element {
-  const loginPage = useSelector((state: RootState) => state.loginPage)
+  const loginPage = useSelector((state: RootState) => state.login)
 
   const formButton = loginPage.isLoginForm ? 'Login' : 'Signup'
   const formBottomText = loginPage.isLoginForm ? "Don't have an account? Create one!" : 'Already have an account? Login!'
@@ -41,20 +41,20 @@ function LoginPage(): JSX.Element {
 
   /** On input change: 1. update state, 2. wipe out old errors */
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const updateInputsAction = loginPage.isLoginForm ? loginPageActions.updateLoginInputs({
+    const updateInputsAction = loginPage.isLoginForm ? updateLoginFormInputs({
       ...loginPage.login_inputs,
       [e.target.name]: e.target.value
-    }) : loginPageActions.updateSignupInputs({
+    }) : updateSignupFormInputs({
       ...loginPage.signup_inputs,
       [e.target.name]: e.target.value
     })
 
     dispatch(updateInputsAction);
 
-    const updateInputErrorsAction = loginPage.isLoginForm ? loginPageActions.updateLoginInputErrors({
+    const updateInputErrorsAction = loginPage.isLoginForm ? updateLoginFormErrors({
       ...loginPage.login_input_errors, 
       [e.target.name]: ''
-    }) : loginPageActions.updateSignupInputErrors({
+    }) : updateSignupFormErrors({
       ...loginPage.signup_input_errors, 
       [e.target.name]: ''
     })
@@ -75,34 +75,34 @@ function LoginPage(): JSX.Element {
   /** On from submit: 1. validate, 2. showspinner, 3. login/signup 4. @TODO: navigate to homepage  */
   const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
-
+    console.log(loginPage.signup_inputs);
     const { errors, allErrorsEmpty } = loginPage.isLoginForm ? 
       getLoginInputErrors(loginPage.login_inputs) : 
       getSignupInputErrors(loginPage.signup_inputs);
     
     if (!allErrorsEmpty) {
-      let action = loginPage.isLoginForm ? loginPageActions.updateLoginInputErrors : loginPageActions.updateSignupInputErrors;
+      let action = loginPage.isLoginForm ? updateLoginFormErrors : updateSignupFormErrors;
       dispatch(action(errors));
       return;
     }
 
-    dispatch(loginPageActions.toggleIsSaving())
+    dispatch(toggleIsSaving())
     loginPage.isLoginForm ? handleLogin() : handleSignup();
   }
 
   /** Handle bottom form link being clicked */
   const handleFormSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const action = loginPage.isLoginForm ? loginPageActions.handleFormSwitchToSignup : loginPageActions.handleFormSwitchToLogin;
+    const action = loginPage.isLoginForm ? switchToSignupForm : switchToLoginForm;
     dispatch(action());
   }
 
   useEffect(() => {
     const inputs = loginPage.isLoginForm ? loginPage.login_inputs : loginPage.signup_inputs;
-    const inputAction = loginPage.isLoginForm ? loginPageActions.updateLoginInputs : loginPageActions.updateSignupInputs;
-    dispatch(loginPageActions.clearForm())
+    const inputAction = loginPage.isLoginForm ? updateLoginFormInputs : updateSignupFormInputs;
+    dispatch(clearForm())
     dispatch(inputAction(inputs))
-  }, [dispatch, loginPageActions])
+  }, [dispatch])
 
   const errors = loginPage.isLoginForm ? loginPage.login_input_errors : loginPage.signup_input_errors;
   const username_error = loginPage.isLoginForm ? getLoginInputErrorByKey('username', errors) : getSignupInputErrorByKey('username', errors);
