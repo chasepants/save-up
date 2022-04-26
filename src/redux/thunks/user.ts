@@ -1,105 +1,78 @@
 import { PlaidItem, SavingsItem, User } from '../../library/types'
-import { updateUser, clearUser, UserState } from '../reducers/user'
-import { updatePageError } from '../reducers/login'
-import { clearAuth, updateIsValid } from '../reducers/auth'
-import { Dispatch } from 'redux'
-import { RootState } from '../store'
-import { LoginInputs, SignupInputs } from '../../library/types'
 import UsersService from '../../library/usersService'
-import { clearForm, hideForm, setAddGoalFormError, setRemoveGoalFormError } from '../reducers/savingsGoalForm'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 
-function updateUserPlaidItems(item: PlaidItem) {
-    return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
-        const state: RootState = getState()
-        const user: UserState = state.user 
-        
-        try {
-            let updatedUser = await usersService.addUserPlaidItem((user._id as string), item);
-            updatedUser._id = user._id
-            localStorage.removeItem('state')
-            dispatch(updateUser(updatedUser))
-        } catch (error: any) {
-            console.log(error)
-        }
+interface LoginArgs {
+    username: string, 
+    password: string
+}
+
+interface SignupArgs { 
+    username: string,
+    password: string,
+    confirm_password: string,
+    firstname: string,
+    lastname: string 
+}
+
+interface UpdatePlaidItemArgs {
+    userId: string,
+    plaidItem: PlaidItem
+}
+
+interface UpdateSavingsdItemArgs {
+    userId: string,
+    savingsItem: SavingsItem
+}
+
+export const updateUserPlaidItemsThunk = createAsyncThunk<User, UpdatePlaidItemArgs, { extra: UsersService }>(
+    'user/updatePlaidItems', 
+    async (args, { extra: usersService }) => {
+        let updatedUser = await usersService.addUserPlaidItem(args.userId, args.plaidItem);
+        updatedUser._id = args.userId;
+        localStorage.removeItem('state');
+        return updatedUser;
     }
-}
+)
 
-function updateUserItems(item: SavingsItem) {
-    return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
-        const state: RootState = getState()
-        const user: UserState = state.user
-        
-        try {
-            const updatedUser = await usersService.addUserSavingsItem((user._id as string), item);
-            localStorage.removeItem('state')
-            dispatch(updateUser(updatedUser))
-            dispatch(hideForm())
-        } catch (error: any) {
-            console.log(error)
-            dispatch(setAddGoalFormError('Item could not be added at this time. If problem persists please contact support'))
-        }
+export const updateUserItemsThunk = createAsyncThunk<User, UpdateSavingsdItemArgs, { extra: UsersService }>(
+    'user/updateSavingItems', 
+    async (args, { extra: usersService }) => {
+        let updatedUser = await usersService.addUserSavingsItem(args.userId, args.savingsItem);
+        updatedUser._id = args.userId;
+        localStorage.removeItem('state');
+        return updatedUser;
     }
-}
+)
 
-function removeUserItem(item: SavingsItem) {
-    return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
-        const state: RootState = getState()
-        const user: UserState = state.user
-
-        try {
-            let updatedUser = await usersService.removeUserSavingsItems((user._id as string), item)
-
-            updatedUser._id = user._id; 
-            dispatch(updateUser(updatedUser));
-        } catch (error: any) {
-            dispatch(setRemoveGoalFormError('Could not remove item at this time. If problem persists please contact support.'))
-        }
+export const removeUserItemThunk = createAsyncThunk<User, UpdateSavingsdItemArgs, { extra: UsersService }>(
+    'user/removeUserItem', 
+    async (args, { extra: usersService }) => {
+        let updatedUser = await usersService.removeUserSavingsItems(args.userId, args.savingsItem);
+        updatedUser._id = args.userId;
+        return updatedUser;
     }
-}
+)
 
-function login(user: LoginInputs) {
-    return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
-        try {
-            const loggedInUser: User = await usersService.login((user.username as string), (user.password as string));
-            dispatch(updateIsValid(true))
-            dispatch(updateUser(loggedInUser))
-        } catch (error: any) {
-            dispatch(updatePageError(error.message))
-            dispatch(clearAuth())
-        }
+export const loginThunk = createAsyncThunk<User, LoginArgs, { extra: UsersService }>(
+    'user/login', 
+    async (args, { extra: usersService }) => {
+        return await usersService.login(args.username, args.password);
     }
-}
+)
 
-function signup(signupUser: SignupInputs) {
-    return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
-        try {
-            const name = `${signupUser.firstname} ${signupUser.lastname}`;
-            const user: User = await usersService.signup((signupUser.username as string), (signupUser.password as string), name);
-            dispatch(updateIsValid(true))
-            dispatch(updateUser(user))
-        } catch (error: any) {
-            dispatch(updatePageError(error))
-            dispatch(clearAuth())
-        }
+export const signupThunk = createAsyncThunk<User, SignupArgs, { extra: UsersService }>(
+    'user/signup', 
+    async (args, { extra: usersService }) => {
+        const name = `${args.firstname} ${args.lastname}`;
+        return await usersService.signup(args.username, args.password, name);
     }
-}
+)
 
-const logout = () => {
-    return async (dispatch: Dispatch, getState: any, usersService: UsersService) => {
-        await usersService.logout()
-        localStorage.removeItem('state')
-        dispatch(clearAuth())
-        dispatch(clearUser())
-        dispatch(clearForm())
-        dispatch(updatePageError(''))
+export const logoutThunk = createAsyncThunk<void, {}, { extra: UsersService }>(
+    'user/logout', 
+    async (args, { extra: usersService }) => {
+        await usersService.logout();
+        localStorage.removeItem('state');
     }
-}
-
-export {
-    login, 
-    logout,
-    signup,
-    updateUserItems,
-    removeUserItem,
-    updateUserPlaidItems
-}
+)

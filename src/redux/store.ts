@@ -28,7 +28,7 @@ const saveState = (state: RootState): void => {
 const peristedState = loadState();
 const usersApi: UsersApi = new UsersApi();
 const usersService: UsersService = new UsersService(usersApi);
-let store: any = createStore(
+const store: any = createStore(
   reducer,
   peristedState,
   applyMiddleware(thunk.withExtraArgument(usersService))

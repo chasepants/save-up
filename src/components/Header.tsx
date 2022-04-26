@@ -1,6 +1,6 @@
 import '../App.css'
 import React from 'react'
-import * as user from '../redux/thunks/user'
+import { logoutThunk } from '../redux/thunks/user'
 import { RootState } from '../redux/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { NavigateFunction, useNavigate } from 'react-router-dom'
@@ -46,7 +46,7 @@ function Header(): JSX.Element {
 
     const handleLogout = async (event: MouseEvent) => {
         event.preventDefault()
-        dispatch(user.logout())
+        dispatch(logoutThunk({}))
         setShowMenuOptions(false)
     }
 

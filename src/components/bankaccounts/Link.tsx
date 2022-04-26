@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { updateUserPlaidItems } from '../../redux/thunks/user'
+import { updateUserPlaidItemsThunk } from '../../redux/thunks/user'
 import { useDispatch, useSelector } from 'react-redux'
 
 /** PLAID */
@@ -22,7 +22,7 @@ const Link = (props: LinkProps): JSX.Element => {
       })
       .then(response => response.json())
       .then(data => {
-        dispatch(updateUserPlaidItems(data))
+        dispatch(updateUserPlaidItemsThunk(data))
       })
       .catch(err => console.log(err))
     }, [auth_token, dispatch])

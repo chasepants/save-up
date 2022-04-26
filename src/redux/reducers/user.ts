@@ -1,5 +1,6 @@
 import { PlaidItem, SavingsItem } from '../../library/types'
-import { createAction, createReducer } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
+import { loginThunk, logoutThunk, removeUserItemThunk, signupThunk, updateUserItemsThunk, updateUserPlaidItemsThunk } from '../thunks/user'
 
 /** TYPES */
 export interface UserState {
@@ -10,15 +11,33 @@ export interface UserState {
     savings_items: Array<SavingsItem>;
 }
 
-/** ACTIONS */
-export const updateUser = createAction<UserState>('user/update');
-export const clearUser = createAction('user/clear');
-
 /** INITIAL STATE */
 const initalState: UserState = { username: '', name: '', plaid_items: [], savings_items: [] }
 
 /** REDUCER */
-export const userReducer = createReducer<UserState>(initalState, builder => {
-    builder.addCase(updateUser, (state: UserState, action) => state = action.payload);
-    builder.addCase(clearUser, (state: UserState) => state = initalState);
-});
+const userSlice = createSlice({
+    name: 'user',
+    initialState: initalState,
+    reducers: {
+        update: (state: UserState, action) => state = action.payload,
+        clear: (state: UserState) => state = initalState
+    }, 
+    extraReducers: (builder) => {
+        /** ADD PLAID ITEM */
+        builder.addCase(updateUserPlaidItemsThunk.fulfilled, (state, action) => state = action.payload);
+        // builder.addCase(updateUserPlaidItemsThunk.rejected, () => console.log('error'))
+        /** ADD SAVINGS ITEM */
+        builder.addCase(updateUserItemsThunk.fulfilled, (state, action) => state = action.payload);
+        /** REMOVE SAVINGS ITEM */
+        builder.addCase(removeUserItemThunk.fulfilled, (state, action) => state = action.payload);
+        /** LOGIN */
+        builder.addCase(loginThunk.fulfilled, (state, action) => state = action.payload);
+        /** SIGNUP */
+        builder.addCase(signupThunk.fulfilled, (state, action) => state = action.payload);
+        /** LOGOUT */
+        builder.addCase(logoutThunk.rejected, state => state = initalState);
+        builder.addCase(logoutThunk.fulfilled, state => state = initalState);
+    },
+})
+
+export default userSlice.reducer

@@ -1,17 +1,19 @@
 import '../../App.css'
 import { useSelector, useDispatch } from 'react-redux'
-import { removeUserItem } from '../../redux/thunks/user'
+import { removeUserItemThunk } from '../../redux/thunks/user'
 import AddSavingsGoalForm from './AddSavingsGoalForm'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { RootState } from '../../redux/store'
 import { SavingsItem } from '../../library/types'
 import { SavingsGoalAddButtonProps, SavingsGoalErrorProps, SavingsItemProps } from './types'
-import { showForm } from '../../redux/reducers/savingsGoalForm'
+import { savingsGoalFormSlice } from '../../redux/reducers/savingsGoalForm'
+
 
 function SavingsGoalRow(props: SavingsItemProps) {
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
-
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const user = useSelector((state: RootState) => state.user);
+    
     return (
         <div key={props.item.name} className='row'>
             <div className='col-sm-6 offset-sm-3'>
@@ -19,7 +21,7 @@ function SavingsGoalRow(props: SavingsItemProps) {
                     <p className="form-control">{props.item.name}</p>
                     <div className="input-group-append">
                         <button onClick={() => navigate(`/goal/${props.item.name}`)} className="btn-sharp btn-outline-primary">view</button>
-                        <button onClick={() => dispatch(removeUserItem(props.item))} className="btn-sharp btn-outline-danger">delete</button>
+                        <button onClick={() => dispatch(removeUserItemThunk({ userId: user._id, savingsItem: props.item}))} className="btn-sharp btn-outline-danger">delete</button>
                         <button className="btn-sharp btn-outline-warning" type="button">share</button>
                     </div>
                 </div>
@@ -30,7 +32,7 @@ function SavingsGoalRow(props: SavingsItemProps) {
 
 function SavingsGoalAddButton(props: SavingsGoalAddButtonProps): JSX.Element {
     const dispatch = useDispatch()
-    const toggleForm = () => dispatch(showForm())
+    const toggleForm = () => dispatch(savingsGoalFormSlice.actions.showForm())
 
     return (!props.itemForm.show_form && props.user.savings_items.length !== 0) ? (
         <div className='row'>

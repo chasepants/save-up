@@ -1,5 +1,6 @@
-import { createAction, createReducer } from '@reduxjs/toolkit'
+import { createAction, createSlice } from '@reduxjs/toolkit'
 import { SavingsGoalInputs, SavingsGoalInputErrors } from '../../library/types'
+import { updateUserItemsThunk } from '../thunks/user';
 
 /** TYPES */
 interface SavingsGoalFormState {
@@ -31,14 +32,25 @@ const initialState: SavingsGoalFormState = {
     isSaving: false
 }
 
-/** REDUCER */
-export const savingsGoalFormReducer = createReducer(initialState, builder => {
-    builder.addCase(showForm, (state: SavingsGoalFormState) => { state.show_form = true })
-    builder.addCase(hideForm, (state: SavingsGoalFormState) => state = initialState)
-    builder.addCase(clearForm, (state: SavingsGoalFormState) => state = initialState)
-    builder.addCase(updateFormInputs, (state: SavingsGoalFormState, action) => { state.savings_goal_inputs = action.payload })
-    builder.addCase(toggleFormIsSaving, (state: SavingsGoalFormState) => { state.isSaving = !state.isSaving })
-    builder.addCase(setAddGoalFormError, (state: SavingsGoalFormState, action) => { state.add_error = action.payload })
-    builder.addCase(updateFormInputErrors, (state: SavingsGoalFormState, action) => { state.savings_goal_input_errors = action.payload })
-    builder.addCase(setRemoveGoalFormError, (state: SavingsGoalFormState, action) => { state.remove_error = action.payload })
+export const savingsGoalFormSlice = createSlice({
+    name: 'savingsGoalFormSlice',
+    initialState: initialState,
+    reducers: {
+        showForm: (state: SavingsGoalFormState) => { state.show_form = true },
+        hideForm: (state: SavingsGoalFormState) => state = initialState,
+        clearForm: (state: SavingsGoalFormState) => state = initialState,
+        updateFormInputs: (state: SavingsGoalFormState, action) => { state.savings_goal_inputs = action.payload },
+        toggleFormIsSaving: (state: SavingsGoalFormState) => { state.isSaving = !state.isSaving },
+        setAddGoalFormError: (state: SavingsGoalFormState, action) => { state.add_error = action.payload },
+        updateFormInputErrors: (state: SavingsGoalFormState, action) => { state.savings_goal_input_errors = action.payload },
+        setRemoveGoalFormError: (state: SavingsGoalFormState, action) => { state.remove_error = action.payload }
+    },
+    extraReducers: builder => {
+        builder.addCase(updateUserItemsThunk.fulfilled, (state: SavingsGoalFormState) => state = initialState)
+        builder.addCase(updateUserItemsThunk.rejected, (state: SavingsGoalFormState) => { 
+            state.add_error = 'Item could not be added at this time. If problem persists please contact support'
+        })
+    }
 })
+
+export default savingsGoalFormSlice.reducer;

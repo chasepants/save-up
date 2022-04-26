@@ -1,5 +1,6 @@
-import { createAction, createReducer } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import { LoginInputErrors, LoginInputs, SignupInputErrors, SignupInputs } from '../../library/types'
+import { loginThunk, logoutThunk, signupThunk } from '../thunks/user';
 
 /** TYPES */
 export interface LoginState { 
@@ -11,17 +12,6 @@ export interface LoginState {
     isSaving: boolean;
     isLoginForm: boolean;
 }
-
-/** ACTIONS */
-export const clearForm = createAction('login/clearForm');
-export const toggleIsSaving = createAction('login/isSaving');
-export const updatePageError = createAction<string>('login/updatePageError');
-export const switchToLoginForm  = createAction('login/switchToLoginForm');
-export const switchToSignupForm = createAction('login/switchToSignupForm');
-export const updateLoginFormInputs  = createAction<LoginInputs>('login/updateLoginFormInputs');
-export const updateLoginFormErrors  = createAction<LoginInputErrors>('login/updateLoginFormErrors');
-export const updateSignupFormInputs = createAction<SignupInputs>('login/updateSignupFormInputs');
-export const updateSignupFormErrors = createAction<SignupInputErrors>('login/updateSignupFormErrors');
 
 /** INITIAL STATE */
 const initialState: LoginState = { 
@@ -35,22 +25,34 @@ const initialState: LoginState = {
 };
 
 /** REDUCER */
-export const loginReducer = createReducer(initialState, builder => {
-    builder.addCase(clearForm, (state: LoginState) => state = initialState);
-    builder.addCase(toggleIsSaving, (state: LoginState) => { state.isSaving = !state.isSaving });
-    builder.addCase(updatePageError, (state: LoginState, action) => { state.login_error = action.payload })
-    builder.addCase(switchToLoginForm, (state: LoginState) => { 
-        state.login_inputs.username = state.signup_inputs.username
-        state.login_inputs.password = state.signup_inputs.password
-        state.isLoginForm = true 
-    });
-    builder.addCase(switchToSignupForm, (state: LoginState) => { 
-        state.signup_inputs.username = state.login_inputs.username
-        state.signup_inputs.password = state.login_inputs.password
-        state.isLoginForm = false
-    });
-    builder.addCase(updateLoginFormInputs, (state: LoginState, action) => { state.login_inputs = action.payload })
-    builder.addCase(updateLoginFormErrors, (state: LoginState, action) => { state.login_input_errors = action.payload })
-    builder.addCase(updateSignupFormInputs, (state: LoginState, action) => { state.signup_inputs = action.payload })
-    builder.addCase(updateSignupFormErrors, (state: LoginState, action) => { state.signup_input_errors = action.payload })
+export const loginSlice = createSlice({
+    name: 'login',
+    initialState: initialState,
+    reducers: {
+        clearForm: (state: LoginState) => state = initialState,
+        isSaving: (state: LoginState) => { state.isSaving = !state.isSaving },
+        updatePageError: (state: LoginState, action) => { state.login_error = action.payload },
+        switchToLoginForm: (state: LoginState) => { 
+            state.login_inputs.username = state.signup_inputs.username
+            state.login_inputs.password = state.signup_inputs.password
+            state.isLoginForm = true 
+        },
+        switchToSignupForm: (state: LoginState) => { 
+            state.signup_inputs.username = state.login_inputs.username
+            state.signup_inputs.password = state.login_inputs.password
+            state.isLoginForm = false
+        },  
+        updateLoginFormInputs: (state: LoginState, action) => { state.login_inputs = action.payload },
+        updateLoginFormErrors: (state: LoginState, action) => { state.login_input_errors = action.payload },
+        updateSignupFormInputs: (state: LoginState, action) => { state.signup_inputs = action.payload },
+        updateSignupFormErrors: (state: LoginState, action) => { state.signup_input_errors = action.payload }
+    }, 
+    extraReducers: (builder) => {
+        builder.addCase(loginThunk.rejected, (state: LoginState, action) => { state.login_error = (action.payload as string) })
+        builder.addCase(signupThunk.rejected, (state: LoginState, action) => { state.login_error = (action.payload as string) })
+        builder.addCase(logoutThunk.rejected, (state: LoginState) => state = initialState)
+        builder.addCase(logoutThunk.fulfilled, (state: LoginState) => state = initialState)
+    }
 })
+
+export default loginSlice.reducer;

@@ -1,4 +1,4 @@
-import { updateUserItems } from '../../redux/thunks/user'
+import { updateUserItemsThunk } from '../../redux/thunks/user'
 import { useSelector, useDispatch } from 'react-redux'
 import { Button, Form  } from 'react-bootstrap'
 import { RootState } from '../../redux/store'
@@ -6,8 +6,8 @@ import { AutomaticTransfersTitleProps, SavingsGoalAccountOptionProps, SavingsPla
 import { getSavingsGoalErrors } from '../../library/helpers'
 import { FormButton, FormDropDown, FormError, FormInput } from '../common/forms'
 import { PlaidItem, getUpdateObj, SavingsGoalInputErrors, getAddGoalFormErrorByKey } from '../../library/types'
-import { hideForm, updateFormInputErrors, updateFormInputs, toggleFormIsSaving, setAddGoalFormError, setRemoveGoalFormError, clearForm } from '../../redux/reducers/savingsGoalForm'
-import { useEffect } from 'react'
+import { savingsGoalFormSlice } from '../../redux/reducers/savingsGoalForm';
+
 
 function getPlaidItemAccounts(plaid_items: Array<PlaidItem>) {
     const accountOptions: Array<JSX.Element> = [];
@@ -70,6 +70,7 @@ export function AddSavingsPlanInputs({plaid_items, handleInput}: SavingsPlansInp
 }
 
 function AddSavingsGoalForm(): JSX.Element {
+    const user = useSelector((state: RootState) => state.user)
     const items = useSelector((state: RootState) => state.user.savings_items)
     const itemForm = useSelector((state: RootState) => state.savingsGoalForm)
     const plaid_items = useSelector((state: RootState) => state.user.plaid_items)
@@ -77,15 +78,14 @@ function AddSavingsGoalForm(): JSX.Element {
 
     const handleInput = (e: any) => {
         let key: keyof SavingsGoalInputErrors = (e.target.name as keyof SavingsGoalInputErrors)
- 
-        dispatch(updateFormInputs({
+        dispatch(savingsGoalFormSlice.actions.updateFormInputs({
             ...itemForm.savings_goal_inputs,
             [e.target.name]: e.target.value,
         }))
     
         //check for previous error, reset error for new input
         if (!!itemForm.savings_goal_input_errors[key]) {
-            dispatch(updateFormInputErrors({
+            dispatch(savingsGoalFormSlice.actions.updateFormInputErrors({
                 ...itemForm.savings_goal_input_errors,
                 [e.target.name]: '',
             }))
@@ -95,25 +95,25 @@ function AddSavingsGoalForm(): JSX.Element {
     const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
 
-        dispatch(setAddGoalFormError(''));
-        dispatch(setRemoveGoalFormError(''));
+        dispatch(savingsGoalFormSlice.actions.setAddGoalFormError(''));
+        dispatch(savingsGoalFormSlice.actions.setRemoveGoalFormError(''));
 
         const { errors, allErrorsEmpty } = getSavingsGoalErrors(itemForm.savings_goal_inputs, plaid_items.length > 0);
         if (!allErrorsEmpty) {
-            dispatch(updateFormInputErrors(errors));
+            dispatch(savingsGoalFormSlice.actions.updateFormInputErrors(errors));
             return;
         }
-        dispatch(toggleFormIsSaving())
-        dispatch(updateUserItems(getUpdateObj(itemForm.savings_goal_inputs)))
+        dispatch(savingsGoalFormSlice.actions.toggleFormIsSaving())
+        dispatch(updateUserItemsThunk({ userId: user._id, savingsItem: getUpdateObj(itemForm.savings_goal_inputs) }))
     }
     
     const name_error = getAddGoalFormErrorByKey('name', itemForm.savings_goal_input_errors);
     const description_error = getAddGoalFormErrorByKey('description', itemForm.savings_goal_input_errors);
     const link_error = getAddGoalFormErrorByKey('link', itemForm.savings_goal_input_errors);
     const amount_error = getAddGoalFormErrorByKey('amount', itemForm.savings_goal_input_errors);
-    console.log(amount_error)
+
     const customButton = (
-        <Button onClick={() => dispatch(hideForm())} className="btn-sharp btn-warning">
+        <Button onClick={() => dispatch(savingsGoalFormSlice.actions.hideForm())} className="btn-sharp btn-warning">
             Close
         </Button>
     ); 

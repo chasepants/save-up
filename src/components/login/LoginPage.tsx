@@ -3,11 +3,11 @@ import React, { useEffect } from 'react';
 import { Form } from 'react-bootstrap';
 import { RootState } from '../../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { login, signup } from '../../redux/thunks/user';
+import { loginThunk, signupThunk } from '../../redux/thunks/user';
 import { FormButton, FormError, FormInput } from '../common/forms'
 import { getLoginInputErrors, getSignupInputErrors } from '../../library/helpers';
 import { getLoginInputErrorByKey, getSignupInputErrorByKey } from '../../library/types';
-import { clearForm, switchToLoginForm, switchToSignupForm, toggleIsSaving, updateLoginFormErrors, updateLoginFormInputs, updateSignupFormErrors, updateSignupFormInputs } from '../../redux/reducers/login';
+import { loginSlice } from '../../redux/reducers/login';
 
 function PageTitle(): JSX.Element {
   return (
@@ -41,20 +41,20 @@ function LoginPage(): JSX.Element {
 
   /** On input change: 1. update state, 2. wipe out old errors */
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const updateInputsAction = loginPage.isLoginForm ? updateLoginFormInputs({
+    const updateInputsAction = loginPage.isLoginForm ? loginSlice.actions.updateLoginFormInputs({
       ...loginPage.login_inputs,
       [e.target.name]: e.target.value
-    }) : updateSignupFormInputs({
+    }) : loginSlice.actions.updateSignupFormInputs({
       ...loginPage.signup_inputs,
       [e.target.name]: e.target.value
     })
 
     dispatch(updateInputsAction);
 
-    const updateInputErrorsAction = loginPage.isLoginForm ? updateLoginFormErrors({
+    const updateInputErrorsAction = loginPage.isLoginForm ? loginSlice.actions.updateLoginFormErrors({
       ...loginPage.login_input_errors, 
       [e.target.name]: ''
-    }) : updateSignupFormErrors({
+    }) : loginSlice.actions.updateSignupFormErrors({
       ...loginPage.signup_input_errors, 
       [e.target.name]: ''
     })
@@ -64,12 +64,12 @@ function LoginPage(): JSX.Element {
 
   /** Dispatch login thunk */
   const handleLogin = async () => {
-    dispatch(login(loginPage.login_inputs))
+    dispatch(loginThunk(loginPage.login_inputs))
   }
 
   /** Dispatch signup thunk */
   const handleSignup = async () => {
-    dispatch(signup(loginPage.signup_inputs))
+    dispatch(signupThunk(loginPage.signup_inputs))
   }
 
   /** On from submit: 1. validate, 2. showspinner, 3. login/signup 4. @TODO: navigate to homepage  */
@@ -80,26 +80,26 @@ function LoginPage(): JSX.Element {
       getSignupInputErrors(loginPage.signup_inputs);
     
     if (!allErrorsEmpty) {
-      let action = loginPage.isLoginForm ? updateLoginFormErrors : updateSignupFormErrors;
+      let action = loginPage.isLoginForm ?loginSlice.actions.updateLoginFormErrors : loginSlice.actions.updateSignupFormErrors;
       dispatch(action(errors));
       return;
     }
 
-    dispatch(toggleIsSaving())
+    dispatch(loginSlice.actions.isSaving())
     loginPage.isLoginForm ? handleLogin() : handleSignup();
   }
 
   /** Handle bottom form link being clicked */
   const handleFormSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const action = loginPage.isLoginForm ? switchToSignupForm : switchToLoginForm;
+    const action = loginPage.isLoginForm ? loginSlice.actions.switchToSignupForm : loginSlice.actions.switchToLoginForm;
     dispatch(action());
   }
 
   useEffect(() => {
     const inputs = loginPage.isLoginForm ? loginPage.login_inputs : loginPage.signup_inputs;
-    const inputAction = loginPage.isLoginForm ? updateLoginFormInputs : updateSignupFormInputs;
-    dispatch(clearForm())
+    const inputAction = loginPage.isLoginForm ? loginSlice.actions.updateLoginFormInputs : loginSlice.actions.updateSignupFormInputs;
+    dispatch(loginSlice.actions.clearForm())
     dispatch(inputAction(inputs))
   }, [dispatch])
 

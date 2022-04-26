@@ -1,4 +1,4 @@
-import { createAction, createReducer } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { ItemPreview, SavingsItem } from '../../library/types';
 
 /** TYPES */
@@ -7,10 +7,6 @@ interface SavingsGoalPageState {
     item_preview: ItemPreview;
 };
 
-/** ACTIONS */
-const clearPage = createAction('savingsGoalPage/clearPage')
-const updateItem = createAction<SavingsItem>('savingsGoalPage/updateItem')
-const updateItemPreview = createAction<ItemPreview>('savingsGoalPage/updateItemPreview')
 /** INITIAL STATE */
 const initialState: SavingsGoalPageState = { 
     item: {}, 
@@ -18,8 +14,14 @@ const initialState: SavingsGoalPageState = {
 };
 
 /** REDUCER */
-export const savingsGoalPageReducer = createReducer(initialState, builder => {
-    builder.addCase(clearPage, (state, action) => { state = initialState })
-    builder.addCase(updateItem, (state, action) => { state.item = action.payload })
-    builder.addCase(updateItemPreview, (state, action) => { state.item_preview = action.payload })
+const savingsGoalPageSlice = createSlice({
+    name: 'savingsGoalPage',
+    initialState: initialState,
+    reducers: {
+        clearPage: state => state = initialState,
+        updateItem: (state, action) => { state.item = action.payload },
+        updateItemPreview: (state, action) => { state.item_preview = action.payload }
+    }
 })
+
+export default savingsGoalPageSlice.reducer;

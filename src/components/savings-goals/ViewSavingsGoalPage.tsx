@@ -32,7 +32,6 @@ function HypeBoard(): JSX.Element {
                             <b>Friend:</b>
                         </div>
                         <p className="form-control-no-border">Dude nice can't wait to jam!</p>
-                        
                     </div>
                 </div>
             </div>
